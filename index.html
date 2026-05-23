@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>64 Squares — Chess Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">64 <span>Squares</span></div>
+  <div class="nav-links">
+    <a onclick="scrollTo('articles')" class="active">Articles</a>
+    <a onclick="scrollTo('players')">Players</a>
+    <a onclick="scrollTo('games')">Games</a>
+    <a onclick="scrollTo('library')">Library</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="home" style="border-top:none; padding: 0;">
+  <div class="hero-left">
+    <p class="hero-tag">♟ Chess Journal & Archive</p>
+    <h1 class="hero-title">Where the board <em>tells</em> its stories.</h1>
+    <p class="hero-desc">Deep dives into the game's greatest minds, immortal games, strategic ideas, and a growing library of chess literature.</p>
+    <button class="hero-cta" onclick="scrollTo('articles')">Explore Articles →</button>
+  </div>
+  <div class="hero-right">
+    <div class="chess-board-deco" id="chessBoard"></div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section id="articles">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Articles</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="articles-grid" id="articlesGrid"></div>
+</section>
+
+<!-- PLAYER PROFILES -->
+<section id="players">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Player Profiles</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="players-grid" id="playersGrid"></div>
+</section>
+
+<!-- GAMES OF THE CENTURY -->
+<section id="games">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Games of the Century</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="games-list" id="gamesList"></div>
+</section>
+
+<!-- PDF LIBRARY -->
+<section id="library">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">PDF Library</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="pdf-grid" id="pdfGrid"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">64 Squares</div>
+  <div class="footer-copy">© 2026 — A Chess Journal</div>
+</footer>
+
+<!-- PLAYER MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="playerModal">
+    <div class="modal-topbar">
+      <div>
+        <div id="modalName" style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;"></div>
+        <div id="modalCountry" style="font-family:'DM Mono',monospace;font-size:.65rem;opacity:.5;letter-spacing:.12em;margin-top:.3rem;"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="switchTab(this,'bio')">Bio</button>
+        <button class="modal-tab" onclick="switchTab(this,'achievements')">Achievements</button>
+        <button class="modal-tab" onclick="switchTab(this,'career')">Career</button>
+        <button class="modal-tab" onclick="switchTab(this,'bestgames')">Best Games</button>
+      </div>
+      <div class="modal-tab-content active" id="tab-bio"></div>
+      <div class="modal-tab-content" id="tab-achievements"></div>
+      <div class="modal-tab-content" id="tab-career"></div>
+      <div class="modal-tab-content" id="tab-bestgames"></div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
