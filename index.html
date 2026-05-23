@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>64 Squares — Chess Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -14,16 +14,16 @@
 <nav>
   <div class="nav-logo">64 <span>Squares</span></div>
   <div class="nav-links">
-    <a onclick="scrollTo('articles')" class="active">Articles</a>
+    <a onclick="scrollTo('articles')">Articles</a>
     <a onclick="scrollTo('players')">Players</a>
     <a onclick="scrollTo('games')">Games</a>
     <a onclick="scrollTo('library')">Library</a>
-    <button class="nav-admin-btn" onclick="openAdminLogin()">⚙ Admin</button>
+    <button class="nav-admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙ Admin</button>
   </div>
 </nav>
 
 <!-- HERO -->
-<section id="home" style="border-top:none; padding:0;">
+<section id="home" style="border-top:none;padding:0;">
   <div class="hero-left">
     <p class="hero-tag">♟ Chess Journal & Archive</p>
     <h1 class="hero-title">Where the board <em>tells</em> its stories.</h1>
@@ -31,7 +31,7 @@
     <button class="hero-cta" onclick="scrollTo('articles')">Explore Articles →</button>
   </div>
   <div class="hero-right">
-    <p class="board-label">Play against yourself</p>
+    <p class="board-label">Play — click a piece to move</p>
     <div id="chessBoard"></div>
     <div class="board-controls">
       <span id="turnIndicator"></span>
@@ -50,7 +50,7 @@
   <div class="articles-grid" id="articlesGrid"></div>
 </section>
 
-<!-- PLAYER PROFILES -->
+<!-- PLAYERS -->
 <section id="players">
   <div class="section-header">
     <span class="section-num">02</span>
@@ -60,7 +60,7 @@
   <div class="players-grid" id="playersGrid"></div>
 </section>
 
-<!-- GAMES OF THE CENTURY -->
+<!-- GAMES -->
 <section id="games">
   <div class="section-header">
     <span class="section-num">03</span>
@@ -115,7 +115,7 @@
 <div class="admin-login-overlay" id="adminLoginOverlay">
   <div class="admin-login-box">
     <h2>Admin Access</h2>
-    <p>Enter your password to manage site content.</p>
+    <p>Enter your password to manage content.</p>
     <p class="admin-pw-error" id="adminPwError">Incorrect password. Try again.</p>
     <input class="admin-input" id="adminPwInput" type="password" placeholder="Password"/>
     <button class="admin-login-btn" onclick="submitAdminLogin()">Enter →</button>
@@ -123,103 +123,108 @@
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
-<div class="admin-panel-overlay" id="adminPanelOverlay">
-  <div class="admin-panel">
-    <div class="admin-panel-header">
-      <h2>Content Manager</h2>
-      <button class="admin-close-btn" onclick="closeAdminPanel()">✕</button>
+<!-- ADMIN PANEL (slide-in toggle) -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-panel-header">
+    <h2>Content Manager</h2>
+    <button class="admin-close-btn" onclick="toggleAdminPanel()">✕</button>
+  </div>
+  <div class="admin-tabs">
+    <button class="admin-tab-btn active" data-tab="articles" onclick="showAdminTab('articles')">Articles</button>
+    <button class="admin-tab-btn" data-tab="players" onclick="showAdminTab('players')">Players</button>
+    <button class="admin-tab-btn" data-tab="games" onclick="showAdminTab('games')">Games</button>
+    <button class="admin-tab-btn" data-tab="pdfs" onclick="showAdminTab('pdfs')">PDFs</button>
+  </div>
+  <div class="admin-body">
+
+    <!-- ARTICLES -->
+    <div class="admin-section" id="admin-articles">
+      <h3>Add Article</h3>
+      <div class="admin-form">
+        <label>Tag / Category</label>
+        <input id="a-tag" type="text" placeholder="e.g. Strategy, History, Tactics"/>
+        <label>Title *</label>
+        <input id="a-title" type="text" placeholder="Article title"/>
+        <label>Excerpt *</label>
+        <textarea id="a-excerpt" rows="3" placeholder="Short description shown on the card"></textarea>
+        <label>Date</label>
+        <input id="a-date" type="text" placeholder="e.g. May 2026"/>
+        <label>Read Time</label>
+        <input id="a-readtime" type="text" placeholder="e.g. 8 min"/>
+        <button class="admin-submit-btn" onclick="addArticle()">Add Article →</button>
+      </div>
+      <p class="admin-list-title">Published Articles</p>
+      <div id="adminArticleList"></div>
     </div>
-    <div class="admin-tabs">
-      <button class="admin-tab-btn active" data-tab="articles" onclick="showAdminTab('articles')">Articles</button>
-      <button class="admin-tab-btn" data-tab="players" onclick="showAdminTab('players')">Players</button>
-      <button class="admin-tab-btn" data-tab="games" onclick="showAdminTab('games')">Games</button>
-      <button class="admin-tab-btn" data-tab="pdfs" onclick="showAdminTab('pdfs')">PDFs</button>
+
+    <!-- PLAYERS -->
+    <div class="admin-section" id="admin-players">
+      <h3>Add Player Profile</h3>
+      <div class="admin-form">
+        <label>Full Name *</label>
+        <input id="p-name" type="text" placeholder="e.g. Garry Kasparov"/>
+        <label>Country</label>
+        <input id="p-country" type="text" placeholder="e.g. Russia"/>
+        <label>Peak Rating</label>
+        <input id="p-rating" type="text" placeholder="e.g. 2851"/>
+        <label>Bio *</label>
+        <textarea id="p-bio" rows="4" placeholder="Player biography"></textarea>
+        <label>Career Summary</label>
+        <textarea id="p-career" rows="3" placeholder="Career highlights and timeline"></textarea>
+        <button class="admin-submit-btn" onclick="addPlayer()">Add Player →</button>
+      </div>
+      <p class="admin-list-title">Published Players</p>
+      <div id="adminPlayerList"></div>
     </div>
-    <div class="admin-body">
 
-      <!-- ARTICLES -->
-      <div class="admin-section" id="admin-articles">
-        <h3>Add Article</h3>
-        <div class="admin-form">
-          <label>Tag / Category</label>
-          <input class="admin-input" id="a-tag" type="text" placeholder="e.g. Strategy, History, Tactics"/>
-          <label>Title *</label>
-          <input class="admin-input" id="a-title" type="text" placeholder="Article title"/>
-          <label>Excerpt *</label>
-          <textarea class="admin-input" id="a-excerpt" rows="3" placeholder="Short description shown on the card"></textarea>
-          <label>Date</label>
-          <input class="admin-input" id="a-date" type="text" placeholder="e.g. May 2026"/>
-          <label>Read Time</label>
-          <input class="admin-input" id="a-readtime" type="text" placeholder="e.g. 8 min"/>
-          <button class="admin-submit-btn" onclick="addArticle()">Add Article →</button>
-        </div>
-        <p class="admin-list-title">Existing Articles</p>
-        <div id="adminArticleList"></div>
+    <!-- GAMES -->
+    <div class="admin-section" id="admin-games">
+      <h3>Add Game of the Century</h3>
+      <div class="admin-form">
+        <label>Game Title *</label>
+        <input id="g-title" type="text" placeholder="e.g. The Immortal Game"/>
+        <label>White Player *</label>
+        <input id="g-white" type="text" placeholder="e.g. Adolf Anderssen"/>
+        <label>Black Player *</label>
+        <input id="g-black" type="text" placeholder="e.g. Lionel Kieseritzky"/>
+        <label>Year</label>
+        <input id="g-year" type="text" placeholder="e.g. 1851"/>
+        <label>Event / Tournament</label>
+        <input id="g-event" type="text" placeholder="e.g. London"/>
+        <label>Result</label>
+        <input id="g-result" type="text" placeholder="e.g. 1–0"/>
+        <label>PGN (paste game moves)</label>
+        <textarea id="g-pgn" rows="5" placeholder="1.e4 e5 2.Nf3 Nc6 3.Bb5 ..."></textarea>
+        <button class="admin-submit-btn" onclick="addGame()">Add Game →</button>
       </div>
-
-      <!-- PLAYERS -->
-      <div class="admin-section" id="admin-players">
-        <h3>Add Player Profile</h3>
-        <div class="admin-form">
-          <label>Full Name *</label>
-          <input class="admin-input" id="p-name" type="text" placeholder="e.g. Garry Kasparov"/>
-          <label>Country</label>
-          <input class="admin-input" id="p-country" type="text" placeholder="e.g. Russia"/>
-          <label>Peak Rating</label>
-          <input class="admin-input" id="p-rating" type="text" placeholder="e.g. 2851"/>
-          <label>Bio *</label>
-          <textarea class="admin-input" id="p-bio" rows="4" placeholder="Player biography"></textarea>
-          <label>Career Summary</label>
-          <textarea class="admin-input" id="p-career" rows="3" placeholder="Career highlights and timeline"></textarea>
-          <button class="admin-submit-btn" onclick="addPlayer()">Add Player →</button>
-        </div>
-        <p class="admin-list-title">Existing Players</p>
-        <div id="adminPlayerList"></div>
-      </div>
-
-      <!-- GAMES -->
-      <div class="admin-section" id="admin-games">
-        <h3>Add Game of the Century</h3>
-        <div class="admin-form">
-          <label>Game Title *</label>
-          <input class="admin-input" id="g-title" type="text" placeholder="e.g. The Immortal Game"/>
-          <label>Players *</label>
-          <input class="admin-input" id="g-players" type="text" placeholder="e.g. Anderssen vs. Kieseritzky"/>
-          <label>Year</label>
-          <input class="admin-input" id="g-year" type="text" placeholder="e.g. 1851"/>
-          <label>Event / Tournament</label>
-          <input class="admin-input" id="g-event" type="text" placeholder="e.g. London"/>
-          <label>Result</label>
-          <input class="admin-input" id="g-result" type="text" placeholder="e.g. 1–0"/>
-          <button class="admin-submit-btn" onclick="addGame()">Add Game →</button>
-        </div>
-        <p class="admin-list-title">Existing Games</p>
-        <div id="adminGameList"></div>
-      </div>
-
-      <!-- PDFS -->
-      <div class="admin-section" id="admin-pdfs">
-        <h3>Add PDF to Library</h3>
-        <div class="admin-form">
-          <label>Title *</label>
-          <input class="admin-input" id="d-title" type="text" placeholder="e.g. My System"/>
-          <label>Author *</label>
-          <input class="admin-input" id="d-author" type="text" placeholder="e.g. Nimzowitsch"/>
-          <label>Description</label>
-          <textarea class="admin-input" id="d-desc" rows="3" placeholder="Brief description of the book or document"></textarea>
-          <label>File Size</label>
-          <input class="admin-input" id="d-size" type="text" placeholder="e.g. 3.2 MB"/>
-          <button class="admin-submit-btn" onclick="addPdf()">Add PDF →</button>
-        </div>
-        <p class="admin-list-title">Existing PDFs</p>
-        <div id="adminPdfList"></div>
-        <button class="admin-reset-btn" onclick="resetToDefault()">⚠ Reset all content to default</button>
-      </div>
-
+      <p class="admin-list-title">Published Games</p>
+      <div id="adminGameList"></div>
     </div>
+
+    <!-- PDFS -->
+    <div class="admin-section" id="admin-pdfs">
+      <h3>Add PDF to Library</h3>
+      <div class="admin-form">
+        <label>Title *</label>
+        <input id="d-title" type="text" placeholder="e.g. My System"/>
+        <label>Author *</label>
+        <input id="d-author" type="text" placeholder="e.g. Nimzowitsch"/>
+        <label>Description</label>
+        <textarea id="d-desc" rows="3" placeholder="Brief description of the book or document"></textarea>
+        <label>File Size</label>
+        <input id="d-size" type="text" placeholder="e.g. 3.2 MB"/>
+        <button class="admin-submit-btn" onclick="addPdf()">Add PDF →</button>
+      </div>
+      <p class="admin-list-title">Published PDFs</p>
+      <div id="adminPdfList"></div>
+      <button class="admin-reset-btn" onclick="resetToDefault()">⚠ Reset all content to defaults</button>
+    </div>
+
   </div>
 </div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script src="script.js"></script>
 </body>
