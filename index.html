@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <!-- NAV -->
 <nav id="mainNav">
   <div class="nav-logo" onclick="goHome()">64 <span>Squares</span></div>
@@ -18,28 +18,61 @@
     <a onclick="goHome(); setTimeout(()=>scrollToSection('players'),100)">Players</a>
     <a onclick="goHome(); setTimeout(()=>scrollToSection('games'),100)">Games</a>
     <a onclick="goHome(); setTimeout(()=>scrollToSection('library'),100)">Library</a>
-    <button class="nav-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle dark mode">◑</button>
-    <button class="nav-admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙ Admin</button>
+    <button class="nav-search-btn" onclick="toggleSearch()" title="Search">&#9906;</button>
+    <button class="nav-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle dark mode">&#9681;</button>
+    <button class="nav-admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">&#9881; Admin</button>
   </div>
 </nav>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <div class="search-top">
+      <span class="search-icon">&#9906;</span>
+      <input id="searchInput" type="text" placeholder="Search articles, players, games, books…" oninput="runSearch()"/>
+      <button class="search-close-btn" onclick="closeSearch()">&#10005;</button>
+    </div>
+    <div id="searchResults">
+      <p class="search-empty">Start typing to search articles, players, games and books.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LATEST ADDITIONS -->
+<div id="latestStrip" style="display:none; padding-top:70px;"></div>
 
 <!-- HOME PAGE -->
 <div id="homePage">
   <section id="home" style="border-top:none;padding:0;">
+
+    <!-- LEFT: hero text -->
     <div class="hero-left">
-      <p class="hero-tag">♟ Chess Journal & Archive</p>
+      <p class="hero-tag">&#9817; Chess Journal &amp; Archive</p>
       <h1 class="hero-title">Where the board <em>tells</em> its stories.</h1>
       <p class="hero-desc">Deep dives into the game's greatest minds, immortal games, strategic ideas, and a growing library of chess literature.</p>
-      <button class="hero-cta" onclick="scrollToSection('articles')">Explore Articles →</button>
+      <button class="hero-cta" onclick="scrollToSection('articles')">Explore Articles &#8594;</button>
     </div>
+
+    <!-- RIGHT: chess.com style board with player name strips -->
     <div class="hero-right">
-      <p class="board-label">Play — click a piece to move</p>
+      <p class="board-label">&#9817; Play — click a piece to move</p>
+
+      <!-- Black player name (top of board) -->
+      <div class="board-player-strip board-player-black" id="boardPlayerBlack">&#9818; Black</div>
+
+      <!-- The interactive board -->
       <div id="chessBoard"></div>
+
+      <!-- White player name (bottom of board) -->
+      <div class="board-player-strip board-player-white" id="boardPlayerWhite">&#9812; White</div>
+
+      <!-- Turn indicator + reset -->
       <div class="board-controls">
         <span id="turnIndicator"></span>
-        <button class="board-reset-btn" onclick="resetBoard()">↺ Reset</button>
+        <button class="board-reset-btn" onclick="resetBoard()">&#8634; Reset</button>
       </div>
     </div>
+
   </section>
 
   <section id="articles">
@@ -80,7 +113,7 @@
 
   <footer>
     <div class="footer-logo">64 Squares</div>
-    <div class="footer-copy">© 2026 — A Chess Journal</div>
+    <div class="footer-copy">&#169; 2026 &mdash; A Chess Journal</div>
   </footer>
 </div>
 
@@ -96,7 +129,7 @@
     <p>Enter your password to manage content.</p>
     <p class="admin-pw-error" id="adminPwError">Incorrect password. Try again.</p>
     <input class="admin-input" id="adminPwInput" type="password" placeholder="Password"/>
-    <button class="admin-login-btn" onclick="submitAdminLogin()">Enter →</button>
+    <button class="admin-login-btn" onclick="submitAdminLogin()">Enter &#8594;</button>
     <button class="admin-cancel-btn" onclick="closeAdminLogin()">Cancel</button>
   </div>
 </div>
@@ -105,7 +138,7 @@
 <div class="admin-panel" id="adminPanel">
   <div class="admin-panel-header">
     <h2>Content Manager</h2>
-    <button class="admin-close-btn" onclick="closeAdminPanel()">✕</button>
+    <button class="admin-close-btn" onclick="closeAdminPanel()">&#10005;</button>
   </div>
   <div class="admin-tabs">
     <button class="admin-tab-btn active" data-tab="articles" onclick="showAdminTab('articles')">Articles</button>
@@ -115,11 +148,11 @@
   </div>
   <div class="admin-body">
 
-    <!-- ARTICLES TAB -->
+    <!-- ── ARTICLES TAB ─────────────────────── -->
     <div class="admin-section active" id="admin-articles">
       <div class="admin-section-title-row">
         <h3 id="article-form-heading">Add Article</h3>
-        <button class="admin-cancel-edit-btn" id="article-cancel-edit" onclick="cancelEdit('article')" style="display:none;">✕ Cancel Edit</button>
+        <button class="admin-cancel-edit-btn" id="article-cancel-edit" onclick="cancelEdit('article')" style="display:none;">&#10005; Cancel Edit</button>
       </div>
       <div class="admin-form">
         <input type="hidden" id="a-edit-id"/>
@@ -131,20 +164,20 @@
         <label>Cover Image</label>
         <div class="img-upload-wrap" id="a-img-wrap">
           <div class="img-upload-dropzone" id="a-img-drop" onclick="document.getElementById('a-img-input').click()">
-            <span class="img-upload-icon">📷</span>
+            <span class="img-upload-icon">&#128247;</span>
             <span class="img-upload-text">Click to upload cover image</span>
-            <span class="img-upload-hint">JPG, PNG, WEBP — stored in browser</span>
+            <span class="img-upload-hint">JPG, PNG, WEBP &mdash; max 2MB</span>
           </div>
           <input type="file" id="a-img-input" accept="image/*" style="display:none" onchange="handleImgUpload('a-img-input','a-img-preview','a-img-data')"/>
           <div class="img-preview-wrap" id="a-img-preview" style="display:none;">
             <img id="a-img-preview-img" src="" alt="preview"/>
-            <button class="img-remove-btn" onclick="removeImg('a-img-preview','a-img-data','a-img-drop')">✕ Remove</button>
+            <button class="img-remove-btn" onclick="removeImg('a-img-preview','a-img-data','a-img-drop')">&#10005; Remove</button>
           </div>
           <input type="hidden" id="a-img-data"/>
         </div>
 
         <label>Full Content *</label>
-        <textarea id="a-content" rows="7" placeholder="Write the full article here..."></textarea>
+        <textarea id="a-content" rows="7" placeholder="Write the full article here…"></textarea>
         <label>Excerpt <span style="font-weight:300;opacity:.7">(auto-generated if blank)</span></label>
         <textarea id="a-excerpt" rows="2" placeholder="Short preview shown on the card"></textarea>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
@@ -167,9 +200,9 @@
         </div>
         <div style="display:flex;gap:.8rem;flex-wrap:wrap;">
           <button class="admin-submit-btn" onclick="addArticle()">
-            <span id="a-submit-label">Add Article →</span>
+            <span id="a-submit-label">Add Article &#8594;</span>
           </button>
-          <button class="admin-preview-btn" onclick="previewArticle()">Preview ↗</button>
+          <button class="admin-preview-btn" onclick="previewArticle()">Preview &#8599;</button>
         </div>
       </div>
       <p class="admin-list-title">Published Articles</p>
@@ -178,11 +211,11 @@
       <div id="adminArticleDraftList"></div>
     </div>
 
-    <!-- PLAYERS TAB -->
+    <!-- ── PLAYERS TAB ──────────────────────── -->
     <div class="admin-section" id="admin-players">
       <div class="admin-section-title-row">
         <h3 id="player-form-heading">Add Player Profile</h3>
-        <button class="admin-cancel-edit-btn" id="player-cancel-edit" onclick="cancelEdit('player')" style="display:none;">✕ Cancel Edit</button>
+        <button class="admin-cancel-edit-btn" id="player-cancel-edit" onclick="cancelEdit('player')" style="display:none;">&#10005; Cancel Edit</button>
       </div>
       <div class="admin-form">
         <input type="hidden" id="p-edit-id"/>
@@ -191,15 +224,9 @@
             <label>Title / Rank</label>
             <select id="p-title" style="padding:.7rem .9rem;font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:100%;">
               <option value="">— None —</option>
-              <option>GM</option>
-              <option>IM</option>
-              <option>FM</option>
-              <option>CM</option>
-              <option>WGM</option>
-              <option>WIM</option>
-              <option>WFM</option>
-              <option>NM</option>
-              <option>World Champion</option>
+              <option>GM</option><option>IM</option><option>FM</option><option>CM</option>
+              <option>WGM</option><option>WIM</option><option>WFM</option>
+              <option>NM</option><option>World Champion</option>
             </select>
           </div>
           <div style="display:flex;flex-direction:column;gap:.4rem;">
@@ -211,14 +238,14 @@
         <label>Profile Photo</label>
         <div class="img-upload-wrap">
           <div class="img-upload-dropzone" id="p-img-drop" onclick="document.getElementById('p-img-input').click()">
-            <span class="img-upload-icon">👤</span>
+            <span class="img-upload-icon">&#128100;</span>
             <span class="img-upload-text">Click to upload profile photo</span>
-            <span class="img-upload-hint">JPG, PNG — stored in browser</span>
+            <span class="img-upload-hint">JPG, PNG &mdash; stored in Supabase</span>
           </div>
           <input type="file" id="p-img-input" accept="image/*" style="display:none" onchange="handleImgUpload('p-img-input','p-img-preview','p-img-data')"/>
           <div class="img-preview-wrap" id="p-img-preview" style="display:none;">
             <img id="p-img-preview-img" src="" alt="preview" style="border-radius:50%;width:80px;height:80px;object-fit:cover;"/>
-            <button class="img-remove-btn" onclick="removeImg('p-img-preview','p-img-data','p-img-drop')">✕ Remove</button>
+            <button class="img-remove-btn" onclick="removeImg('p-img-preview','p-img-data','p-img-drop')">&#10005; Remove</button>
           </div>
           <input type="hidden" id="p-img-data"/>
         </div>
@@ -236,12 +263,8 @@
         <label>Playing Style</label>
         <select id="p-style" style="padding:.7rem .9rem;font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:100%;">
           <option value="">— Select style —</option>
-          <option>Tactical</option>
-          <option>Positional</option>
-          <option>Universal</option>
-          <option>Endgame Specialist</option>
-          <option>Attacking</option>
-          <option>Defensive</option>
+          <option>Tactical</option><option>Positional</option><option>Universal</option>
+          <option>Endgame Specialist</option><option>Attacking</option><option>Defensive</option>
         </select>
         <label>Bio *</label>
         <textarea id="p-bio" rows="4" placeholder="Player biography"></textarea>
@@ -250,20 +273,20 @@
         <label>Achievements <span style="font-weight:300;opacity:.7">(one per line: Title | Year)</span></label>
         <textarea id="p-achievements" rows="3" placeholder="World Chess Champion | 1985–2000&#10;Peak FIDE Rating 2851 | 1999"></textarea>
         <label>Best Games <span style="font-weight:300;opacity:.7">(one per line: Title | Event | Year)</span></label>
-        <textarea id="p-bestgames" rows="3" placeholder="Immortal Game vs GM Topalov | Wijk aan Zee | 1999&#10;Opera Game vs Duke of Brunswick | Paris Opera | 1858"></textarea>
+        <textarea id="p-bestgames" rows="3" placeholder="Immortal Game vs GM Topalov | Wijk aan Zee | 1999"></textarea>
         <button class="admin-submit-btn" onclick="addPlayer()">
-          <span id="p-submit-label">Add Player →</span>
+          <span id="p-submit-label">Add Player &#8594;</span>
         </button>
       </div>
       <p class="admin-list-title">Players</p>
       <div id="adminPlayerList"></div>
     </div>
 
-    <!-- GAMES TAB -->
+    <!-- ── GAMES TAB ────────────────────────── -->
     <div class="admin-section" id="admin-games">
       <div class="admin-section-title-row">
         <h3 id="game-form-heading">Add Game of the Century</h3>
-        <button class="admin-cancel-edit-btn" id="game-cancel-edit" onclick="cancelEdit('game')" style="display:none;">✕ Cancel Edit</button>
+        <button class="admin-cancel-edit-btn" id="game-cancel-edit" onclick="cancelEdit('game')" style="display:none;">&#10005; Cancel Edit</button>
       </div>
       <div class="admin-form">
         <input type="hidden" id="g-edit-id"/>
@@ -275,7 +298,8 @@
             <div style="display:flex;gap:.4rem;">
               <select id="g-white-title" style="padding:.7rem .6rem;font-family:var(--mono);font-size:.75rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:80px;flex-shrink:0;">
                 <option value="">—</option>
-                <option>GM</option><option>IM</option><option>FM</option><option>WGM</option><option>WIM</option><option>NM</option>
+                <option>GM</option><option>IM</option><option>FM</option>
+                <option>WGM</option><option>WIM</option><option>NM</option>
               </select>
               <input id="g-white" type="text" placeholder="e.g. Adolf Anderssen" style="flex:1;"/>
             </div>
@@ -285,7 +309,8 @@
             <div style="display:flex;gap:.4rem;">
               <select id="g-black-title" style="padding:.7rem .6rem;font-family:var(--mono);font-size:.75rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:80px;flex-shrink:0;">
                 <option value="">—</option>
-                <option>GM</option><option>IM</option><option>FM</option><option>WGM</option><option>WIM</option><option>NM</option>
+                <option>GM</option><option>IM</option><option>FM</option>
+                <option>WGM</option><option>WIM</option><option>NM</option>
               </select>
               <input id="g-black" type="text" placeholder="e.g. Lionel Kieseritzky" style="flex:1;"/>
             </div>
@@ -306,22 +331,22 @@
           </div>
         </div>
         <label>Description / Analysis</label>
-        <textarea id="g-desc" rows="4" placeholder="What makes this game significant..."></textarea>
+        <textarea id="g-desc" rows="4" placeholder="What makes this game significant…"></textarea>
         <label>PGN (paste moves)</label>
-        <textarea id="g-pgn" rows="5" placeholder="1.e4 e5 2.Nf3 Nc6 ..."></textarea>
+        <textarea id="g-pgn" rows="5" placeholder="1.e4 e5 2.Nf3 Nc6 …"></textarea>
         <button class="admin-submit-btn" onclick="addGame()">
-          <span id="g-submit-label">Add Game →</span>
+          <span id="g-submit-label">Add Game &#8594;</span>
         </button>
       </div>
       <p class="admin-list-title">Published Games</p>
       <div id="adminGameList"></div>
     </div>
 
-    <!-- PDFS TAB -->
+    <!-- ── PDFS TAB ─────────────────────────── -->
     <div class="admin-section" id="admin-pdfs">
       <div class="admin-section-title-row">
         <h3 id="pdf-form-heading">Add PDF to Library</h3>
-        <button class="admin-cancel-edit-btn" id="pdf-cancel-edit" onclick="cancelEdit('pdf')" style="display:none;">✕ Cancel Edit</button>
+        <button class="admin-cancel-edit-btn" id="pdf-cancel-edit" onclick="cancelEdit('pdf')" style="display:none;">&#10005; Cancel Edit</button>
       </div>
       <div class="admin-form">
         <input type="hidden" id="d-edit-id"/>
@@ -333,38 +358,45 @@
         <label>Author *</label>
         <input id="d-author" type="text" placeholder="e.g. Nimzowitsch"/>
 
+        <label>Category Tag</label>
+        <select id="d-tag" style="padding:.7rem .9rem;font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:100%;">
+          <option value="">— Select tag —</option>
+          <option>Strategy</option><option>Tactics</option><option>Endgames</option>
+          <option>Openings</option><option>History</option><option>Biography</option>
+        </select>
+
         <label>Upload PDF File</label>
         <div class="pdf-upload-wrap">
           <div class="pdf-upload-dropzone" id="d-pdf-drop" onclick="document.getElementById('d-pdf-input').click()">
-            <span class="pdf-upload-icon">📄</span>
+            <span class="pdf-upload-icon">&#128196;</span>
             <span class="pdf-upload-text">Click to upload a PDF file</span>
-            <span class="pdf-upload-hint">PDF only · max 5MB · stored in browser</span>
+            <span class="pdf-upload-hint">PDF only &middot; max 5MB</span>
           </div>
           <input type="file" id="d-pdf-input" accept="application/pdf" style="display:none" onchange="handlePdfUpload()"/>
           <div class="pdf-upload-preview" id="d-pdf-preview" style="display:none;">
-            <div class="pdf-upload-preview-icon">📄</div>
+            <div class="pdf-upload-preview-icon">&#128196;</div>
             <div class="pdf-upload-preview-info">
               <span class="pdf-upload-preview-name" id="d-pdf-preview-name"></span>
               <span class="pdf-upload-preview-size" id="d-pdf-preview-size"></span>
             </div>
-            <button class="img-remove-btn" onclick="removePdfUpload()">✕ Remove</button>
+            <button class="img-remove-btn" onclick="removePdfUpload()">&#10005; Remove</button>
           </div>
         </div>
 
-        <label>— or paste an external URL instead —</label>
+        <label>&mdash; or paste an external URL instead &mdash;</label>
         <input id="d-url" type="text" placeholder="https://example.com/file.pdf"/>
 
         <label>Cover Image <span style="font-weight:300;opacity:.7">(optional)</span></label>
         <div class="img-upload-wrap">
           <div class="img-upload-dropzone" id="d-img-drop" onclick="document.getElementById('d-img-input').click()">
-            <span class="img-upload-icon">🖼</span>
+            <span class="img-upload-icon">&#128444;</span>
             <span class="img-upload-text">Click to upload a cover image</span>
-            <span class="img-upload-hint">JPG, PNG — shown on the library card</span>
+            <span class="img-upload-hint">JPG, PNG &mdash; shown on library card</span>
           </div>
           <input type="file" id="d-img-input" accept="image/*" style="display:none" onchange="handleImgUpload('d-img-input','d-img-preview','d-img-data')"/>
           <div class="img-preview-wrap" id="d-img-preview" style="display:none;">
             <img id="d-img-preview-img" src="" alt="cover preview"/>
-            <button class="img-remove-btn" onclick="removeImg('d-img-preview','d-img-data','d-img-drop')">✕ Remove</button>
+            <button class="img-remove-btn" onclick="removeImg('d-img-preview','d-img-data','d-img-drop')">&#10005; Remove</button>
           </div>
           <input type="hidden" id="d-img-data"/>
         </div>
@@ -372,23 +404,25 @@
         <label>Description</label>
         <textarea id="d-desc" rows="3" placeholder="Brief description of the book or document"></textarea>
         <label>Full Content / Summary</label>
-        <textarea id="d-content" rows="4" placeholder="Extended summary, table of contents, or key excerpts..."></textarea>
+        <textarea id="d-content" rows="4" placeholder="Extended summary, table of contents, or key excerpts…"></textarea>
         <button class="admin-submit-btn" onclick="addPdf()">
-          <span id="d-submit-label">Add PDF →</span>
+          <span id="d-submit-label">Add PDF &#8594;</span>
         </button>
       </div>
 
       <p class="admin-list-title">Published PDFs</p>
       <div id="adminPdfList"></div>
-      <button class="admin-reset-btn" onclick="resetToDefault()">⚠ Reset all content to defaults</button>
+      <button class="admin-reset-btn" onclick="resetToDefault()">&#9888; Reset all content to defaults</button>
     </div>
 
-  </div>
-</div>
+  </div><!-- /admin-body -->
+</div><!-- /admin-panel -->
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- Supabase JS — must come BEFORE script.js -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
 </html>
