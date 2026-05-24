@@ -18,6 +18,7 @@
     <a onclick="goHome(); setTimeout(()=>scrollToSection('players'),100)">Players</a>
     <a onclick="goHome(); setTimeout(()=>scrollToSection('games'),100)">Games</a>
     <a onclick="goHome(); setTimeout(()=>scrollToSection('library'),100)">Library</a>
+    <button class="nav-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle dark mode">◑</button>
     <button class="nav-admin-btn" id="adminToggleBtn" onclick="toggleAdmin()">⚙ Admin</button>
   </div>
 </nav>
@@ -185,8 +186,27 @@
       </div>
       <div class="admin-form">
         <input type="hidden" id="p-edit-id"/>
-        <label>Full Name *</label>
-        <input id="p-name" type="text" placeholder="e.g. Garry Kasparov"/>
+        <div style="display:grid;grid-template-columns:150px 1fr;gap:.7rem;">
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <label>Title / Rank</label>
+            <select id="p-title" style="padding:.7rem .9rem;font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:100%;">
+              <option value="">— None —</option>
+              <option>GM</option>
+              <option>IM</option>
+              <option>FM</option>
+              <option>CM</option>
+              <option>WGM</option>
+              <option>WIM</option>
+              <option>WFM</option>
+              <option>NM</option>
+              <option>World Champion</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <label>Full Name *</label>
+            <input id="p-name" type="text" placeholder="e.g. Garry Kasparov"/>
+          </div>
+        </div>
 
         <label>Profile Photo</label>
         <div class="img-upload-wrap">
@@ -230,7 +250,7 @@
         <label>Achievements <span style="font-weight:300;opacity:.7">(one per line: Title | Year)</span></label>
         <textarea id="p-achievements" rows="3" placeholder="World Chess Champion | 1985–2000&#10;Peak FIDE Rating 2851 | 1999"></textarea>
         <label>Best Games <span style="font-weight:300;opacity:.7">(one per line: Title | Event | Year)</span></label>
-        <textarea id="p-bestgames" rows="3" placeholder="Immortal Game vs Topalov | Wijk aan Zee | 1999"></textarea>
+        <textarea id="p-bestgames" rows="3" placeholder="Immortal Game vs GM Topalov | Wijk aan Zee | 1999&#10;Opera Game vs Duke of Brunswick | Paris Opera | 1858"></textarea>
         <button class="admin-submit-btn" onclick="addPlayer()">
           <span id="p-submit-label">Add Player →</span>
         </button>
@@ -250,13 +270,25 @@
         <label>Game Title *</label>
         <input id="g-title" type="text" placeholder="e.g. The Immortal Game"/>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
-          <div style="display:flex;flex-direction:column;gap:.4rem;">
+          <div style="display:flex;flex-direction:column;gap:.5rem;">
             <label>White Player *</label>
-            <input id="g-white" type="text" placeholder="e.g. Adolf Anderssen"/>
+            <div style="display:flex;gap:.4rem;">
+              <select id="g-white-title" style="padding:.7rem .6rem;font-family:var(--mono);font-size:.75rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:80px;flex-shrink:0;">
+                <option value="">—</option>
+                <option>GM</option><option>IM</option><option>FM</option><option>WGM</option><option>WIM</option><option>NM</option>
+              </select>
+              <input id="g-white" type="text" placeholder="e.g. Adolf Anderssen" style="flex:1;"/>
+            </div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:.4rem;">
+          <div style="display:flex;flex-direction:column;gap:.5rem;">
             <label>Black Player *</label>
-            <input id="g-black" type="text" placeholder="e.g. Lionel Kieseritzky"/>
+            <div style="display:flex;gap:.4rem;">
+              <select id="g-black-title" style="padding:.7rem .6rem;font-family:var(--mono);font-size:.75rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:80px;flex-shrink:0;">
+                <option value="">—</option>
+                <option>GM</option><option>IM</option><option>FM</option><option>WGM</option><option>WIM</option><option>NM</option>
+              </select>
+              <input id="g-black" type="text" placeholder="e.g. Lionel Kieseritzky" style="flex:1;"/>
+            </div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;">
