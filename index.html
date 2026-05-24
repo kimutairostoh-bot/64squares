@@ -293,28 +293,59 @@
       </div>
       <div class="admin-form">
         <input type="hidden" id="d-edit-id"/>
+        <input type="hidden" id="d-file-data"/>
+        <input type="hidden" id="d-file-name"/>
+
         <label>Title *</label>
         <input id="d-title" type="text" placeholder="e.g. My System"/>
         <label>Author *</label>
         <input id="d-author" type="text" placeholder="e.g. Nimzowitsch"/>
+
+        <label>Upload PDF File</label>
+        <div class="pdf-upload-wrap">
+          <div class="pdf-upload-dropzone" id="d-pdf-drop" onclick="document.getElementById('d-pdf-input').click()">
+            <span class="pdf-upload-icon">📄</span>
+            <span class="pdf-upload-text">Click to upload a PDF file</span>
+            <span class="pdf-upload-hint">PDF only · max 5MB · stored in browser</span>
+          </div>
+          <input type="file" id="d-pdf-input" accept="application/pdf" style="display:none" onchange="handlePdfUpload()"/>
+          <div class="pdf-upload-preview" id="d-pdf-preview" style="display:none;">
+            <div class="pdf-upload-preview-icon">📄</div>
+            <div class="pdf-upload-preview-info">
+              <span class="pdf-upload-preview-name" id="d-pdf-preview-name"></span>
+              <span class="pdf-upload-preview-size" id="d-pdf-preview-size"></span>
+            </div>
+            <button class="img-remove-btn" onclick="removePdfUpload()">✕ Remove</button>
+          </div>
+        </div>
+
+        <label>— or paste an external URL instead —</label>
+        <input id="d-url" type="text" placeholder="https://example.com/file.pdf"/>
+
+        <label>Cover Image <span style="font-weight:300;opacity:.7">(optional)</span></label>
+        <div class="img-upload-wrap">
+          <div class="img-upload-dropzone" id="d-img-drop" onclick="document.getElementById('d-img-input').click()">
+            <span class="img-upload-icon">🖼</span>
+            <span class="img-upload-text">Click to upload a cover image</span>
+            <span class="img-upload-hint">JPG, PNG — shown on the library card</span>
+          </div>
+          <input type="file" id="d-img-input" accept="image/*" style="display:none" onchange="handleImgUpload('d-img-input','d-img-preview','d-img-data')"/>
+          <div class="img-preview-wrap" id="d-img-preview" style="display:none;">
+            <img id="d-img-preview-img" src="" alt="cover preview"/>
+            <button class="img-remove-btn" onclick="removeImg('d-img-preview','d-img-data','d-img-drop')">✕ Remove</button>
+          </div>
+          <input type="hidden" id="d-img-data"/>
+        </div>
+
         <label>Description</label>
         <textarea id="d-desc" rows="3" placeholder="Brief description of the book or document"></textarea>
         <label>Full Content / Summary</label>
-        <textarea id="d-content" rows="5" placeholder="Extended summary, table of contents, or key excerpts..."></textarea>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
-          <div style="display:flex;flex-direction:column;gap:.4rem;">
-            <label>File Size</label>
-            <input id="d-size" type="text" placeholder="e.g. 3.2 MB"/>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:.4rem;">
-            <label>Download URL</label>
-            <input id="d-url" type="text" placeholder="https://..."/>
-          </div>
-        </div>
+        <textarea id="d-content" rows="4" placeholder="Extended summary, table of contents, or key excerpts..."></textarea>
         <button class="admin-submit-btn" onclick="addPdf()">
           <span id="d-submit-label">Add PDF →</span>
         </button>
       </div>
+
       <p class="admin-list-title">Published PDFs</p>
       <div id="adminPdfList"></div>
       <button class="admin-reset-btn" onclick="resetToDefault()">⚠ Reset all content to defaults</button>
