@@ -523,3 +523,80 @@ body.dark .player-title-badge { background: rgba(255,255,255,.08); color: rgba(2
   border: 1px solid var(--rule);
   margin-right: .3rem;
 }
+
+/* ════════════════════════════
+   BUG FIXES & MISSING STYLES
+════════════════════════════ */
+
+/* Article card body padding (fixes broken inline style from v4) */
+.article-card-body { padding: 2rem; }
+.article-card-img + .article-card-body { padding-top: 1.5rem; }
+/* When card has image, remove top padding from card itself so image sits flush */
+.article-card:has(.article-card-img) { padding: 0; }
+
+/* Admin pw-error was using opacity toggle before — ensure display:none default works */
+.admin-pw-error { display: none; }
+.admin-pw-error.visible { display: block; }
+
+/* Dark mode: admin select bg for inline selects inside game form */
+body.dark select { background: #1a1a1a; color: #e8e4dc; border-color: #2a2826; }
+
+/* Fix player card header avatar alignment when photo used */
+.player-card-header { gap: 1.2rem; }
+
+/* Game detail players line — make titles visually distinct */
+.game-detail-players .player-title { 
+  font-family: var(--mono);
+  font-size: .65rem;
+  opacity: .6;
+  margin-right: .2rem;
+}
+
+/* Ensure detail page has correct top padding in all scroll states */
+#detailPage { background: var(--bg); min-height: 100vh; }
+
+/* Fix admin form select dark mode for p-style and p-title */
+body.dark #p-style,
+body.dark #p-title,
+body.dark #g-white-title,
+body.dark #g-black-title { background: #1a1a1a !important; color: #e8e4dc !important; border-color: #2a2826 !important; }
+
+/* Fix toast positioning on mobile */
+@media (max-width: 480px) {
+  .toast { width: 90%; text-align: center; }
+}
+
+/* Ensure admin panel doesn't overlap nav on mobile */
+@media (max-width: 768px) {
+  .admin-panel { top: 0; }
+  .nav-links a { display: none; }
+  .nav-links { gap: .6rem; }
+}
+
+/* Fix game viewer board size on detail page */
+.game-detail-right .chess-board-viewer {
+  width: 100%;
+  max-width: 300px;
+}
+
+/* PDF card cover doesn't break card border radius */
+.pdf-card { overflow: hidden; }
+
+/* Fix bestgame-row hover in dark mode */
+body.dark .bestgame-row:hover h4,
+body.dark .bestgame-row:hover p { color: #0d0d0d; }
+
+/* Fix achievement table dark mode text */
+body.dark .achievement-table td { color: #e8e4dc; }
+body.dark .achievement-table td:last-child { color: #7a7570; }
+
+/* Fix modal / detail tabs dark */
+body.dark .pd-tab { color: #7a7570; }
+body.dark .pd-panel p { color: #9a9590; }
+
+/* Fix gv-pgn em tag dark */
+body.dark .gv-pgn em { color: #7a7570; }
+body.dark .gv-pgn pre { color: #9a9590; }
+
+/* Fix hero board dark border */
+body.dark .chess-board-interactive { border-color: #1a1a1a; }
