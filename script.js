@@ -1,602 +1,846 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #f9f7f4; --ink: #0e0e0e; --mid: #6b6b6b; --rule: #d8d5d0; --white: #ffffff;
-  --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif; --serif: 'Playfair Display', serif;
-  --board-light: #c8b89a; --board-dark: #4a3728;
-  --board-sel: #f0c040; --board-legal: rgba(240,192,64,.75);
+// ═══════════════════════════════════════════
+// 64 SQUARES — script.js  (v4 — full admin)
+// ═══════════════════════════════════════════
+
+const STORAGE_KEY = 'chess64_v4';
+const THEME_KEY = 'chess64_theme';
+
+// ── DARK MODE ──
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+  document.getElementById('themeToggleBtn').textContent = isDark ? '○' : '◑';
+  syncDarkSelects();
 }
-html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 300; min-height: 100vh; overflow-x: hidden; }
-
-/* NAV */
-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 3rem; background: var(--bg); border-bottom: 1px solid var(--rule); }
-.nav-logo { font-family: var(--serif); font-size: 1.3rem; cursor: pointer; }
-.nav-logo span { font-style: italic; color: var(--mid); }
-.nav-links { display: flex; gap: 2rem; align-items: center; }
-.nav-links a { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color .2s; cursor: pointer; }
-.nav-links a:hover, .nav-links a.active { color: var(--ink); }
-.nav-admin-btn { font-family: var(--mono); font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; padding: .5rem 1.1rem; background: var(--ink); color: var(--bg); border: none; cursor: pointer; transition: background .2s; white-space: nowrap; }
-.nav-admin-btn:hover { background: #333; }
-
-/* HERO */
-#home { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 70px; }
-.hero-left { display: flex; flex-direction: column; justify-content: center; padding: 5rem 3rem; border-right: 1px solid var(--rule); }
-.hero-tag { font-family: var(--mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--mid); margin-bottom: 1.8rem; }
-.hero-title { font-family: var(--serif); font-size: clamp(2.8rem, 5vw, 5rem); line-height: 1.05; font-weight: 700; margin-bottom: 1.5rem; }
-.hero-title em { font-style: italic; color: var(--mid); }
-.hero-desc { font-size: 1rem; color: var(--mid); line-height: 1.8; max-width: 380px; margin-bottom: 2.8rem; }
-.hero-cta { display: inline-flex; align-items: center; gap: .8rem; font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; padding: .9rem 2rem; background: var(--ink); color: var(--bg); border: none; cursor: pointer; transition: background .2s; }
-.hero-cta:hover { background: #333; }
-.hero-right { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem; padding: 3rem 2rem; background: #111; }
-.board-label { font-family: var(--mono); font-size: .6rem; letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255,.3); }
-.board-controls { display: flex; justify-content: space-between; align-items: center; width: min(440px, 90vw); }
-#turnIndicator { font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; color: rgba(255,255,255,.55); }
-.board-reset-btn { font-family: var(--mono); font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; padding: .4rem .9rem; background: transparent; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.15); cursor: pointer; transition: all .2s; }
-.board-reset-btn:hover { color: #fff; border-color: rgba(255,255,255,.5); }
-
-/* INTERACTIVE BOARD */
-.chess-board-interactive { display: grid; grid-template-columns: repeat(8,1fr); width: min(440px, 90vw); aspect-ratio: 1; border: 2px solid #2a2a2a; box-shadow: 0 0 60px rgba(0,0,0,.8), 0 24px 60px rgba(0,0,0,.5); }
-.isq { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: filter .1s; }
-.isq:hover { filter: brightness(1.15); }
-.isq-light { background: var(--board-light); }
-.isq-dark  { background: var(--board-dark); }
-.isq-selected { background: var(--board-sel) !important; }
-.isq-legal::after { content:''; position:absolute; width:32%; height:32%; border-radius:50%; background: var(--board-legal); pointer-events:none; z-index:1; }
-.ipiece { font-size: clamp(1.3rem, 3.2vw, 1.9rem); line-height:1; user-select:none; pointer-events:none; filter: drop-shadow(0 2px 5px rgba(0,0,0,.5)); position:relative; z-index:2; }
-.wpiece { color: #f5efe0; }
-.bpiece { color: #120c04; text-shadow: 0 0 2px rgba(255,255,255,.1); }
-
-/* GAME VIEWER BOARD */
-.chess-board-viewer { display: grid; grid-template-columns: repeat(8,1fr); width: 280px; aspect-ratio: 1; border: 2px solid var(--rule); flex-shrink: 0; }
-.vsq { aspect-ratio:1; display:flex; align-items:center; justify-content:center; }
-.vsq-light { background: var(--board-light); }
-.vsq-dark  { background: var(--board-dark); }
-.vpiece { font-size: 1.4rem; line-height:1; user-select:none; filter: drop-shadow(0 1px 3px rgba(0,0,0,.4)); }
-
-/* SECTIONS */
-section { padding: 6rem 3rem; border-top: 1px solid var(--rule); }
-.section-header { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 4rem; }
-.section-num { font-family: var(--mono); font-size: .65rem; color: var(--mid); letter-spacing: .15em; }
-.section-title { font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 700; }
-.section-line { flex:1; height:1px; background: var(--rule); margin-left: auto; }
-.empty-msg { font-family: var(--mono); font-size: .75rem; color: var(--mid); letter-spacing: .06em; }
-
-/* ARTICLES */
-.articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-.article-card { border: 1px solid var(--rule); margin: -1px 0 0 -1px; padding: 2rem; cursor: pointer; transition: background .2s; position: relative; overflow: hidden; }
-.article-card:hover { background: var(--ink); color: var(--bg); }
-.article-card:hover .article-tag, .article-card:hover .article-meta { color: rgba(255,255,255,.45); }
-.article-card:hover .article-excerpt { color: rgba(255,255,255,.6); }
-.article-card:hover .article-arrow { opacity:1; transform:translate(0,0); }
-.article-tag { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--mid); margin-bottom: 1rem; }
-.article-title { font-family: var(--serif); font-size: 1.2rem; line-height: 1.35; margin-bottom: .8rem; font-weight: 700; }
-.article-excerpt { font-size: .88rem; line-height: 1.7; color: var(--mid); margin-bottom: 1.5rem; }
-.article-meta { font-family: var(--mono); font-size: .62rem; color: var(--mid); letter-spacing: .08em; }
-.article-arrow { position:absolute; bottom:1.5rem; right:1.5rem; font-size:1.2rem; opacity:0; transform:translate(-6px,6px); transition: opacity .2s, transform .2s; }
-
-/* PLAYERS */
-.players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 2rem; }
-.player-card { border: 1px solid var(--rule); cursor: pointer; transition: transform .2s, box-shadow .2s; background: var(--white); }
-.player-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.09); }
-.player-card-header { background: var(--ink); color: var(--bg); padding: 2rem; display: flex; align-items: center; gap: 1.2rem; }
-.player-avatar { width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-family:var(--serif); flex-shrink:0; }
-.player-name { font-family:var(--serif); font-size:1.1rem; font-weight:700; }
-.player-country { font-family:var(--mono); font-size:.65rem; letter-spacing:.12em; opacity:.6; margin-top:.2rem; }
-.player-card-body { padding:1.5rem; }
-.player-rating { font-family:var(--mono); font-size:.65rem; letter-spacing:.1em; color:var(--mid); text-transform:uppercase; }
-.player-rating strong { font-size:1.4rem; font-family:var(--serif); color:var(--ink); display:block; }
-.player-tabs { display:flex; gap:.5rem; margin-top:1.2rem; flex-wrap:wrap; }
-.player-tab-pill { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; padding:.3rem .7rem; border:1px solid var(--rule); color:var(--mid); }
-.player-view-btn { font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; margin-top:1rem; padding:.5rem 1rem; background:var(--ink); color:var(--bg); border:none; cursor:pointer; }
-
-/* GAMES */
-.games-list { display:flex; flex-direction:column; }
-.game-entry { border-bottom:1px solid var(--rule); }
-.game-entry:first-child { border-top:1px solid var(--rule); }
-.game-row { display:grid; grid-template-columns:3rem 1fr auto; align-items:center; gap:1.5rem; padding:1.4rem 1.2rem; cursor:pointer; transition:background .15s; }
-.game-row:hover { background:var(--ink); color:var(--bg); }
-.game-row:hover .game-meta, .game-row:hover .game-year, .game-row:hover .game-num, .game-row:hover .game-expand-icon { color:rgba(255,255,255,.4); }
-.game-num { font-family:var(--mono); font-size:.7rem; color:var(--mid); }
-.game-title { font-family:var(--serif); font-size:1rem; font-weight:700; }
-.game-meta { font-family:var(--mono); font-size:.65rem; color:var(--mid); margin-top:.2rem; }
-.game-right { display:flex; flex-direction:column; align-items:flex-end; gap:.3rem; }
-.game-year { font-family:var(--mono); font-size:.75rem; color:var(--mid); }
-.game-expand-icon { font-size:.75rem; color:var(--mid); transition:transform .2s; }
-.game-open-btn { font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; padding:.3rem .7rem; border:1px solid rgba(255,255,255,.3); color:rgba(255,255,255,.7); background:transparent; cursor:pointer; }
-.game-row:not(:hover) .game-open-btn { display:none; }
-
-/* GAME VIEWER */
-.game-viewer { background:#faf8f5; border-top:1px solid var(--rule); }
-.game-viewer-inner { display:flex; gap:2rem; padding:2rem; flex-wrap:wrap; }
-.gv-board-wrap { flex-shrink:0; }
-.gv-controls { flex:1; min-width:200px; display:flex; flex-direction:column; gap:1.2rem; }
-.gv-pgn { font-family:var(--mono); font-size:.7rem; color:var(--mid); line-height:1.8; background:#f0ece6; padding:1rem; overflow-x:auto; max-height:160px; overflow-y:auto; }
-.gv-pgn pre { white-space: pre-wrap; word-break: break-all; }
-.gv-nav { display:flex; align-items:center; gap:.5rem; }
-.gv-btn { font-family:var(--mono); font-size:.75rem; padding:.4rem .7rem; background:var(--ink); color:var(--bg); border:none; cursor:pointer; transition:background .15s; }
-.gv-btn:hover { background:#333; }
-.gv-btn:disabled { opacity:.3; cursor:default; }
-.gv-movenav { font-family:var(--mono); font-size:.68rem; color:var(--mid); letter-spacing:.06em; flex:1; text-align:center; }
-.gv-open-page { font-family:var(--mono); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; padding:.5rem 1.2rem; background:transparent; color:var(--mid); border:1px solid var(--rule); cursor:pointer; transition:all .2s; }
-.gv-open-page:hover { background:var(--ink); color:var(--bg); border-color:var(--ink); }
-
-/* PDF */
-.pdf-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.5rem; }
-.pdf-card { border:1px solid var(--rule); padding:1.5rem; cursor:pointer; transition:transform .2s, box-shadow .2s; background:var(--white); display:flex; flex-direction:column; gap:.8rem; }
-.pdf-card:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,.08); }
-.pdf-icon { width:52px; height:52px; background:var(--ink); color:var(--bg); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.65rem; letter-spacing:.06em; }
-.pdf-title { font-family:var(--serif); font-size:1rem; font-weight:700; line-height:1.3; }
-.pdf-desc { font-size:.82rem; color:var(--mid); line-height:1.6; flex:1; }
-.pdf-size { font-family:var(--mono); font-size:.6rem; color:var(--mid); letter-spacing:.1em; text-transform:uppercase; border-top:1px solid var(--rule); padding-top:.8rem; }
-
-/* FOOTER */
-footer { border-top:1px solid var(--rule); padding:3rem; display:flex; justify-content:space-between; align-items:center; }
-.footer-logo { font-family:var(--serif); font-size:1.1rem; }
-.footer-copy { font-family:var(--mono); font-size:.62rem; color:var(--mid); letter-spacing:.1em; }
-
-/* FADE IN */
-.fade-in { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
-.fade-in.visible { opacity:1; transform:translateY(0); }
-
-/* TOAST */
-.toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:var(--bg); font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; padding:.8rem 2rem; z-index:999; opacity:0; transition:opacity .3s, transform .3s; pointer-events:none; }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-/* ════════════════════════════
-   DETAIL PAGES
-════════════════════════════ */
-#detailPage { padding-top: 70px; min-height: 100vh; }
-
-.detail-back { display:inline-flex; align-items:center; gap:.6rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--mid); cursor:pointer; padding:1.5rem 3rem; border-bottom:1px solid var(--rule); transition:color .2s; }
-.detail-back:hover { color:var(--ink); }
-
-/* Article Detail */
-.article-detail { max-width:760px; margin:0 auto; padding:4rem 3rem; }
-.article-detail-tag { font-family:var(--mono); font-size:.65rem; letter-spacing:.16em; text-transform:uppercase; color:var(--mid); margin-bottom:1.2rem; }
-.article-detail-title { font-family:var(--serif); font-size:clamp(2rem,4vw,3.2rem); line-height:1.1; font-weight:700; margin-bottom:1.5rem; }
-.article-detail-meta { font-family:var(--mono); font-size:.68rem; color:var(--mid); letter-spacing:.08em; margin-bottom:3rem; padding-bottom:2rem; border-bottom:1px solid var(--rule); }
-.article-detail-body { font-size:1.05rem; line-height:1.9; color:#2a2a2a; }
-.article-detail-body p { margin-bottom:1.5rem; }
-
-/* Player Detail */
-.player-detail { max-width:900px; margin:0 auto; padding:3rem; }
-.player-detail-hero { background:var(--ink); color:var(--bg); padding:3rem; margin-bottom:3rem; display:flex; align-items:center; gap:2.5rem; }
-.player-detail-avatar { width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; font-size:3rem; font-family:var(--serif); flex-shrink:0; }
-.player-detail-name { font-family:var(--serif); font-size:clamp(1.8rem,3vw,2.8rem); font-weight:700; margin-bottom:.4rem; }
-.player-detail-country { font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; opacity:.55; }
-.player-detail-rating-badge { font-family:var(--mono); font-size:.65rem; letter-spacing:.1em; margin-top:.8rem; display:inline-block; padding:.4rem .9rem; border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.7); }
-.player-detail-tabs { display:flex; border-bottom:1px solid var(--rule); margin-bottom:2.5rem; overflow-x:auto; }
-.pd-tab { font-family:var(--mono); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; padding:.9rem 1.5rem; background:none; border:none; color:var(--mid); cursor:pointer; border-bottom:2px solid transparent; transition:color .2s, border-color .2s; white-space:nowrap; }
-.pd-tab.active { color:var(--ink); border-bottom-color:var(--ink); }
-.pd-panel { display:none; }
-.pd-panel.active { display:block; }
-.pd-panel p { font-size:.98rem; line-height:1.85; color:var(--mid); }
-.achievement-table { width:100%; border-collapse:collapse; }
-.achievement-table tr { border-bottom:1px solid var(--rule); }
-.achievement-table td { padding:.75rem .5rem; font-family:var(--mono); font-size:.8rem; }
-.achievement-table td:last-child { color:var(--mid); text-align:right; }
-.bestgame-row { border:1px solid var(--rule); padding:1.2rem 1.5rem; margin-bottom:1rem; }
-.bestgame-row h4 { font-family:var(--serif); font-size:1rem; margin-bottom:.3rem; }
-.bestgame-row p { font-family:var(--mono); font-size:.65rem; color:var(--mid); letter-spacing:.08em; }
-
-/* Game Detail */
-.game-detail { max-width:960px; margin:0 auto; padding:3rem; }
-.game-detail-header { margin-bottom:3rem; padding-bottom:2rem; border-bottom:1px solid var(--rule); }
-.game-detail-num { font-family:var(--mono); font-size:.65rem; color:var(--mid); letter-spacing:.15em; margin-bottom:.8rem; }
-.game-detail-title { font-family:var(--serif); font-size:clamp(2rem,4vw,3rem); font-weight:700; margin-bottom:1rem; }
-.game-detail-players { font-family:var(--mono); font-size:.8rem; color:var(--mid); letter-spacing:.06em; }
-.game-detail-body { display:flex; gap:3rem; flex-wrap:wrap; }
-.game-detail-left { flex:1; min-width:280px; }
-.game-detail-right { width:300px; flex-shrink:0; display:flex; flex-direction:column; gap:1.5rem; }
-.game-detail-desc { font-size:.98rem; line-height:1.85; color:var(--mid); margin-bottom:2rem; }
-.game-detail-pgn-box { background:#f0ece6; padding:1.2rem; }
-.game-detail-pgn-box pre { font-family:var(--mono); font-size:.7rem; color:var(--mid); line-height:1.8; white-space:pre-wrap; word-break:break-all; }
-.game-detail-pgn-label { font-family:var(--mono); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:var(--mid); margin-bottom:.6rem; }
-
-/* PDF Detail */
-.pdf-detail { max-width:760px; margin:0 auto; padding:4rem 3rem; }
-.pdf-detail-header { display:flex; align-items:flex-start; gap:2rem; margin-bottom:3rem; padding-bottom:2rem; border-bottom:1px solid var(--rule); }
-.pdf-detail-icon { width:72px; height:72px; background:var(--ink); color:var(--bg); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.75rem; flex-shrink:0; }
-.pdf-detail-title { font-family:var(--serif); font-size:clamp(1.8rem,3vw,2.5rem); font-weight:700; margin-bottom:.4rem; }
-.pdf-detail-author { font-family:var(--mono); font-size:.72rem; color:var(--mid); letter-spacing:.1em; }
-.pdf-detail-size { font-family:var(--mono); font-size:.65rem; color:var(--mid); margin-top:.5rem; }
-.pdf-detail-desc { font-size:1rem; line-height:1.85; color:var(--mid); margin-bottom:2rem; }
-.pdf-detail-content { font-size:.96rem; line-height:1.9; color:#2a2a2a; }
-.pdf-detail-content p { margin-bottom:1.4rem; }
-.pdf-download-btn { display:inline-flex; align-items:center; gap:.8rem; font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; padding:.9rem 2rem; background:var(--ink); color:var(--bg); border:none; cursor:pointer; text-decoration:none; transition:background .2s; }
-.pdf-download-btn:hover { background:#333; }
-
-/* ═══════════════════════
-   ADMIN PANEL
-═══════════════════════ */
-.admin-panel { position:fixed; top:0; right:-100%; width:min(640px,100vw); height:100vh; background:var(--bg); z-index:300; display:flex; flex-direction:column; box-shadow:-8px 0 40px rgba(0,0,0,.15); transition:right .35s cubic-bezier(.4,0,.2,1); }
-.admin-panel.open { right:0; }
-.admin-panel-header { background:var(--ink); color:var(--bg); padding:1.5rem 2rem; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-.admin-panel-header h2 { font-family:var(--serif); font-size:1.2rem; }
-.admin-close-btn { background:none; border:none; color:var(--bg); font-size:1.2rem; cursor:pointer; opacity:.6; transition:opacity .2s; }
-.admin-close-btn:hover { opacity:1; }
-.admin-tabs { display:flex; border-bottom:1px solid var(--rule); flex-shrink:0; overflow-x:auto; background:var(--white); }
-.admin-tab-btn { font-family:var(--mono); font-size:.63rem; letter-spacing:.12em; text-transform:uppercase; padding:.9rem 1.2rem; background:none; border:none; color:var(--mid); cursor:pointer; border-bottom:2px solid transparent; transition:color .2s, border-color .2s; white-space:nowrap; }
-.admin-tab-btn.active { color:var(--ink); border-bottom-color:var(--ink); }
-.admin-body { flex:1; overflow-y:auto; padding:1.8rem 2rem; }
-.admin-section { display:none; }
-.admin-section.active { display:block; }
-.admin-section h3 { font-family:var(--serif); font-size:1.1rem; margin-bottom:1.4rem; }
-.admin-form { display:flex; flex-direction:column; gap:.7rem; margin-bottom:2rem; padding-bottom:2rem; border-bottom:1px solid var(--rule); }
-.admin-form label { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--mid); margin-top:.3rem; }
-.admin-form input, .admin-form textarea { padding:.7rem .9rem; font-family:var(--sans); font-size:.88rem; border:1px solid var(--rule); background:var(--bg); color:var(--ink); outline:none; resize:vertical; width:100%; }
-.admin-form input:focus, .admin-form textarea:focus { border-color:var(--ink); }
-.admin-submit-btn { padding:.8rem 1.5rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; background:var(--ink); color:var(--bg); border:none; cursor:pointer; align-self:flex-start; margin-top:.5rem; transition:background .2s; }
-.admin-submit-btn:hover { background:#333; }
-.admin-list-title { font-family:var(--mono); font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; color:var(--mid); margin-bottom:.8rem; margin-top:1rem; }
-.admin-item { display:flex; justify-content:space-between; align-items:center; padding:.65rem .9rem; border:1px solid var(--rule); margin-bottom:-1px; font-size:.85rem; }
-.admin-item span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding-right:1rem; flex:1; }
-.admin-del-btn { background:none; border:none; color:var(--mid); cursor:pointer; font-size:.85rem; padding:.2rem .4rem; transition:color .2s; flex-shrink:0; }
-.admin-del-btn:hover { color:#c0392b; }
-.admin-empty { font-family:var(--mono); font-size:.72rem; color:var(--mid); padding:.5rem 0; }
-.admin-reset-btn { margin-top:2rem; padding:.7rem 1.2rem; font-family:var(--mono); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; background:none; color:#c0392b; border:1px solid #c0392b; cursor:pointer; transition:all .2s; }
-.admin-reset-btn:hover { background:#c0392b; color:#fff; }
-
-/* ADMIN LOGIN */
-.admin-login-overlay { position:fixed; inset:0; z-index:500; background:rgba(14,14,14,.9); display:none; align-items:center; justify-content:center; }
-.admin-login-overlay.open { display:flex; }
-.admin-login-box { background:var(--bg); padding:3rem; width:340px; }
-.admin-login-box h2 { font-family:var(--serif); font-size:1.5rem; margin-bottom:.4rem; }
-.admin-login-box p { font-family:var(--mono); font-size:.68rem; color:var(--mid); letter-spacing:.06em; margin-bottom:1.8rem; }
-.admin-pw-error { font-family:var(--mono); font-size:.68rem; color:#c0392b; margin-bottom:.8rem; display:none !important; }
-.admin-pw-error.visible { display:block !important; }
-.admin-input { width:100%; padding:.8rem 1rem; font-family:var(--mono); font-size:.85rem; border:1px solid var(--rule); background:var(--bg); color:var(--ink); margin-bottom:.9rem; outline:none; }
-.admin-input:focus { border-color:var(--ink); }
-.admin-login-btn { width:100%; padding:.85rem; font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; background:var(--ink); color:var(--bg); border:none; cursor:pointer; transition:background .2s; }
-.admin-login-btn:hover { background:#333; }
-.admin-cancel-btn { width:100%; padding:.7rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; background:none; color:var(--mid); border:1px solid var(--rule); cursor:pointer; margin-top:.5rem; transition:all .2s; }
-.admin-cancel-btn:hover { color:var(--ink); border-color:var(--ink); }
-
-/* RESPONSIVE */
-@media (max-width:768px) {
-  nav { padding:1rem 1.5rem; }
-  .nav-links { gap:1rem; }
-  .nav-links a { font-size:.62rem; }
-  #home { grid-template-columns:1fr; }
-  .hero-right { padding:2rem 1rem; }
-  .hero-left { padding:3rem 1.5rem; }
-  section { padding:4rem 1.5rem; }
-  footer { flex-direction:column; gap:1rem; text-align:center; }
-  .game-viewer-inner { flex-direction:column; }
-  .chess-board-viewer { width:100%; max-width:300px; }
-  .detail-back { padding:1rem 1.5rem; }
-  .article-detail, .player-detail, .game-detail, .pdf-detail { padding:2rem 1.5rem; }
-  .player-detail-hero { flex-direction:column; gap:1.2rem; }
-  .game-detail-body { flex-direction:column; }
-  .game-detail-right { width:100%; }
-  .pdf-detail-header { flex-direction:column; }
+function applyStoredTheme() {
+  const t = localStorage.getItem(THEME_KEY);
+  if (t === 'dark') {
+    document.body.classList.add('dark');
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) btn.textContent = '○';
+  }
 }
 
-/* ════════════════════════════
-   ADMIN IMPROVEMENTS
-════════════════════════════ */
-.admin-section-title-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; }
-.admin-section-title-row h3 { margin-bottom:0; }
-.admin-cancel-edit-btn { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; padding:.4rem .9rem; background:none; color:#c0392b; border:1px solid #c0392b; cursor:pointer; transition:all .2s; }
-.admin-cancel-edit-btn:hover { background:#c0392b; color:#fff; }
-
-.admin-preview-btn { padding:.8rem 1.5rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; background:none; color:var(--ink); border:1px solid var(--ink); cursor:pointer; transition:all .2s; }
-.admin-preview-btn:hover { background:var(--ink); color:var(--bg); }
-
-/* Edit mode highlight */
-.admin-form.editing { border:2px solid var(--ink); padding:1rem; background:rgba(14,14,14,.03); }
-
-/* Admin item actions */
-.admin-item-actions { display:flex; gap:.3rem; flex-shrink:0; }
-.admin-edit-btn { background:none; border:none; color:var(--mid); cursor:pointer; font-size:.8rem; padding:.2rem .5rem; font-family:var(--mono); letter-spacing:.06em; transition:color .2s; }
-.admin-edit-btn:hover { color:var(--ink); }
-
-/* Draft badge */
-.draft-badge { font-family:var(--mono); font-size:.55rem; letter-spacing:.1em; text-transform:uppercase; padding:.2rem .5rem; background:#fff3cd; color:#856404; border:1px solid #ffc107; margin-left:.5rem; }
-.published-badge { font-family:var(--mono); font-size:.55rem; letter-spacing:.1em; text-transform:uppercase; padding:.2rem .5rem; background:#d4edda; color:#155724; border:1px solid #28a745; margin-left:.5rem; }
-
-/* Toggle switch */
-.toggle-row { display:flex; align-items:center; gap:.8rem; }
-.toggle-switch { position:relative; width:42px; height:24px; flex-shrink:0; }
-.toggle-switch input { opacity:0; width:0; height:0; position:absolute; }
-.toggle-slider { position:absolute; inset:0; background:var(--rule); cursor:pointer; transition:.3s; border-radius:24px; }
-.toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:#fff; transition:.3s; border-radius:50%; }
-.toggle-switch input:checked + .toggle-slider { background:var(--ink); }
-.toggle-switch input:checked + .toggle-slider::before { transform:translateX(18px); }
-.toggle-label { font-family:var(--mono); font-size:.72rem; color:var(--mid); letter-spacing:.06em; }
-
-/* Image Upload */
-.img-upload-wrap { display:flex; flex-direction:column; gap:.6rem; }
-.img-upload-dropzone { border:2px dashed var(--rule); padding:1.2rem; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:.4rem; transition:border-color .2s, background .2s; }
-.img-upload-dropzone:hover { border-color:var(--ink); background:rgba(14,14,14,.03); }
-.img-upload-icon { font-size:1.5rem; }
-.img-upload-text { font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; color:var(--ink); }
-.img-upload-hint { font-family:var(--mono); font-size:.6rem; color:var(--mid); letter-spacing:.06em; }
-.img-preview-wrap { display:flex; align-items:center; gap:1rem; padding:.8rem; border:1px solid var(--rule); background:#faf8f5; }
-.img-preview-wrap img { width:80px; height:60px; object-fit:cover; border:1px solid var(--rule); }
-.img-remove-btn { font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; padding:.4rem .8rem; background:none; color:#c0392b; border:1px solid #c0392b; cursor:pointer; transition:all .2s; white-space:nowrap; }
-.img-remove-btn:hover { background:#c0392b; color:#fff; }
-
-/* Article card with image */
-.article-card-img { width:100%; height:160px; object-fit:cover; display:block; margin-bottom:-.5rem; }
-
-/* Player card photo */
-.player-avatar-photo { width:56px; height:56px; border-radius:50%; object-fit:cover; flex-shrink:0; }
-
-/* Player detail photo */
-.player-detail-photo { width:90px; height:90px; border-radius:50%; object-fit:cover; flex-shrink:0; border:3px solid rgba(255,255,255,.2); }
-
-/* Playing style badge */
-.style-badge { display:inline-block; font-family:var(--mono); font-size:.58rem; letter-spacing:.1em; text-transform:uppercase; padding:.3rem .7rem; border:1px solid rgba(255,255,255,.25); color:rgba(255,255,255,.7); margin-top:.6rem; }
-
-/* Article detail hero image */
-.article-detail-hero-img { width:100%; max-height:420px; object-fit:cover; margin-bottom:3rem; }
-
-/* ════════════════════════════
-   PDF UPLOAD
-════════════════════════════ */
-.pdf-upload-wrap { display:flex; flex-direction:column; gap:.6rem; }
-.pdf-upload-dropzone { border:2px dashed var(--rule); padding:1.4rem; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:.4rem; transition:border-color .2s, background .2s; }
-.pdf-upload-dropzone:hover { border-color:var(--ink); background:rgba(14,14,14,.03); }
-.pdf-upload-icon { font-size:1.8rem; }
-.pdf-upload-text { font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; color:var(--ink); }
-.pdf-upload-hint { font-family:var(--mono); font-size:.6rem; color:var(--mid); letter-spacing:.06em; }
-
-.pdf-upload-preview { display:flex; align-items:center; gap:1rem; padding:.9rem 1rem; border:1px solid var(--rule); background:#faf8f5; }
-.pdf-upload-preview-icon { font-size:2rem; flex-shrink:0; }
-.pdf-upload-preview-info { display:flex; flex-direction:column; gap:.2rem; flex:1; min-width:0; }
-.pdf-upload-preview-name { font-family:var(--mono); font-size:.75rem; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.pdf-upload-preview-size { font-family:var(--mono); font-size:.62rem; color:var(--mid); letter-spacing:.06em; }
-
-/* PDF card with cover */
-.pdf-card-cover { width:100%; height:120px; object-fit:cover; display:block; border-bottom:1px solid var(--rule); }
-
-/* PDF viewer embed */
-.pdf-viewer-embed { width:100%; height:600px; border:1px solid var(--rule); background:#f5f5f5; display:block; margin-top:1.5rem; }
-.pdf-viewer-fallback { background:#f0ece6; padding:2rem; text-align:center; margin-top:1.5rem; }
-.pdf-viewer-fallback p { font-family:var(--mono); font-size:.75rem; color:var(--mid); margin-bottom:1rem; }
-
-/* ════════════════════════════════════════
-   DARK MODE THEME
-════════════════════════════════════════ */
-.nav-theme-btn {
-  font-family: var(--mono);
-  font-size: 1rem;
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent;
-  color: var(--mid);
-  border: 1px solid var(--rule);
-  cursor: pointer;
-  border-radius: 50%;
-  transition: all .2s;
-  padding: 0;
+// Keep inline selects styled when dark mode toggled dynamically
+function syncDarkSelects() {
+  const dark = document.body.classList.contains('dark');
+  document.querySelectorAll('select[id^="g-white-title"],select[id^="g-black-title"],select[id="p-title"]').forEach(sel => {
+    sel.style.background = dark ? '#1a1a1a' : '';
+    sel.style.color = dark ? '#e8e4dc' : '';
+    sel.style.borderColor = dark ? '#2a2826' : '';
+  });
 }
-.nav-theme-btn:hover { color: var(--ink); border-color: var(--ink); }
+function loadData() { try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
+function saveData(d) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) { showToast('Storage full — try removing large images.'); } }
 
-/* Dark mode root overrides */
-body.dark {
-  --bg: #0d0d0d;
-  --ink: #e8e4dc;
-  --mid: #7a7570;
-  --rule: #2a2826;
-  --white: #141414;
-  --board-light: #b5a48a;
-  --board-dark: #3a2b1e;
-  --board-sel: #d4a017;
-  --board-legal: rgba(212,160,23,.7);
+// ── DEFAULT DATA ──
+const defaultData = {
+  articles: [
+    { id:1, tag:"Strategy", title:"The Art of the Endgame: Rook & Pawn Mastery", excerpt:"Understanding why endgames are where true chess understanding is revealed — and how the world's best navigated them.", content:"The endgame is where champions are made. While openings can be memorized and middlegames can be calculated, the endgame demands pure understanding — an intuitive grasp of piece coordination, king activity, and pawn promotion that separates true masters from the rest.\n\nRook endgames constitute the vast majority of practical endgame situations, and mastering them is perhaps the single greatest investment a club player can make. The Lucena position and the Philidor defense are not merely theoretical curiosities; they are the pillars upon which practical rook endgame technique is built.\n\nThe key insight is activity. In rook endgames, the rook must be active at all costs. A passive rook is almost always losing; an active rook can often hold or even win seemingly hopeless positions.\n\nPractice these positions repeatedly until the moves become second nature. The champions of the game did not merely study endgames — they absorbed them.", date:"May 2026", readTime:"8 min", published:true, image:"" },
+    { id:2, tag:"History", title:"Fischer vs. Spassky: The Match That Stopped the World", excerpt:"A look back at the 1972 World Championship in Reykjavík — a Cold War showdown played on 64 squares.", content:"In the summer of 1972, the world held its breath — not over a military confrontation, but over a chess match. In Reykjavík, Iceland, an eccentric American prodigy named Robert James Fischer faced the calm Soviet champion Boris Spassky in what would become the most watched chess match in history.\n\nThe backdrop was unmistakable: the Cold War was at its height. The Soviet chess machine had dominated the World Championship for decades, and Fischer's challenge was seen in Washington and Moscow alike as something far greater than sport.\n\nFischer won the match 12.5–8.5, becoming the 11th World Chess Champion and the first American to hold the title. He never defended it. The chess world was never quite the same.", date:"Apr 2026", readTime:"12 min", published:true, image:"" },
+    { id:3, tag:"Opening Theory", title:"The Sicilian Dragon: Fire on the Board", excerpt:"One of chess's most double-edged openings — why the Dragon keeps burning generations of players.", content:"Few opening systems in chess generate as much heat as the Sicilian Dragon. Named for the pawn structure that resembles the constellation Draco, the Dragon has seduced generations of attacking players with its promise of sharp, uncompromising chess.\n\nThe position arises after 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6, with Black fianchettoing the bishop on g7 — the fabled Dragon bishop, the soul of the entire system.\n\nThe Dragon demands deep theoretical preparation. A single misplaced move can be catastrophic for either side. Yet this is precisely the appeal: the Dragon rewards the player who has studied hardest and calculated most precisely.", date:"Mar 2026", readTime:"6 min", published:true, image:"" },
+  ],
+  players: [
+    { id:1, title:"GM", name:"Garry Kasparov", country:"Russia", rating:"2851", style:"Universal", bio:"Widely regarded as the greatest chess player of all time, Garry Kasparov dominated competitive chess for two decades. Born in Baku in 1963, he became World Champion at 22 — the youngest in history at the time — defeating the formidable Anatoly Karpov in a legendary five-match series.", career:"Kasparov defeated Karpov in five legendary World Championship matches from 1984 to 1990. He held the world number one ranking for 225 months. In 1997, he famously lost a match to IBM's Deep Blue.", achievements:[{title:"World Chess Champion",year:"1985–2000"},{title:"Peak FIDE Rating 2851",year:"1999"},{title:"World number 1 for 225 months",year:"1984–2005"}], bestGames:[{title:"Kasparov vs. Topalov — The Immortal Game",event:"Wijk aan Zee",year:"1999"}], image:"" },
+    { id:2, title:"GM", name:"Magnus Carlsen", country:"Norway", rating:"2882", style:"Universal", bio:"Magnus Carlsen is a Norwegian grandmaster and the highest-rated player in chess history, achieving a peak rating of 2882 in 2014. Born in 1990, he became a grandmaster at just 13 years of age.", career:"Carlsen became World Chess Champion in 2013 by defeating Viswanathan Anand. He defended the title four times. In 2022 he declined to defend against Nepomniachtchi.", achievements:[{title:"FIDE World Chess Champion",year:"2013–2023"},{title:"Peak FIDE Rating 2882",year:"2014"}], bestGames:[{title:"Carlsen vs. Karjakin — Game 10",event:"World Championship Match",year:"2016"}], image:"" },
+    { id:3, title:"GM", name:"Bobby Fischer", country:"USA", rating:"2785", style:"Tactical", bio:"Robert James Fischer, the 11th World Chess Champion. Born in 1943, became a grandmaster at 15 — a world record at the time. His intensity, genius, and turbulent personality made him a cultural phenomenon.", career:"Fischer annihilated Taimanov and Larsen 6-0 in the 1971 Candidates before defeating Petrosian. His 1972 match against Spassky became a global media sensation.", achievements:[{title:"World Chess Champion",year:"1972–1975"},{title:"US Chess Champion (8 times)",year:"1957–1967"}], bestGames:[{title:"The Game of the Century vs. Donald Byrne",event:"Rosenwald Trophy",year:"1956"}], image:"" },
+  ],
+  games: [
+    { id:1, title:"The Opera Game", white:"Paul Morphy", black:"Duke of Brunswick & Count Isouard", whiteName:"Paul Morphy", blackName:"Duke of Brunswick & Count Isouard", whiteTitle:"", blackTitle:"", year:"1858", event:"Paris Opera", result:"1–0", desc:"Played during a performance of Norma at the Paris Opera House, this game is the quintessential illustration of rapid development. Morphy declined material repeatedly, culminating in a breathtaking queen sacrifice on move 16.", pgn:"1.e4 e5 2.Nf3 d6 3.d4 Bg4 4.dxe5 Bxf3 5.Qxf3 dxe5 6.Bc4 Nf6 7.Qb3 Qe7 8.Nc3 c6 9.Bg5 b5 10.Nxb5 cxb5 11.Bxb5+ Nbd7 12.O-O-O Rd8 13.Rxd7 Rxd7 14.Rd1 Qe6 15.Bxd7+ Nxd7 16.Qb8+ Nxb8 17.Rd8#" },
+    { id:2, title:"The Immortal Game", white:"Adolf Anderssen", black:"Lionel Kieseritzky", whiteName:"Adolf Anderssen", blackName:"Lionel Kieseritzky", whiteTitle:"", blackTitle:"", year:"1851", event:"London", result:"1–0", desc:"Anderssen sacrificed both rooks, his bishop, and finally his queen — then delivered checkmate with three minor pieces. Perhaps the most celebrated attacking game in chess history.", pgn:"1.e4 e5 2.f4 exf4 3.Bc4 Qh4+ 4.Kf1 b5 5.Bxb5 Nf6 6.Nf3 Qh6 7.d3 Nh5 8.Nh4 Qg5 9.Nf5 c6 10.g4 Nf6 11.Rg1 cxb5 12.h4 Qg6 13.h5 Qg5 14.Qf3 Ng8 15.Bxf4 Qf6 16.Nc3 Bc5 17.Nd5 Qxb2 18.Bd6 Bxg1 19.e5 Qxa1+ 20.Ke2 Na6 21.Nxg7+ Kd8 22.Qf6+ Nxf6 23.Be7#" },
+    { id:3, title:"Game of the Century", white:"Donald Byrne", black:"Robert J. Fischer", whiteName:"Donald Byrne", blackName:"Robert J. Fischer", whiteTitle:"", blackTitle:"", year:"1956", event:"Rosenwald Trophy", result:"0–1", desc:"A 13-year-old Bobby Fischer sacrificed his queen on move 17, launching a forcing sequence of extraordinary depth. Hans Kmoch declared it 'The Game of the Century' — the name has stuck for 70 years.", pgn:"1.Nf3 Nf6 2.c4 g6 3.Nc3 Bg7 4.d4 O-O 5.Bf4 d5 6.Qb3 dxc4 7.Qxc4 c6 8.e4 Nbd7 9.Rd1 Nb6 10.Qc5 Bg4 11.Bg5 Na4 12.Qa3 Nxc3 13.bxc3 Nxe4 14.Bxe7 Qb6 15.Bc4 Nxc3 16.Bc5 Rfe8+ 17.Kf1 Be6 18.Bxb6 Bxc4+ 19.Kg1 Ne2+ 20.Kf1 Nxd4+ 21.Kg1 Ne2+ 22.Kf1 Nc3+ 23.Kg1 axb6 24.Qb4 Ra4 25.Qxb6 Nxd1 26.h3 Rxa2 27.Kh2 Nxf2 28.Re1 Rxe1 29.Qd8+ Bf8 30.Nxe1 Bd5 31.Nf3 Ne4 32.Qb8 b5 33.h4 h5 34.Ne5 Kg7 35.Kg1 Bc5+ 36.Kf1 Ng3+ 37.Ke1 Bb4+ 38.Kd1 Bb3+ 39.Kc1 Ne2+ 40.Kb1 Nc3+ 41.Kc1 Rc2#" },
+  ],
+  pdfs: [
+    { id:1, title:"My System", author:"Nimzowitsch", desc:"The foundational text of modern positional chess strategy.", content:"Nimzowitsch's My System, published in 1925, is arguably the most influential chess book ever written. It systematized concepts like the blockade, prophylaxis, and overprotection into a coherent framework.\n\nNimzowitsch's prose is colorful; he anthropomorphizes pawns and pieces, describing the passed pawn's 'lust to expand.' Whether this makes the book more or less accessible depends on the reader, but it is rarely dull.\n\nMy System remains essential reading for any player seeking to move beyond tactical calculation into strategic understanding.", size:"2.4 MB", url:"" },
+    { id:2, title:"Chess Fundamentals", author:"Capablanca", desc:"The World Champion's essential guide covering endings, middle games, and openings.", content:"Capablanca's Chess Fundamentals, published in 1921, is lean and direct. Capablanca believed chess knowledge should be built from the endgame backward — understand the endings first, and the rest of the game makes more sense.\n\nThe book covers king and pawn endgames, rook endgames, basic tactical motifs, and key opening principles, all illustrated with Capablanca's own games.\n\nFor the improving player, Chess Fundamentals remains one of the most efficient paths to genuine chess understanding.", size:"1.8 MB", url:"" },
+  ],
+};
+
+let siteData = loadData() || JSON.parse(JSON.stringify(defaultData));
+
+// ════════════════════════════════
+// CHESS ENGINE
+// ════════════════════════════════
+const GLYPHS = { wK:'♔',wQ:'♕',wR:'♖',wB:'♗',wN:'♘',wP:'♙',bK:'♚',bQ:'♛',bR:'♜',bB:'♝',bN:'♞',bP:'♟' };
+const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+
+function fenToBoard(fen) {
+  return fen.split(' ')[0].split('/').map(row => {
+    const r = [];
+    for (const ch of row) isNaN(ch) ? r.push((ch===ch.toUpperCase()?'w':'b')+ch.toUpperCase()) : [...Array(+ch)].forEach(()=>r.push(null));
+    return r;
+  });
+}
+function parsePGN(pgn) {
+  const moves = pgn.replace(/\d+\./g,'').replace(/\s+/g,' ').trim().split(' ').filter(m=>m&&!m.match(/^\d/)&&!['1-0','0-1','1/2-1/2'].includes(m));
+  const states = []; let board = fenToBoard(START_FEN); let turn = 'w';
+  states.push(board.map(r=>[...r]));
+  for (const move of moves) { board = applyMove(board,move,turn); states.push(board.map(r=>[...r])); turn=turn==='w'?'b':'w'; }
+  return states;
+}
+function applyMove(board, san, color) {
+  const b = board.map(r=>[...r]);
+  try {
+    if (san==='O-O'||san==='0-0') { const row=color==='w'?7:0; b[row][6]=color+'K';b[row][4]=null;b[row][5]=color+'R';b[row][7]=null; return b; }
+    if (san==='O-O-O'||san==='0-0-0') { const row=color==='w'?7:0; b[row][2]=color+'K';b[row][4]=null;b[row][3]=color+'R';b[row][0]=null; return b; }
+    const clean=san.replace(/[+#!?]/g,''); const promo=clean.includes('=')?clean.split('=')[1][0]:null; const s=clean.split('=')[0];
+    let piece,rest; if('KQRBN'.includes(s[0])){piece=s[0];rest=s.slice(1);}else{piece='P';rest=s;}
+    const isCapture=rest.includes('x'); rest=rest.replace('x','');
+    const dest=rest.slice(-2); const toC=dest.charCodeAt(0)-97; const toR=8-parseInt(dest[1]); const hint=rest.slice(0,-2);
+    for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
+      if(b[r][c]!==color+piece) continue;
+      if(hint){if(hint.length===2){if(r!==8-parseInt(hint[1])||c!==hint.charCodeAt(0)-97)continue;}else if(isNaN(hint)){if(c!==hint.charCodeAt(0)-97)continue;}else{if(r!==8-parseInt(hint))continue;}}
+      if(canMove(b,r,c,toR,toC,color,piece)){b[toR][toC]=promo?color+promo:b[r][c];b[r][c]=null;if(piece==='P'&&isCapture&&!board[toR][toC])b[r][toC]=null;return b;}
+    }
+  } catch(e) {}
+  return b;
+}
+function canMove(board,fr,fc,tr,tc,color,piece){
+  const dr=tr-fr,dc=tc-fc,target=board[tr][tc];
+  if(target&&target[0]===color)return false;
+  if(piece==='P'){const dir=color==='w'?-1:1,sr=color==='w'?6:1;if(dc===0&&dr===dir&&!target)return true;if(dc===0&&dr===2*dir&&fr===sr&&!board[fr+dir][fc]&&!target)return true;if(Math.abs(dc)===1&&dr===dir)return true;return false;}
+  if(piece==='N')return(Math.abs(dr)===2&&Math.abs(dc)===1)||(Math.abs(dr)===1&&Math.abs(dc)===2);
+  if(piece==='K')return Math.abs(dr)<=1&&Math.abs(dc)<=1;
+  if(piece==='R'){if(dr!==0&&dc!==0)return false;return pathClear(board,fr,fc,tr,tc);}
+  if(piece==='B'){if(Math.abs(dr)!==Math.abs(dc))return false;return pathClear(board,fr,fc,tr,tc);}
+  if(piece==='Q'){if(dr!==0&&dc!==0&&Math.abs(dr)!==Math.abs(dc))return false;return pathClear(board,fr,fc,tr,tc);}
+  return false;
+}
+function pathClear(board,fr,fc,tr,tc){const dr=Math.sign(tr-fr),dc=Math.sign(tc-fc);let r=fr+dr,c=fc+dc;while(r!==tr||c!==tc){if(board[r][c])return false;r+=dr;c+=dc;}return true;}
+function inBounds(r,c){return r>=0&&r<8&&c>=0&&c<8;}
+function getLegalMoves(board,r,c,color){
+  const piece=board[r][c]; if(!piece||piece[0]!==color)return [];
+  const type=piece[1],enemy=color==='w'?'b':'w',moves=[];
+  const slide=dirs=>{for(const[dr,dc]of dirs){let nr=r+dr,nc=c+dc;while(inBounds(nr,nc)){const t=board[nr][nc];if(!t){moves.push([nr,nc]);}else{if(t[0]===enemy)moves.push([nr,nc]);break;}nr+=dr;nc+=dc;}}};
+  const step=dirs=>{for(const[dr,dc]of dirs){const nr=r+dr,nc=c+dc;if(inBounds(nr,nc)){const t=board[nr][nc];if(!t||t[0]===enemy)moves.push([nr,nc]);}}};
+  if(type==='P'){const dir=color==='w'?-1:1,sr=color==='w'?6:1;if(inBounds(r+dir,c)&&!board[r+dir][c]){moves.push([r+dir,c]);if(r===sr&&!board[r+2*dir][c])moves.push([r+2*dir,c]);}for(const dc of[-1,1]){if(inBounds(r+dir,c+dc)&&board[r+dir][c+dc]?.[0]===enemy)moves.push([r+dir,c+dc]);}}
+  else if(type==='R')slide([[1,0],[-1,0],[0,1],[0,-1]]);
+  else if(type==='B')slide([[1,1],[1,-1],[-1,1],[-1,-1]]);
+  else if(type==='Q')slide([[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]);
+  else if(type==='N')step([[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]]);
+  else if(type==='K')step([[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]);
+  return moves;
 }
 
-/* Nav dark */
-body.dark nav { background: #0d0d0d; border-bottom-color: #2a2826; }
-body.dark .nav-theme-btn { color: #7a7570; border-color: #2a2826; }
-body.dark .nav-theme-btn:hover { color: #e8e4dc; border-color: #e8e4dc; }
-body.dark .nav-admin-btn { background: #e8e4dc; color: #0d0d0d; }
-body.dark .nav-admin-btn:hover { background: #ccc; }
-
-/* Hero dark */
-body.dark .hero-right { background: #060606; }
-body.dark .hero-cta { background: #e8e4dc; color: #0d0d0d; }
-body.dark .hero-cta:hover { background: #ccc; }
-
-/* Sections dark */
-body.dark section { border-top-color: #2a2826; }
-body.dark footer { border-top-color: #2a2826; }
-
-/* Article cards dark */
-body.dark .article-card { border-color: #2a2826; background: #111; }
-body.dark .article-card:hover { background: #e8e4dc; color: #0d0d0d; }
-body.dark .article-card:hover .article-tag,
-body.dark .article-card:hover .article-meta,
-body.dark .article-card:hover .article-excerpt { color: rgba(0,0,0,.5); }
-
-/* Player cards dark */
-body.dark .player-card { background: #141414; border-color: #2a2826; }
-body.dark .player-card-header { background: #1c1c1c; }
-body.dark .player-tab-pill { border-color: #2a2826; }
-
-/* Game rows dark */
-body.dark .game-entry { border-bottom-color: #2a2826; }
-body.dark .game-entry:first-child { border-top-color: #2a2826; }
-body.dark .game-row:hover { background: #e8e4dc; color: #0d0d0d; }
-body.dark .game-row:hover .game-meta,
-body.dark .game-row:hover .game-year,
-body.dark .game-row:hover .game-num,
-body.dark .game-row:hover .game-expand-icon { color: rgba(0,0,0,.4); }
-body.dark .game-viewer { background: #111; border-top-color: #2a2826; }
-body.dark .gv-pgn { background: #1a1a1a; }
-body.dark .gv-btn { background: #e8e4dc; color: #0d0d0d; }
-body.dark .gv-btn:hover { background: #ccc; }
-body.dark .gv-open-page { border-color: #3a3a3a; color: #7a7570; }
-body.dark .gv-open-page:hover { background: #e8e4dc; color: #0d0d0d; border-color: #e8e4dc; }
-
-/* PDF cards dark */
-body.dark .pdf-card { background: #141414; border-color: #2a2826; }
-body.dark .pdf-icon { background: #e8e4dc; color: #0d0d0d; }
-
-/* Detail pages dark */
-body.dark .detail-back { border-bottom-color: #2a2826; }
-body.dark .article-detail-body { color: #c8c4bc; }
-body.dark .article-detail-meta { color: #7a7570; }
-body.dark .player-detail-hero { background: #1c1c1c; }
-body.dark .player-detail-tabs { border-bottom-color: #2a2826; }
-body.dark .pd-tab.active { color: #e8e4dc; border-bottom-color: #e8e4dc; }
-body.dark .achievement-table tr { border-bottom-color: #2a2826; }
-body.dark .bestgame-row { border-color: #2a2826; }
-body.dark .bestgame-row:hover { background: #e8e4dc; color: #0d0d0d; }
-body.dark .game-detail-header { border-bottom-color: #2a2826; }
-body.dark .game-detail-pgn-box { background: #1a1a1a; }
-body.dark .pdf-detail-header { border-bottom-color: #2a2826; }  /* already handled by --rule */
-body.dark .pdf-download-btn { background: #e8e4dc; color: #0d0d0d; }
-body.dark .pdf-download-btn:hover { background: #ccc; }
-body.dark .pdf-viewer-embed { border-color: #2a2826; }
-
-/* Admin panel dark */
-body.dark .admin-panel { background: #111; box-shadow: -8px 0 40px rgba(0,0,0,.6); }
-body.dark .admin-panel-header { background: #1c1c1c; }
-body.dark .admin-tabs { background: #111; border-bottom-color: #2a2826; }
-body.dark .admin-tab-btn.active { color: #e8e4dc; border-bottom-color: #e8e4dc; }
-body.dark .admin-form input,
-body.dark .admin-form textarea,
-body.dark .admin-form select { background: #1a1a1a; border-color: #2a2826; color: #e8e4dc; }
-body.dark .admin-form input:focus,
-body.dark .admin-form textarea:focus { border-color: #e8e4dc; }
-body.dark .admin-item { border-color: #2a2826; }
-body.dark .admin-submit-btn { background: #e8e4dc; color: #0d0d0d; }
-body.dark .admin-submit-btn:hover { background: #ccc; }
-body.dark .admin-preview-btn { color: #e8e4dc; border-color: #e8e4dc; }
-body.dark .admin-preview-btn:hover { background: #e8e4dc; color: #0d0d0d; }
-body.dark .admin-section h3 { color: #e8e4dc; }
-body.dark .admin-list-title { color: #7a7570; }
-body.dark .admin-section-title-row h3 { color: #e8e4dc; }
-body.dark .img-upload-dropzone { border-color: #2a2826; }
-body.dark .img-upload-dropzone:hover { border-color: #e8e4dc; background: rgba(255,255,255,.03); }
-body.dark .img-upload-text { color: #e8e4dc; }
-body.dark .img-preview-wrap { background: #1a1a1a; border-color: #2a2826; }
-body.dark .pdf-upload-dropzone { border-color: #2a2826; }
-body.dark .pdf-upload-dropzone:hover { border-color: #e8e4dc; background: rgba(255,255,255,.03); }
-body.dark .pdf-upload-text { color: #e8e4dc; }
-body.dark .pdf-upload-preview { background: #1a1a1a; border-color: #2a2826; }
-body.dark .admin-login-box { background: #141414; }
-body.dark .admin-login-box h2 { color: #e8e4dc; }
-body.dark .admin-input { background: #1a1a1a; border-color: #2a2826; color: #e8e4dc; }
-body.dark .admin-login-btn { background: #e8e4dc; color: #0d0d0d; }
-body.dark .admin-login-btn:hover { background: #ccc; }
-body.dark .admin-cancel-btn { color: #7a7570; border-color: #2a2826; }
-body.dark .admin-cancel-btn:hover { color: #e8e4dc; border-color: #e8e4dc; }
-body.dark .toggle-slider { background: #2a2826; }
-body.dark .toggle-switch input:checked + .toggle-slider { background: #e8e4dc; }
-body.dark .toggle-switch input:checked + .toggle-slider::before { background: #0d0d0d; }
-body.dark .admin-form.editing { border-color: #e8e4dc; background: rgba(255,255,255,.02); }
-body.dark .draft-badge { background: #2d2500; color: #d4a017; border-color: #d4a017; }
-body.dark .published-badge { background: #0d2010; color: #4caf50; border-color: #4caf50; }
-
-/* Toast dark */
-body.dark .toast { background: #e8e4dc; color: #0d0d0d; }
-
-/* Section line dark */
-body.dark .section-line { background: #2a2826; }
-
-/* Player title badge */
-.player-title-badge {
-  font-family: var(--mono);
-  font-size: .6rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  padding: .2rem .5rem;
-  background: rgba(255,255,255,.1);
-  color: rgba(255,255,255,.8);
-  border: 1px solid rgba(255,255,255,.2);
-  margin-right: .4rem;
-  vertical-align: middle;
+// ── HOME BOARD ──
+let homeBoard=fenToBoard(START_FEN),homeSel=null,homeMoves=[],homeTurn='w';
+function buildHomeBoard(){
+  const el=document.getElementById('chessBoard'); if(!el)return;
+  el.innerHTML=''; el.className='chess-board-interactive';
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    const sq=document.createElement('div');
+    sq.className='isq '+((r+c)%2===0?'isq-light':'isq-dark');
+    const piece=homeBoard[r][c];
+    if(piece&&GLYPHS[piece]){const sp=document.createElement('span');sp.className='ipiece '+(piece[0]==='w'?'wpiece':'bpiece');sp.textContent=GLYPHS[piece];sq.appendChild(sp);}
+    if(homeSel&&homeSel[0]===r&&homeSel[1]===c)sq.classList.add('isq-selected');
+    if(homeMoves.some(m=>m[0]===r&&m[1]===c))sq.classList.add('isq-legal');
+    sq.addEventListener('click',()=>homeClick(r,c)); el.appendChild(sq);
+  }
+  const ti=document.getElementById('turnIndicator'); if(ti)ti.textContent=homeTurn==='w'?'⬜ White to move':'⬛ Black to move';
 }
-body.dark .player-title-badge { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.15); }
+function homeClick(r,c){
+  const piece=homeBoard[r][c];
+  if(homeSel){if(homeMoves.some(m=>m[0]===r&&m[1]===c)){homeBoard[r][c]=homeBoard[homeSel[0]][homeSel[1]];homeBoard[homeSel[0]][homeSel[1]]=null;homeTurn=homeTurn==='w'?'b':'w';homeSel=null;homeMoves=[];buildHomeBoard();return;}homeSel=null;homeMoves=[];}
+  if(piece&&piece[0]===homeTurn){homeSel=[r,c];homeMoves=getLegalMoves(homeBoard,r,c,homeTurn);}
+  buildHomeBoard();
+}
+function resetBoard(){homeBoard=fenToBoard(START_FEN);homeSel=null;homeMoves=[];homeTurn='w';buildHomeBoard();}
 
-/* Games admin — title prefix */
-.game-player-title {
-  font-family: var(--mono);
-  font-size: .6rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--mid);
-  padding: .15rem .4rem;
-  border: 1px solid var(--rule);
-  margin-right: .3rem;
+// ── GAME VIEWER ──
+function buildGameBoard(containerId,boardState){
+  const el=document.getElementById(containerId); if(!el)return;
+  el.innerHTML=''; el.className='chess-board-viewer';
+  for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+    const sq=document.createElement('div'); sq.className='vsq '+((r+c)%2===0?'vsq-light':'vsq-dark');
+    const piece=boardState[r][c];
+    if(piece&&GLYPHS[piece]){const sp=document.createElement('span');sp.className='vpiece '+(piece[0]==='w'?'wpiece':'bpiece');sp.textContent=GLYPHS[piece];sq.appendChild(sp);}
+    el.appendChild(sq);
+  }
+}
+const gameViewerStates={};
+function initGameViewer(gameId,pgn){
+  const states=pgn?parsePGN(pgn):[fenToBoard(START_FEN)];
+  gameViewerStates[gameId]={states,idx:0};
+  buildGameBoard('board-'+gameId,states[0]); updateGameNav(gameId);
+}
+function updateGameNav(gameId){
+  const vs=gameViewerStates[gameId]; if(!vs)return;
+  const el=document.getElementById('movenav-'+gameId); if(el)el.textContent=`Move ${vs.idx} / ${vs.states.length-1}`;
+  const prev=document.getElementById('prev-'+gameId); const next=document.getElementById('next-'+gameId);
+  if(prev)prev.disabled=vs.idx===0; if(next)next.disabled=vs.idx===vs.states.length-1;
+}
+function gameStep(gameId,dir){const vs=gameViewerStates[gameId];if(!vs)return;vs.idx=Math.max(0,Math.min(vs.states.length-1,vs.idx+dir));buildGameBoard('board-'+gameId,vs.states[vs.idx]);updateGameNav(gameId);}
+function gameJump(gameId,pos){const vs=gameViewerStates[gameId];if(!vs)return;vs.idx=pos==='start'?0:vs.states.length-1;buildGameBoard('board-'+gameId,vs.states[vs.idx]);updateGameNav(gameId);}
+
+// ════════════════════════════════
+// PAGE ROUTING
+// ════════════════════════════════
+let currentPage='home';
+function goHome(){currentPage='home';document.getElementById('homePage').style.display='block';document.getElementById('detailPage').style.display='none';window.scrollTo(0,0);}
+function showDetailPage(html){currentPage='detail';document.getElementById('homePage').style.display='none';document.getElementById('detailPage').style.display='block';document.getElementById('detailContent').innerHTML=html;window.scrollTo(0,0);}
+function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
+
+// ── ARTICLE DETAIL ──
+function openArticle(id){
+  const a=siteData.articles.find(x=>x.id===id); if(!a)return;
+  const bodyHTML=(a.content||a.excerpt||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join('');
+  const heroImg=a.image?`<img class="article-detail-hero-img" src="${a.image}" alt="${a.title}"/>`:'';
+  showDetailPage(`
+    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
+    <div class="article-detail">
+      ${heroImg}
+      <div class="article-detail-tag">${a.tag||'General'}</div>
+      <h1 class="article-detail-title">${a.title}</h1>
+      <div class="article-detail-meta">${a.date||''} &nbsp;·&nbsp; ${a.readTime||''} read</div>
+      <div class="article-detail-body">${bodyHTML}</div>
+    </div>`);
 }
 
-/* ════════════════════════════
-   BUG FIXES & MISSING STYLES
-════════════════════════════ */
-
-/* Article card body padding (fixes broken inline style from v4) */
-.article-card-body { padding: 2rem; }
-.article-card-img + .article-card-body { padding-top: 1.5rem; }
-/* When card has image, remove top padding from card itself so image sits flush */
-.article-card:has(.article-card-img) { padding: 0; }
-
-/* Admin pw-error was using opacity toggle before — ensure display:none default works */
-.admin-pw-error { display: none; }
-.admin-pw-error.visible { display: block; }
-
-/* Dark mode: admin select bg for inline selects inside game form */
-body.dark select { background: #1a1a1a; color: #e8e4dc; border-color: #2a2826; }
-
-/* Fix player card header avatar alignment when photo used */
-.player-card-header { gap: 1.2rem; }
-
-/* Game detail players line — make titles visually distinct */
-.game-detail-players .player-title { 
-  font-family: var(--mono);
-  font-size: .65rem;
-  opacity: .6;
-  margin-right: .2rem;
+// ── PLAYER DETAIL ──
+function openPlayer(id){
+  const p=siteData.players.find(x=>x.id===id); if(!p)return;
+  const avatarHTML=p.image
+    ?`<img class="player-detail-photo" src="${p.image}" alt="${p.name}"/>`
+    :`<div class="player-detail-avatar">${p.name[0]}</div>`;
+  const achievementsHTML=(p.achievements||[]).map(a=>`<tr><td>${a.title}</td><td>${a.year}</td></tr>`).join('')||'<tr><td colspan="2" style="color:var(--mid);font-size:.8rem;">No achievements listed.</td></tr>';
+  const bestGamesHTML=(p.bestGames||[]).map(g=>`<div class="bestgame-row"><h4>${g.title}</h4><p>${g.event} · ${g.year}</p></div>`).join('')||'<p style="color:var(--mid);font-size:.9rem;">No games listed.</p>';
+  const styleBadge=p.style?`<span class="style-badge">${p.style}</span>`:'';
+  showDetailPage(`
+    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
+    <div class="player-detail">
+      <div class="player-detail-hero">
+        ${avatarHTML}
+        <div>
+          <div class="player-detail-name">${p.title?`<span style="font-family:var(--mono);font-size:.9rem;opacity:.7;margin-right:.6rem;">${p.title}</span>`:''} ${p.name}</div>
+          <div class="player-detail-country">${(p.country||'').toUpperCase()}</div>
+          <div class="player-detail-rating-badge">Peak Rating: ${p.rating||'N/A'}</div>
+          ${styleBadge}
+        </div>
+      </div>
+      <div class="player-detail-tabs">
+        <button class="pd-tab active" onclick="switchPdTab(this,'bio')">Biography</button>
+        <button class="pd-tab" onclick="switchPdTab(this,'achievements')">Achievements</button>
+        <button class="pd-tab" onclick="switchPdTab(this,'career')">Career</button>
+        <button class="pd-tab" onclick="switchPdTab(this,'bestgames')">Best Games</button>
+      </div>
+      <div class="pd-panel active" id="pd-bio"><p>${p.bio||'No biography available.'}</p></div>
+      <div class="pd-panel" id="pd-achievements"><table class="achievement-table"><tbody>${achievementsHTML}</tbody></table></div>
+      <div class="pd-panel" id="pd-career"><p>${p.career||'No career summary available.'}</p></div>
+      <div class="pd-panel" id="pd-bestgames">${bestGamesHTML}</div>
+    </div>`);
+}
+function switchPdTab(btn,id){
+  document.querySelectorAll('.pd-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pd-panel').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active'); const panel=document.getElementById('pd-'+id); if(panel)panel.classList.add('active');
 }
 
-/* Ensure detail page has correct top padding in all scroll states */
-#detailPage { background: var(--bg); min-height: 100vh; }
-
-/* Fix admin form select dark mode for p-style and p-title */
-body.dark #p-style,
-body.dark #p-title,
-body.dark #g-white-title,
-body.dark #g-black-title { background: #1a1a1a !important; color: #e8e4dc !important; border-color: #2a2826 !important; }
-
-/* Fix toast positioning on mobile */
-@media (max-width: 480px) {
-  .toast { width: 90%; text-align: center; }
+// ── GAME DETAIL ──
+function openGame(id){
+  const g=siteData.games.find(x=>x.id===id); if(!g)return;
+  const boardId='detail-board-'+g.id;
+  showDetailPage(`
+    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
+    <div class="game-detail">
+      <div class="game-detail-header">
+        <div class="game-detail-num">Game of the Century</div>
+        <h1 class="game-detail-title">${g.title}</h1>
+        <div class="game-detail-players">${g.white} (White) vs ${g.black} (Black) &nbsp;·&nbsp; ${g.event} ${g.year} &nbsp;·&nbsp; ${g.result}</div>
+      </div>
+      <div class="game-detail-body">
+        <div class="game-detail-left">
+          <p class="game-detail-desc">${g.desc||'A landmark game in chess history.'}</p>
+          ${g.pgn?`<div class="game-detail-pgn-label">PGN Notation</div><div class="game-detail-pgn-box"><pre>${g.pgn}</pre></div>`:''}
+        </div>
+        <div class="game-detail-right">
+          <div id="${boardId}" class="chess-board-viewer"></div>
+          <div class="gv-nav">
+            <button class="gv-btn" onclick="gameJump('d${g.id}','start')">|◀</button>
+            <button class="gv-btn" id="prev-d${g.id}" onclick="gameStep('d${g.id}',-1)">◀</button>
+            <span class="gv-movenav" id="movenav-d${g.id}">Move 0</span>
+            <button class="gv-btn" id="next-d${g.id}" onclick="gameStep('d${g.id}',1)">▶</button>
+            <button class="gv-btn" onclick="gameJump('d${g.id}','end')">▶|</button>
+          </div>
+        </div>
+      </div>
+    </div>`);
+  setTimeout(()=>{
+    const states=g.pgn?parsePGN(g.pgn):[fenToBoard(START_FEN)];
+    gameViewerStates['d'+g.id]={states,idx:0};
+    buildGameBoard(boardId,states[0]); updateGameNav('d'+g.id);
+  },50);
 }
 
-/* Ensure admin panel doesn't overlap nav on mobile */
-@media (max-width: 768px) {
-  .admin-panel { top: 0; }
-  .nav-links a { display: none; }
-  .nav-links { gap: .6rem; }
+// ── PDF DETAIL ──
+function openPdf(id){
+  const p=siteData.pdfs.find(x=>x.id===id); if(!p)return;
+  const contentHTML=(p.content||'').split('\n').filter(x=>x.trim()).map(x=>`<p>${x.trim()}</p>`).join('');
+
+  // Build download/view button
+  let downloadBtn='';
+  if(p.fileData){
+    downloadBtn=`<a class="pdf-download-btn" href="${p.fileData}" download="${p.fileName||p.title+'.pdf'}">↓ Download PDF</a>`;
+  } else if(p.url){
+    downloadBtn=`<a class="pdf-download-btn" href="${p.url}" target="_blank">↓ Open PDF</a>`;
+  } else {
+    downloadBtn=`<button class="pdf-download-btn" onclick="showToast('No file attached to this PDF.')">↓ Download PDF</button>`;
+  }
+
+  // Build viewer section
+  let viewerHTML='';
+  if(p.fileData){
+    viewerHTML=`
+      <div style="margin-top:2rem;">
+        <p style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.8rem;">Document Preview</p>
+        <iframe class="pdf-viewer-embed" src="${p.fileData}" title="${p.title}">
+          <div class="pdf-viewer-fallback">
+            <p>Your browser cannot display this PDF inline.</p>
+            <a class="pdf-download-btn" href="${p.fileData}" download="${p.fileName||p.title+'.pdf'}">↓ Download instead</a>
+          </div>
+        </iframe>
+      </div>`;
+  } else if(p.url){
+    viewerHTML=`
+      <div style="margin-top:2rem;">
+        <p style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.8rem;">Document Preview</p>
+        <iframe class="pdf-viewer-embed" src="${p.url}" title="${p.title}">
+          <div class="pdf-viewer-fallback"><p>Cannot display PDF inline.</p><a class="pdf-download-btn" href="${p.url}" target="_blank">↓ Open in new tab</a></div>
+        </iframe>
+      </div>`;
+  }
+
+  const coverImg=p.coverImage?`<img src="${p.coverImage}" alt="${p.title}" style="width:100%;max-height:280px;object-fit:cover;margin-bottom:2rem;border:1px solid var(--rule);">`:'';
+
+  showDetailPage(`
+    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
+    <div class="pdf-detail">
+      ${coverImg}
+      <div class="pdf-detail-header">
+        <div class="pdf-detail-icon">PDF</div>
+        <div>
+          <h1 class="pdf-detail-title">${p.title}</h1>
+          <div class="pdf-detail-author">by ${p.author}</div>
+          ${p.size?`<div class="pdf-detail-size">${p.size}</div>`:''}
+          ${p.fileName?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);margin-top:.3rem;">File: ${p.fileName}</div>`:''}
+        </div>
+      </div>
+      ${p.desc?`<p class="pdf-detail-desc">${p.desc}</p>`:''}
+      ${downloadBtn}
+      ${viewerHTML}
+      ${contentHTML?`<div class="pdf-detail-content" style="margin-top:2.5rem;padding-top:2.5rem;border-top:1px solid var(--rule);">${contentHTML}</div>`:''}
+    </div>`);
 }
 
-/* Fix game viewer board size on detail page */
-.game-detail-right .chess-board-viewer {
-  width: 100%;
-  max-width: 300px;
+// ════════════════════════════════
+// RENDER SECTIONS
+// ════════════════════════════════
+function renderArticles(){
+  const grid=document.getElementById('articlesGrid'); if(!grid)return;
+  const pub=siteData.articles.filter(a=>a.published!==false);
+  if(!pub.length){grid.innerHTML='<p class="empty-msg">No articles yet. Add some from the admin panel.</p>';return;}
+  grid.innerHTML=pub.map(a=>`
+    <div class="article-card fade-in" onclick="openArticle(${a.id})">
+      ${a.image?`<img class="article-card-img" src="${a.image}" alt="${a.title}"/>`:''}
+      <div class="article-card-body">
+        <div class="article-tag">${a.tag||'General'}</div>
+        <div class="article-title">${a.title}</div>
+        <div class="article-excerpt">${a.excerpt}</div>
+        <div class="article-meta">${a.date||''} &nbsp;·&nbsp; ${a.readTime||''} read</div>
+        <div class="article-arrow">→</div>
+      </div>
+    </div>`).join('');
 }
 
-/* PDF card cover doesn't break card border radius */
-.pdf-card { overflow: hidden; }
+function renderPlayers(){
+  const grid=document.getElementById('playersGrid'); if(!grid)return;
+  if(!siteData.players.length){grid.innerHTML='<p class="empty-msg">No players yet.</p>';return;}
+  grid.innerHTML=siteData.players.map(p=>{
+    const avatarHTML=p.image
+      ?`<img class="player-avatar-photo" src="${p.image}" alt="${p.name}"/>`
+      :`<div class="player-avatar">${p.name[0]}</div>`;
+    return `<div class="player-card fade-in" onclick="openPlayer(${p.id})">
+      <div class="player-card-header">${avatarHTML}<div><div class="player-name">${p.title?`<span class="player-title-badge">${p.title}</span>`:''} ${p.name}</div><div class="player-country">${p.country||''}</div></div></div>
+      <div class="player-card-body">
+        <div class="player-rating">Peak Rating <strong>${p.rating||'N/A'}</strong></div>
+        ${p.style?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">${p.style}</div>`:''}
+        <div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">Click to view full profile →</div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-/* Fix bestgame-row hover in dark mode */
-body.dark .bestgame-row:hover h4,
-body.dark .bestgame-row:hover p { color: #0d0d0d; }
+function renderGames(){
+  const list=document.getElementById('gamesList'); if(!list)return;
+  if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}
+  list.innerHTML=siteData.games.map((g,i)=>`
+    <div class="game-entry fade-in">
+      <div class="game-row" onclick="toggleGameViewer('gv-${g.id}',${g.id})">
+        <div class="game-num">${String(i+1).padStart(2,'0')}</div>
+        <div>
+          <div class="game-title">${g.title}</div>
+          <div class="game-meta">${g.white||''} vs ${g.black||''} &nbsp;·&nbsp; ${g.event||''} &nbsp;·&nbsp; ${g.result||''}</div>
+        </div>
+        <div class="game-right"><div class="game-year">${g.year||''}</div><div class="game-expand-icon">▾</div></div>
+      </div>
+      <div class="game-viewer" id="gv-${g.id}" style="display:none;">
+        <div class="game-viewer-inner">
+          <div class="gv-board-wrap"><div id="board-${g.id}" class="chess-board-viewer"></div></div>
+          <div class="gv-controls">
+            <div class="gv-pgn">${g.pgn?'<pre>'+g.pgn+'</pre>':'<em>No PGN provided</em>'}</div>
+            <div class="gv-nav">
+              <button class="gv-btn" onclick="gameJump(${g.id},'start')">|◀</button>
+              <button class="gv-btn" id="prev-${g.id}" onclick="gameStep(${g.id},-1)">◀</button>
+              <span class="gv-movenav" id="movenav-${g.id}">Move 0</span>
+              <button class="gv-btn" id="next-${g.id}" onclick="gameStep(${g.id},1)">▶</button>
+              <button class="gv-btn" onclick="gameJump(${g.id},'end')">▶|</button>
+            </div>
+            <button class="gv-open-page" onclick="openGame(${g.id})">Open full game page →</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
 
-/* Fix achievement table dark mode text */
-body.dark .achievement-table td { color: #e8e4dc; }
-body.dark .achievement-table td:last-child { color: #7a7570; }
+function toggleGameViewer(id,gameId){
+  const el=document.getElementById(id); if(!el)return;
+  const isOpen=el.style.display!=='none'; el.style.display=isOpen?'none':'block';
+  if(!isOpen){const game=siteData.games.find(g=>g.id===gameId);if(game)setTimeout(()=>initGameViewer(gameId,game.pgn||''),50);}
+}
 
-/* Fix modal / detail tabs dark */
-body.dark .pd-tab { color: #7a7570; }
-body.dark .pd-panel p { color: #9a9590; }
+function renderPDFs(){
+  const grid=document.getElementById('pdfGrid'); if(!grid)return;
+  if(!siteData.pdfs.length){grid.innerHTML='<p class="empty-msg">No PDFs yet.</p>';return;}
+  grid.innerHTML=siteData.pdfs.map(p=>{
+    const hasCover=p.coverImage;
+    const hasFile=p.fileData||p.url;
+    const fileBadge=p.fileData?'<span style="font-family:var(--mono);font-size:.55rem;letter-spacing:.08em;padding:.2rem .5rem;background:#d4edda;color:#155724;border:1px solid #28a745;">FILE ATTACHED</span>':'';
+    return `<div class="pdf-card fade-in" onclick="openPdf(${p.id})">
+      ${hasCover?`<img class="pdf-card-cover" src="${p.coverImage}" alt="${p.title}"/>`:''}
+      <div class="pdf-icon">PDF</div>
+      <div class="pdf-title">${p.title} ${fileBadge}</div>
+      <div class="pdf-desc">${p.desc||''}<br><br><em style="font-size:.78rem;">— ${p.author}</em></div>
+      <div class="pdf-size">${hasFile?'↓ View / Download':'↓ View'} &nbsp;·&nbsp; ${p.size||''}</div>
+    </div>`;
+  }).join('');
+}
 
-/* Fix gv-pgn em tag dark */
-body.dark .gv-pgn em { color: #7a7570; }
-body.dark .gv-pgn pre { color: #9a9590; }
+function renderAll(){renderArticles();renderPlayers();renderGames();renderPDFs();setTimeout(initFadeIn,80);}
 
-/* Fix hero board dark border */
-body.dark .chess-board-interactive { border-color: #1a1a1a; }
+// ════════════════════════════════
+// IMAGE UPLOAD
+// ════════════════════════════════
+function handleImgUpload(inputId, previewId, dataId) {
+  const input = document.getElementById(inputId);
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('Image too large — max 2MB.'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = e.target.result;
+    document.getElementById(dataId).value = data;
+    const preview = document.getElementById(previewId);
+    const img = document.getElementById(previewId + '-img');
+    if (img) img.src = data;
+    preview.style.display = 'flex';
+    // hide dropzone
+    const drop = document.getElementById(inputId.replace('-input','-drop'));
+    if (drop) drop.style.display = 'none';
+    showToast('Image loaded ✓');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── PDF FILE UPLOAD ──
+function handlePdfUpload() {
+  const input = document.getElementById('d-pdf-input');
+  const file = input.files[0];
+  if (!file) return;
+  if (file.type !== 'application/pdf') { showToast('Please select a PDF file.'); input.value = ''; return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('PDF too large — max 5MB.'); input.value = ''; return; }
+  const sizeMB = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('d-file-data').value = e.target.result;
+    document.getElementById('d-file-name').value = file.name;
+    document.getElementById('d-pdf-preview-name').textContent = file.name;
+    document.getElementById('d-pdf-preview-size').textContent = sizeMB;
+    document.getElementById('d-pdf-preview').style.display = 'flex';
+    document.getElementById('d-pdf-drop').style.display = 'none';
+    // size is computed automatically from fileData on save
+    showToast('PDF loaded ✓ — ' + sizeMB);
+  };
+  reader.onerror = () => showToast('Failed to read file.');
+  reader.readAsDataURL(file);
+}
+
+function removePdfUpload() {
+  document.getElementById('d-file-data').value = '';
+  document.getElementById('d-file-name').value = '';
+  document.getElementById('d-pdf-preview').style.display = 'none';
+  document.getElementById('d-pdf-drop').style.display = 'flex';
+  document.getElementById('d-pdf-input').value = '';
+}
+
+function removeImg(previewId, dataId, dropId) {
+  document.getElementById(previewId).style.display = 'none';
+  document.getElementById(dataId).value = '';
+  const drop = document.getElementById(dropId);
+  if (drop) drop.style.display = 'flex';
+}
+
+function clearImgField(previewId, dataId, dropId, inputId) {
+  removeImg(previewId, dataId, dropId);
+  const inp = document.getElementById(inputId);
+  if (inp) inp.value = '';
+}
+
+// ════════════════════════════════
+// ADMIN PANEL
+// ════════════════════════════════
+const ADMIN_PW='chess2026';
+let adminUnlocked=false, adminOpen=false;
+
+function toggleAdmin(){
+  if(!adminUnlocked){
+    document.getElementById('adminLoginOverlay').classList.add('open');
+    document.getElementById('adminPwError').classList.remove('visible');
+    setTimeout(()=>document.getElementById('adminPwInput').focus(),150);
+    return;
+  }
+  if(adminOpen)closeAdminPanel(); else openAdminPanel();
+}
+function openAdminPanel(){
+  adminOpen=true;
+  document.getElementById('adminPanel').classList.add('open');
+  document.getElementById('adminToggleBtn').textContent='✕ Close Admin';
+  showAdminTab('articles'); renderAdminLists();
+  syncDarkSelects();
+}
+function closeAdminPanel(){
+  adminOpen=false;
+  document.getElementById('adminPanel').classList.remove('open');
+  document.getElementById('adminToggleBtn').textContent='⚙ Admin';
+}
+function submitAdminLogin(){
+  const pw=document.getElementById('adminPwInput').value;
+  if(pw===ADMIN_PW){adminUnlocked=true;document.getElementById('adminLoginOverlay').classList.remove('open');document.getElementById('adminPwInput').value='';document.getElementById('adminPwError').classList.remove('visible');openAdminPanel();}
+  else{document.getElementById('adminPwError').classList.add('visible');document.getElementById('adminPwInput').value='';document.getElementById('adminPwInput').focus();}
+}
+function closeAdminLogin(){document.getElementById('adminLoginOverlay').classList.remove('open');document.getElementById('adminPwInput').value='';document.getElementById('adminPwError').classList.remove('visible');}
+function showAdminTab(tab){
+  document.querySelectorAll('.admin-tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  const sec=document.getElementById('admin-'+tab); if(sec)sec.classList.add('active');
+}
+
+// ── RENDER ADMIN LISTS ──
+function renderAdminLists(){
+  // Articles — split published / drafts
+  const pubA=siteData.articles.filter(a=>a.published!==false);
+  const draftA=siteData.articles.filter(a=>a.published===false);
+  const al=document.getElementById('adminArticleList');
+  if(al)al.innerHTML=pubA.map(a=>{const i=siteData.articles.indexOf(a);return`<div class="admin-item"><span>${a.title}</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editArticle(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('articles',${i})">✕</button></div></div>`;}).join('')||'<p class="admin-empty">None yet.</p>';
+  const dal=document.getElementById('adminArticleDraftList');
+  if(dal)dal.innerHTML=draftA.map(a=>{const i=siteData.articles.indexOf(a);return`<div class="admin-item"><span>${a.title} <span class="draft-badge">Draft</span></span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editArticle(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('articles',${i})">✕</button></div></div>`;}).join('')||'<p class="admin-empty">No drafts.</p>';
+
+  const pl=document.getElementById('adminPlayerList');
+  if(pl)pl.innerHTML=siteData.players.map((p,i)=>`<div class="admin-item"><span>${p.title?p.title+' ':''} ${p.name} ${p.country?'— '+p.country:''}</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editPlayer(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('players',${i})">✕</button></div></div>`).join('')||'<p class="admin-empty">No players yet.</p>';
+
+  const gl=document.getElementById('adminGameList');
+  if(gl)gl.innerHTML=siteData.games.map((g,i)=>`<div class="admin-item"><span>${g.title} — ${g.white} vs ${g.black} (${g.year})</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editGame(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('games',${i})">✕</button></div></div>`).join('')||'<p class="admin-empty">No games yet.</p>';
+
+  const dl=document.getElementById('adminPdfList');
+  if(dl)dl.innerHTML=siteData.pdfs.map((p,i)=>`<div class="admin-item"><span>${p.title} — ${p.author}</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editPdf(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('pdfs',${i})">✕</button></div></div>`).join('')||'<p class="admin-empty">No PDFs yet.</p>';
+}
+
+function deleteItem(type,idx){
+  if(!confirm('Delete this item?'))return;
+  siteData[type].splice(idx,1); saveData(siteData); renderAdminLists(); renderAll(); showToast('Item deleted.');
+}
+
+// ── ADD / SAVE ARTICLE ──
+function addArticle(){
+  const editId=v('a-edit-id');
+  const tag=v('a-tag'),title=v('a-title'),content=v('a-content'),excerpt=v('a-excerpt'),date=v('a-date'),rt=v('a-readtime');
+  const published=document.getElementById('a-published').checked;
+  const image=document.getElementById('a-img-data').value||'';
+  if(!title){showToast('Title is required.');return;}
+  if(!content&&!excerpt){showToast('Add content or an excerpt.');return;}
+  const newExcerpt=excerpt||content.slice(0,160)+(content.length>160?'…':'');
+
+  if(editId){
+    const idx=siteData.articles.findIndex(a=>String(a.id)===editId);
+    if(idx>-1){
+      siteData.articles[idx]={...siteData.articles[idx],tag:tag||'General',title,content,excerpt:newExcerpt,date:date||siteData.articles[idx].date,readTime:rt||siteData.articles[idx].readTime,published,image:image||siteData.articles[idx].image};
+      showToast('Article updated!');
+    }
+  } else {
+    siteData.articles.unshift({id:Date.now(),tag:tag||'General',title,content,excerpt:newExcerpt,date:date||nowDate(),readTime:rt||'5 min',published,image});
+    showToast(published?'Article published!':'Draft saved!');
+  }
+  saveData(siteData); cancelEdit('article'); renderAdminLists(); renderAll();
+}
+
+function editArticle(idx){
+  const a=siteData.articles[idx]; if(!a)return;
+  showAdminTab('articles');
+  document.getElementById('a-edit-id').value=String(a.id);
+  document.getElementById('a-tag').value=a.tag||'';
+  document.getElementById('a-title').value=a.title||'';
+  document.getElementById('a-content').value=a.content||'';
+  document.getElementById('a-excerpt').value=a.excerpt||'';
+  document.getElementById('a-date').value=a.date||'';
+  document.getElementById('a-readtime').value=a.readTime||'';
+  document.getElementById('a-published').checked=a.published!==false;
+  document.getElementById('a-published-label').textContent=a.published!==false?'Published':'Draft';
+  if(a.image){
+    document.getElementById('a-img-data').value=a.image;
+    const prev=document.getElementById('a-img-preview');
+    const img=document.getElementById('a-img-preview-img');
+    if(img)img.src=a.image; if(prev)prev.style.display='flex';
+    const drop=document.getElementById('a-img-drop'); if(drop)drop.style.display='none';
+  }
+  document.getElementById('article-form-heading').textContent='Edit Article';
+  document.getElementById('a-submit-label').textContent='Save Changes →';
+  document.getElementById('article-cancel-edit').style.display='inline-block';
+  document.querySelector('#admin-articles .admin-form').classList.add('editing');
+  document.getElementById('admin-articles').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function previewArticle(){
+  const title=v('a-title'); const content=v('a-content'); const excerpt=v('a-excerpt'); const tag=v('a-tag'); const date=v('a-date'); const rt=v('a-readtime'); const image=document.getElementById('a-img-data').value;
+  if(!title&&!content){showToast('Add a title or content to preview.');return;}
+  const bodyHTML=(content||excerpt||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join('');
+  const heroImg=image?`<img class="article-detail-hero-img" src="${image}" alt="${title}"/>`:'';
+  showDetailPage(`
+    <div onclick="goHome(); setTimeout(()=>openAdminPanel(),100)" class="detail-back">← Back to Editor</div>
+    <div class="article-detail">
+      ${heroImg}
+      <div class="article-detail-tag">${tag||'General'} &nbsp;<span style="background:#fff3cd;color:#856404;padding:.2rem .5rem;font-size:.6rem;">PREVIEW</span></div>
+      <h1 class="article-detail-title">${title||'Untitled'}</h1>
+      <div class="article-detail-meta">${date||nowDate()} &nbsp;·&nbsp; ${rt||'5 min'} read</div>
+      <div class="article-detail-body">${bodyHTML||'<p style="color:var(--mid);">[No content yet]</p>'}</div>
+    </div>`);
+}
+
+// ── ADD / SAVE PLAYER ──
+function addPlayer(){
+  const editId=v('p-edit-id');
+  const title=document.getElementById('p-title')?.value||'';
+  const name=v('p-name'),country=v('p-country'),rating=v('p-rating'),bio=v('p-bio'),career=v('p-career');
+  const style=document.getElementById('p-style')?.value||'';
+  const image=document.getElementById('p-img-data').value||'';
+  if(!name||!bio){showToast('Name and bio are required.');return;}
+  const achievements=v('p-achievements').split('\n').filter(l=>l.trim()).map(l=>{const parts=l.split('|');return{title:(parts[0]||'').trim(),year:(parts[1]||'').trim()};});
+  const bestGames=v('p-bestgames').split('\n').filter(l=>l.trim()).map(l=>{const parts=l.split('|');return{title:(parts[0]||'').trim(),event:(parts[1]||'').trim(),year:(parts[2]||'').trim()};});
+  if(editId){
+    const idx=siteData.players.findIndex(p=>String(p.id)===editId);
+    if(idx>-1){siteData.players[idx]={...siteData.players[idx],title,name,country:country||'',rating:rating||'N/A',style,bio,career:career||'',achievements,bestGames,image:image||siteData.players[idx].image};showToast('Player updated!');}
+  } else {
+    siteData.players.push({id:Date.now(),title,name,country:country||'',rating:rating||'N/A',style,bio,career:career||'',achievements,bestGames,image});
+    showToast('Player added!');
+  }
+  saveData(siteData); cancelEdit('player'); renderAdminLists(); renderAll();
+}
+
+function editPlayer(idx){
+  const p=siteData.players[idx]; if(!p)return;
+  showAdminTab('players');
+  document.getElementById('p-edit-id').value=String(p.id);
+  document.getElementById('p-name').value=p.name||'';
+  document.getElementById('p-country').value=p.country||'';
+  document.getElementById('p-rating').value=p.rating||'';
+  document.getElementById('p-bio').value=p.bio||'';
+  document.getElementById('p-career').value=p.career||'';
+  if(document.getElementById('p-title'))document.getElementById('p-title').value=p.title||'';
+  if(document.getElementById('p-style'))document.getElementById('p-style').value=p.style||'';
+  document.getElementById('p-achievements').value=(p.achievements||[]).map(a=>a.title+'|'+a.year).join('\n');
+  document.getElementById('p-bestgames').value=(p.bestGames||[]).map(g=>g.title+'|'+g.event+'|'+g.year).join('\n');
+  if(p.image){
+    document.getElementById('p-img-data').value=p.image;
+    const prev=document.getElementById('p-img-preview'); const img=document.getElementById('p-img-preview-img');
+    if(img)img.src=p.image; if(prev)prev.style.display='flex';
+    const drop=document.getElementById('p-img-drop'); if(drop)drop.style.display='none';
+  }
+  document.getElementById('player-form-heading').textContent='Edit Player';
+  document.getElementById('p-submit-label').textContent='Save Changes →';
+  document.getElementById('player-cancel-edit').style.display='inline-block';
+  document.querySelector('#admin-players .admin-form').classList.add('editing');
+  document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── ADD / SAVE GAME ──
+function addGame(){
+  const editId=v('g-edit-id');
+  const title=v('g-title');
+  const whiteTitle=document.getElementById('g-white-title')?.value||'';
+  const blackTitle=document.getElementById('g-black-title')?.value||'';
+  const whiteName=v('g-white'), blackName=v('g-black');
+  const white = whiteTitle ? whiteTitle+' '+whiteName : whiteName;
+  const black = blackTitle ? blackTitle+' '+blackName : blackName;
+  const year=v('g-year'),event=v('g-event'),result=v('g-result'),desc=v('g-desc'),pgn=v('g-pgn');
+  if(!title||!whiteName||!blackName){showToast('Title, White, and Black are required.');return;}
+  if(editId){
+    const idx=siteData.games.findIndex(g=>String(g.id)===editId);
+    if(idx>-1){siteData.games[idx]={...siteData.games[idx],title,white,black,whiteTitle,blackTitle,whiteName,blackName,year:year||'',event:event||'',result:result||'',desc:desc||'',pgn:pgn||''};showToast('Game updated!');}
+  } else {
+    siteData.games.push({id:Date.now(),title,white,black,whiteTitle,blackTitle,whiteName,blackName,year:year||'',event:event||'',result:result||'',desc:desc||'',pgn:pgn||''});
+    showToast('Game added!');
+  }
+  saveData(siteData); cancelEdit('game'); renderAdminLists(); renderAll();
+}
+
+function editGame(idx){
+  const g=siteData.games[idx]; if(!g)return;
+  showAdminTab('games');
+  document.getElementById('g-edit-id').value=String(g.id);
+  document.getElementById('g-title').value=g.title||'';
+  document.getElementById('g-white').value=g.whiteName||g.white||'';
+  document.getElementById('g-black').value=g.blackName||g.black||'';
+  if(document.getElementById('g-white-title'))document.getElementById('g-white-title').value=g.whiteTitle||'';
+  if(document.getElementById('g-black-title'))document.getElementById('g-black-title').value=g.blackTitle||'';
+  document.getElementById('g-year').value=g.year||'';
+  document.getElementById('g-event').value=g.event||'';
+  document.getElementById('g-result').value=g.result||'';
+  document.getElementById('g-desc').value=g.desc||'';
+  document.getElementById('g-pgn').value=g.pgn||'';
+  document.getElementById('game-form-heading').textContent='Edit Game';
+  document.getElementById('g-submit-label').textContent='Save Changes →';
+  document.getElementById('game-cancel-edit').style.display='inline-block';
+  document.querySelector('#admin-games .admin-form').classList.add('editing');
+  document.getElementById('admin-games').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── ADD / SAVE PDF ──
+function addPdf(){
+  const editId=v('d-edit-id');
+  const title=v('d-title'),author=v('d-author'),desc=v('d-desc'),content=v('d-content'),url=v('d-url');
+  const fileData=document.getElementById('d-file-data').value||'';
+  const fileName=document.getElementById('d-file-name').value||'';
+  const coverImage=document.getElementById('d-img-data').value||'';
+  // auto-compute size from base64 if uploaded
+  let size='';
+  if(fileData){const bytes=Math.round((fileData.length*(3/4))/1024);size=bytes>1024?(bytes/1024).toFixed(1)+' MB':bytes+' KB';}
+  if(!title||!author){showToast('Title and author are required.');return;}
+  if(editId){
+    const idx=siteData.pdfs.findIndex(p=>String(p.id)===editId);
+    if(idx>-1){
+      const existing=siteData.pdfs[idx];
+      siteData.pdfs[idx]={...existing,title,author,desc:desc||'',content:content||'',
+        url:url||existing.url,
+        fileData:fileData||existing.fileData||'',
+        fileName:fileName||existing.fileName||'',
+        size:size||existing.size||'',
+        coverImage:coverImage||existing.coverImage||''
+      };
+      showToast('PDF updated!');
+    }
+  } else {
+    siteData.pdfs.push({id:Date.now(),title,author,desc:desc||'',content:content||'',url:url||'',fileData,fileName,size,coverImage});
+    showToast('PDF added!');
+  }
+  saveData(siteData); cancelEdit('pdf'); renderAdminLists(); renderAll();
+}
+
+function editPdf(idx){
+  const p=siteData.pdfs[idx]; if(!p)return;
+  showAdminTab('pdfs');
+  document.getElementById('d-edit-id').value=String(p.id);
+  document.getElementById('d-title').value=p.title||'';
+  document.getElementById('d-author').value=p.author||'';
+  document.getElementById('d-desc').value=p.desc||'';
+  document.getElementById('d-content').value=p.content||'';
+  document.getElementById('d-url').value=p.url||'';
+  // Restore uploaded PDF if present
+  if(p.fileData){
+    document.getElementById('d-file-data').value=p.fileData;
+    document.getElementById('d-file-name').value=p.fileName||p.title+'.pdf';
+    document.getElementById('d-pdf-preview-name').textContent=p.fileName||p.title+'.pdf';
+    document.getElementById('d-pdf-preview-size').textContent=p.size||'';
+    document.getElementById('d-pdf-preview').style.display='flex';
+    document.getElementById('d-pdf-drop').style.display='none';
+  }
+  // Restore cover image if present
+  if(p.coverImage){
+    document.getElementById('d-img-data').value=p.coverImage;
+    const prev=document.getElementById('d-img-preview'); const img=document.getElementById('d-img-preview-img');
+    if(img)img.src=p.coverImage; if(prev)prev.style.display='flex';
+    const drop=document.getElementById('d-img-drop'); if(drop)drop.style.display='none';
+  }
+  document.getElementById('pdf-form-heading').textContent='Edit PDF';
+  document.getElementById('d-submit-label').textContent='Save Changes →';
+  document.getElementById('pdf-cancel-edit').style.display='inline-block';
+  document.querySelector('#admin-pdfs .admin-form').classList.add('editing');
+  document.getElementById('admin-pdfs').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── CANCEL EDIT ──
+function cancelEdit(type){
+  const map={article:'articles',player:'players',game:'games',pdf:'pdfs'};
+  const formMap={article:'a',player:'p',game:'g',pdf:'d'};
+  const p=formMap[type];
+  // Clear hidden ID
+  const editId=document.getElementById(p+'-edit-id'); if(editId)editId.value='';
+  // Reset heading & button
+  const headings={article:'Add Article',player:'Add Player Profile',game:'Add Game of the Century',pdf:'Add PDF to Library'};
+  const hEl=document.getElementById(type+'-form-heading'); if(hEl)hEl.textContent=headings[type];
+  const submitLabels={article:'Add Article →',player:'Add Player →',game:'Add Game →',pdf:'Add PDF →'};
+  const sEl=document.getElementById(p+'-submit-label'); if(sEl)sEl.textContent=submitLabels[type]||'Submit →';
+  const cancelBtn=document.getElementById(type+'-cancel-edit'); if(cancelBtn)cancelBtn.style.display='none';
+  document.querySelector('#admin-'+map[type]+' .admin-form')?.classList.remove('editing');
+  // Clear all inputs
+  const section=document.getElementById('admin-'+map[type]);
+  if(section){
+    section.querySelectorAll('input:not([type=hidden]):not([type=checkbox]):not([type=file])').forEach(el=>el.value='');
+    section.querySelectorAll('textarea').forEach(el=>el.value='');
+    section.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+    section.querySelectorAll('input[type=checkbox]').forEach(el=>{if(el.id.endsWith('-published'))el.checked=true;});
+  }
+  // Clear image previews
+  if(type==='article'){clearImgField('a-img-preview','a-img-data','a-img-drop','a-img-input');}
+  if(type==='player'){clearImgField('p-img-preview','p-img-data','p-img-drop','p-img-input');}
+  if(type==='pdf'){
+    removePdfUpload();
+    clearImgField('d-img-preview','d-img-data','d-img-drop','d-img-input');
+  }
+}
+
+function resetToDefault(){
+  if(!confirm('Reset ALL content to defaults? This cannot be undone.'))return;
+  siteData=JSON.parse(JSON.stringify(defaultData)); saveData(siteData); renderAdminLists(); renderAll(); showToast('Content reset to defaults.');
+}
+
+// ── TOGGLE LABEL ──
+document.addEventListener('change',e=>{
+  if(e.target.id==='a-published'){
+    const lbl=document.getElementById('a-published-label');
+    if(lbl)lbl.textContent=e.target.checked?'Published':'Draft';
+  }
+});
+
+// ── UTILITIES ──
+function v(id){return(document.getElementById(id)?.value||'').trim();}
+function nowDate(){return new Date().toLocaleDateString('en-GB',{month:'short',year:'numeric'});}
+function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+function initFadeIn(){
+  const obs=new IntersectionObserver(entries=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+}
+function initScrollSpy(){
+  const sections=['articles','players','games','library'];
+  const links=document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll',()=>{
+    if(currentPage!=='home')return;
+    let cur='';
+    sections.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-120)cur=id;});
+    links.forEach((l,i)=>l.classList.toggle('active',sections[i]===cur));
+  });
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  applyStoredTheme();
+  syncDarkSelects();
+  renderAll(); buildHomeBoard(); initScrollSpy(); setTimeout(initFadeIn,120);
+  document.getElementById('adminPwInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitAdminLogin();});
+});
