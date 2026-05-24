@@ -211,7 +211,7 @@ function openPlayer(id){
       '<div class="player-detail-hero">'+
         avatarHTML+
         '<div>'+
-          '<div class="player-detail-name">'+(p.title?'<span style="font-family:var(--mono);font-size:.9rem;opacity:.7;margin-right:.6rem;">'+p.title+'</span>':'')+' '+p.name+'</div>'+
+          '<div class="player-detail-name">'+(p.title?'<span class="player-title-badge">'+p.title+'</span>':'')+' '+p.name+'</div>'+
           '<div class="player-detail-country">'+((p.country||'').toUpperCase())+'</div>'+
           '<div class="player-detail-rating-badge">Peak Rating: '+(p.rating||'N/A')+'</div>'+
           styleBadge+
