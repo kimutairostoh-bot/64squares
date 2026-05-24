@@ -1,7 +1,17 @@
 // ===================================================
 // 64 SQUARES -- script.js  (v4 -- full admin)
 // ===================================================
+const SUPABASE_URL = 'https://amhotjblrmctyisrpuub.supabase.co';
 
+const SUPABASE_KEY =
+  'sb_publishable_Mr7Q-_rHblJ8qczzYZnkQw_X7Rkdsq3';
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log('Supabase connected:', supabase);
 const STORAGE_KEY = 'chess64_v4';
 const THEME_KEY = 'chess64_theme';
 
