@@ -1,15 +1,15 @@
-// ═══════════════════════════════════════════
-// 64 SQUARES — script.js  (v4 — full admin)
-// ═══════════════════════════════════════════
+// ===================================================
+// 64 SQUARES -- script.js  (v4 -- full admin)
+// ===================================================
 
 const STORAGE_KEY = 'chess64_v4';
 const THEME_KEY = 'chess64_theme';
 
-// ── DARK MODE ──
+// -- DARK MODE --
 function toggleTheme() {
   const isDark = document.body.classList.toggle('dark');
   localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
-  document.getElementById('themeToggleBtn').textContent = isDark ? '○' : '◑';
+  document.getElementById('themeToggleBtn').textContent = isDark ? 'o' : 'half';
   syncDarkSelects();
 }
 function applyStoredTheme() {
@@ -17,11 +17,10 @@ function applyStoredTheme() {
   if (t === 'dark') {
     document.body.classList.add('dark');
     const btn = document.getElementById('themeToggleBtn');
-    if (btn) btn.textContent = '○';
+    if (btn) btn.textContent = '\u25CB';
   }
 }
 
-// Keep inline selects styled when dark mode toggled dynamically
 function syncDarkSelects() {
   const dark = document.body.classList.contains('dark');
   document.querySelectorAll('select[id^="g-white-title"],select[id^="g-black-title"],select[id="p-title"]').forEach(sel => {
@@ -31,37 +30,37 @@ function syncDarkSelects() {
   });
 }
 function loadData() { try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
-function saveData(d) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) { showToast('Storage full — try removing large images.'); } }
+function saveData(d) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) { showToast('Storage full -- try removing large images.'); } }
 
-// ── DEFAULT DATA ──
+// -- DEFAULT DATA --
 const defaultData = {
   articles: [
-    { id:1, tag:"Strategy", title:"The Art of the Endgame: Rook & Pawn Mastery", excerpt:"Understanding why endgames are where true chess understanding is revealed — and how the world's best navigated them.", content:"The endgame is where champions are made. While openings can be memorized and middlegames can be calculated, the endgame demands pure understanding — an intuitive grasp of piece coordination, king activity, and pawn promotion that separates true masters from the rest.\n\nRook endgames constitute the vast majority of practical endgame situations, and mastering them is perhaps the single greatest investment a club player can make. The Lucena position and the Philidor defense are not merely theoretical curiosities; they are the pillars upon which practical rook endgame technique is built.\n\nThe key insight is activity. In rook endgames, the rook must be active at all costs. A passive rook is almost always losing; an active rook can often hold or even win seemingly hopeless positions.\n\nPractice these positions repeatedly until the moves become second nature. The champions of the game did not merely study endgames — they absorbed them.", date:"May 2026", readTime:"8 min", published:true, image:"" },
-    { id:2, tag:"History", title:"Fischer vs. Spassky: The Match That Stopped the World", excerpt:"A look back at the 1972 World Championship in Reykjavík — a Cold War showdown played on 64 squares.", content:"In the summer of 1972, the world held its breath — not over a military confrontation, but over a chess match. In Reykjavík, Iceland, an eccentric American prodigy named Robert James Fischer faced the calm Soviet champion Boris Spassky in what would become the most watched chess match in history.\n\nThe backdrop was unmistakable: the Cold War was at its height. The Soviet chess machine had dominated the World Championship for decades, and Fischer's challenge was seen in Washington and Moscow alike as something far greater than sport.\n\nFischer won the match 12.5–8.5, becoming the 11th World Chess Champion and the first American to hold the title. He never defended it. The chess world was never quite the same.", date:"Apr 2026", readTime:"12 min", published:true, image:"" },
-    { id:3, tag:"Opening Theory", title:"The Sicilian Dragon: Fire on the Board", excerpt:"One of chess's most double-edged openings — why the Dragon keeps burning generations of players.", content:"Few opening systems in chess generate as much heat as the Sicilian Dragon. Named for the pawn structure that resembles the constellation Draco, the Dragon has seduced generations of attacking players with its promise of sharp, uncompromising chess.\n\nThe position arises after 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6, with Black fianchettoing the bishop on g7 — the fabled Dragon bishop, the soul of the entire system.\n\nThe Dragon demands deep theoretical preparation. A single misplaced move can be catastrophic for either side. Yet this is precisely the appeal: the Dragon rewards the player who has studied hardest and calculated most precisely.", date:"Mar 2026", readTime:"6 min", published:true, image:"" },
+    { id:1, tag:"Strategy", title:"The Art of the Endgame: Rook & Pawn Mastery", excerpt:"Understanding why endgames are where true chess understanding is revealed -- and how the world's best navigated them.", content:"The endgame is where champions are made. While openings can be memorized and middlegames can be calculated, the endgame demands pure understanding -- an intuitive grasp of piece coordination, king activity, and pawn promotion that separates true masters from the rest.\n\nRook endgames constitute the vast majority of practical endgame situations, and mastering them is perhaps the single greatest investment a club player can make. The Lucena position and the Philidor defense are not merely theoretical curiosities; they are the pillars upon which practical rook endgame technique is built.\n\nThe key insight is activity. In rook endgames, the rook must be active at all costs. A passive rook is almost always losing; an active rook can often hold or even win seemingly hopeless positions.\n\nPractice these positions repeatedly until the moves become second nature. The champions of the game did not merely study endgames -- they absorbed them.", date:"May 2026", readTime:"8 min", published:true, image:"" },
+    { id:2, tag:"History", title:"Fischer vs. Spassky: The Match That Stopped the World", excerpt:"A look back at the 1972 World Championship in Reykjavik -- a Cold War showdown played on 64 squares.", content:"In the summer of 1972, the world held its breath -- not over a military confrontation, but over a chess match. In Reykjavik, Iceland, an eccentric American prodigy named Robert James Fischer faced the calm Soviet champion Boris Spassky in what would become the most watched chess match in history.\n\nThe backdrop was unmistakable: the Cold War was at its height. The Soviet chess machine had dominated the World Championship for decades, and Fischer's challenge was seen in Washington and Moscow alike as something far greater than sport.\n\nFischer won the match 12.5-8.5, becoming the 11th World Chess Champion and the first American to hold the title. He never defended it. The chess world was never quite the same.", date:"Apr 2026", readTime:"12 min", published:true, image:"" },
+    { id:3, tag:"Opening Theory", title:"The Sicilian Dragon: Fire on the Board", excerpt:"One of chess's most double-edged openings -- why the Dragon keeps burning generations of players.", content:"Few opening systems in chess generate as much heat as the Sicilian Dragon. Named for the pawn structure that resembles the constellation Draco, the Dragon has seduced generations of attacking players with its promise of sharp, uncompromising chess.\n\nThe position arises after 1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6, with Black fianchettoing the bishop on g7 -- the fabled Dragon bishop, the soul of the entire system.\n\nThe Dragon demands deep theoretical preparation. A single misplaced move can be catastrophic for either side. Yet this is precisely the appeal: the Dragon rewards the player who has studied hardest and calculated most precisely.", date:"Mar 2026", readTime:"6 min", published:true, image:"" },
   ],
   players: [
-    { id:1, title:"GM", name:"Garry Kasparov", country:"Russia", rating:"2851", style:"Universal", bio:"Widely regarded as the greatest chess player of all time, Garry Kasparov dominated competitive chess for two decades. Born in Baku in 1963, he became World Champion at 22 — the youngest in history at the time — defeating the formidable Anatoly Karpov in a legendary five-match series.", career:"Kasparov defeated Karpov in five legendary World Championship matches from 1984 to 1990. He held the world number one ranking for 225 months. In 1997, he famously lost a match to IBM's Deep Blue.", achievements:[{title:"World Chess Champion",year:"1985–2000"},{title:"Peak FIDE Rating 2851",year:"1999"},{title:"World number 1 for 225 months",year:"1984–2005"}], bestGames:[{title:"Kasparov vs. Topalov — The Immortal Game",event:"Wijk aan Zee",year:"1999"}], image:"" },
-    { id:2, title:"GM", name:"Magnus Carlsen", country:"Norway", rating:"2882", style:"Universal", bio:"Magnus Carlsen is a Norwegian grandmaster and the highest-rated player in chess history, achieving a peak rating of 2882 in 2014. Born in 1990, he became a grandmaster at just 13 years of age.", career:"Carlsen became World Chess Champion in 2013 by defeating Viswanathan Anand. He defended the title four times. In 2022 he declined to defend against Nepomniachtchi.", achievements:[{title:"FIDE World Chess Champion",year:"2013–2023"},{title:"Peak FIDE Rating 2882",year:"2014"}], bestGames:[{title:"Carlsen vs. Karjakin — Game 10",event:"World Championship Match",year:"2016"}], image:"" },
-    { id:3, title:"GM", name:"Bobby Fischer", country:"USA", rating:"2785", style:"Tactical", bio:"Robert James Fischer, the 11th World Chess Champion. Born in 1943, became a grandmaster at 15 — a world record at the time. His intensity, genius, and turbulent personality made him a cultural phenomenon.", career:"Fischer annihilated Taimanov and Larsen 6-0 in the 1971 Candidates before defeating Petrosian. His 1972 match against Spassky became a global media sensation.", achievements:[{title:"World Chess Champion",year:"1972–1975"},{title:"US Chess Champion (8 times)",year:"1957–1967"}], bestGames:[{title:"The Game of the Century vs. Donald Byrne",event:"Rosenwald Trophy",year:"1956"}], image:"" },
+    { id:1, title:"GM", name:"Garry Kasparov", country:"Russia", rating:"2851", style:"Universal", bio:"Widely regarded as the greatest chess player of all time, Garry Kasparov dominated competitive chess for two decades. Born in Baku in 1963, he became World Champion at 22 -- the youngest in history at the time -- defeating the formidable Anatoly Karpov in a legendary five-match series.", career:"Kasparov defeated Karpov in five legendary World Championship matches from 1984 to 1990. He held the world number one ranking for 225 months. In 1997, he famously lost a match to IBM's Deep Blue.", achievements:[{title:"World Chess Champion",year:"1985-2000"},{title:"Peak FIDE Rating 2851",year:"1999"},{title:"World number 1 for 225 months",year:"1984-2005"}], bestGames:[{title:"Kasparov vs. Topalov -- The Immortal Game",event:"Wijk aan Zee",year:"1999"}], image:"" },
+    { id:2, title:"GM", name:"Magnus Carlsen", country:"Norway", rating:"2882", style:"Universal", bio:"Magnus Carlsen is a Norwegian grandmaster and the highest-rated player in chess history, achieving a peak rating of 2882 in 2014. Born in 1990, he became a grandmaster at just 13 years of age.", career:"Carlsen became World Chess Champion in 2013 by defeating Viswanathan Anand. He defended the title four times. In 2022 he declined to defend against Nepomniachtchi.", achievements:[{title:"FIDE World Chess Champion",year:"2013-2023"},{title:"Peak FIDE Rating 2882",year:"2014"}], bestGames:[{title:"Carlsen vs. Karjakin -- Game 10",event:"World Championship Match",year:"2016"}], image:"" },
+    { id:3, title:"GM", name:"Bobby Fischer", country:"USA", rating:"2785", style:"Tactical", bio:"Robert James Fischer, the 11th World Chess Champion. Born in 1943, became a grandmaster at 15 -- a world record at the time. His intensity, genius, and turbulent personality made him a cultural phenomenon.", career:"Fischer annihilated Taimanov and Larsen 6-0 in the 1971 Candidates before defeating Petrosian. His 1972 match against Spassky became a global media sensation.", achievements:[{title:"World Chess Champion",year:"1972-1975"},{title:"US Chess Champion (8 times)",year:"1957-1967"}], bestGames:[{title:"The Game of the Century vs. Donald Byrne",event:"Rosenwald Trophy",year:"1956"}], image:"" },
   ],
   games: [
-    { id:1, title:"The Opera Game", white:"Paul Morphy", black:"Duke of Brunswick & Count Isouard", whiteName:"Paul Morphy", blackName:"Duke of Brunswick & Count Isouard", whiteTitle:"", blackTitle:"", year:"1858", event:"Paris Opera", result:"1–0", desc:"Played during a performance of Norma at the Paris Opera House, this game is the quintessential illustration of rapid development. Morphy declined material repeatedly, culminating in a breathtaking queen sacrifice on move 16.", pgn:"1.e4 e5 2.Nf3 d6 3.d4 Bg4 4.dxe5 Bxf3 5.Qxf3 dxe5 6.Bc4 Nf6 7.Qb3 Qe7 8.Nc3 c6 9.Bg5 b5 10.Nxb5 cxb5 11.Bxb5+ Nbd7 12.O-O-O Rd8 13.Rxd7 Rxd7 14.Rd1 Qe6 15.Bxd7+ Nxd7 16.Qb8+ Nxb8 17.Rd8#" },
-    { id:2, title:"The Immortal Game", white:"Adolf Anderssen", black:"Lionel Kieseritzky", whiteName:"Adolf Anderssen", blackName:"Lionel Kieseritzky", whiteTitle:"", blackTitle:"", year:"1851", event:"London", result:"1–0", desc:"Anderssen sacrificed both rooks, his bishop, and finally his queen — then delivered checkmate with three minor pieces. Perhaps the most celebrated attacking game in chess history.", pgn:"1.e4 e5 2.f4 exf4 3.Bc4 Qh4+ 4.Kf1 b5 5.Bxb5 Nf6 6.Nf3 Qh6 7.d3 Nh5 8.Nh4 Qg5 9.Nf5 c6 10.g4 Nf6 11.Rg1 cxb5 12.h4 Qg6 13.h5 Qg5 14.Qf3 Ng8 15.Bxf4 Qf6 16.Nc3 Bc5 17.Nd5 Qxb2 18.Bd6 Bxg1 19.e5 Qxa1+ 20.Ke2 Na6 21.Nxg7+ Kd8 22.Qf6+ Nxf6 23.Be7#" },
-    { id:3, title:"Game of the Century", white:"Donald Byrne", black:"Robert J. Fischer", whiteName:"Donald Byrne", blackName:"Robert J. Fischer", whiteTitle:"", blackTitle:"", year:"1956", event:"Rosenwald Trophy", result:"0–1", desc:"A 13-year-old Bobby Fischer sacrificed his queen on move 17, launching a forcing sequence of extraordinary depth. Hans Kmoch declared it 'The Game of the Century' — the name has stuck for 70 years.", pgn:"1.Nf3 Nf6 2.c4 g6 3.Nc3 Bg7 4.d4 O-O 5.Bf4 d5 6.Qb3 dxc4 7.Qxc4 c6 8.e4 Nbd7 9.Rd1 Nb6 10.Qc5 Bg4 11.Bg5 Na4 12.Qa3 Nxc3 13.bxc3 Nxe4 14.Bxe7 Qb6 15.Bc4 Nxc3 16.Bc5 Rfe8+ 17.Kf1 Be6 18.Bxb6 Bxc4+ 19.Kg1 Ne2+ 20.Kf1 Nxd4+ 21.Kg1 Ne2+ 22.Kf1 Nc3+ 23.Kg1 axb6 24.Qb4 Ra4 25.Qxb6 Nxd1 26.h3 Rxa2 27.Kh2 Nxf2 28.Re1 Rxe1 29.Qd8+ Bf8 30.Nxe1 Bd5 31.Nf3 Ne4 32.Qb8 b5 33.h4 h5 34.Ne5 Kg7 35.Kg1 Bc5+ 36.Kf1 Ng3+ 37.Ke1 Bb4+ 38.Kd1 Bb3+ 39.Kc1 Ne2+ 40.Kb1 Nc3+ 41.Kc1 Rc2#" },
+    { id:1, title:"The Opera Game", white:"Paul Morphy", black:"Duke of Brunswick & Count Isouard", whiteName:"Paul Morphy", blackName:"Duke of Brunswick & Count Isouard", whiteTitle:"", blackTitle:"", year:"1858", event:"Paris Opera", result:"1-0", desc:"Played during a performance of Norma at the Paris Opera House, this game is the quintessential illustration of rapid development. Morphy declined material repeatedly, culminating in a breathtaking queen sacrifice on move 16.", pgn:"1.e4 e5 2.Nf3 d6 3.d4 Bg4 4.dxe5 Bxf3 5.Qxf3 dxe5 6.Bc4 Nf6 7.Qb3 Qe7 8.Nc3 c6 9.Bg5 b5 10.Nxb5 cxb5 11.Bxb5+ Nbd7 12.O-O-O Rd8 13.Rxd7 Rxd7 14.Rd1 Qe6 15.Bxd7+ Nxd7 16.Qb8+ Nxb8 17.Rd8#" },
+    { id:2, title:"The Immortal Game", white:"Adolf Anderssen", black:"Lionel Kieseritzky", whiteName:"Adolf Anderssen", blackName:"Lionel Kieseritzky", whiteTitle:"", blackTitle:"", year:"1851", event:"London", result:"1-0", desc:"Anderssen sacrificed both rooks, his bishop, and finally his queen -- then delivered checkmate with three minor pieces. Perhaps the most celebrated attacking game in chess history.", pgn:"1.e4 e5 2.f4 exf4 3.Bc4 Qh4+ 4.Kf1 b5 5.Bxb5 Nf6 6.Nf3 Qh6 7.d3 Nh5 8.Nh4 Qg5 9.Nf5 c6 10.g4 Nf6 11.Rg1 cxb5 12.h4 Qg6 13.h5 Qg5 14.Qf3 Ng8 15.Bxf4 Qf6 16.Nc3 Bc5 17.Nd5 Qxb2 18.Bd6 Bxg1 19.e5 Qxa1+ 20.Ke2 Na6 21.Nxg7+ Kd8 22.Qf6+ Nxf6 23.Be7#" },
+    { id:3, title:"Game of the Century", white:"Donald Byrne", black:"Robert J. Fischer", whiteName:"Donald Byrne", blackName:"Robert J. Fischer", whiteTitle:"", blackTitle:"", year:"1956", event:"Rosenwald Trophy", result:"0-1", desc:"A 13-year-old Bobby Fischer sacrificed his queen on move 17, launching a forcing sequence of extraordinary depth. Hans Kmoch declared it 'The Game of the Century' -- the name has stuck for 70 years.", pgn:"1.Nf3 Nf6 2.c4 g6 3.Nc3 Bg7 4.d4 O-O 5.Bf4 d5 6.Qb3 dxc4 7.Qxc4 c6 8.e4 Nbd7 9.Rd1 Nb6 10.Qc5 Bg4 11.Bg5 Na4 12.Qa3 Nxc3 13.bxc3 Nxe4 14.Bxe7 Qb6 15.Bc4 Nxc3 16.Bc5 Rfe8+ 17.Kf1 Be6 18.Bxb6 Bxc4+ 19.Kg1 Ne2+ 20.Kf1 Nxd4+ 21.Kg1 Ne2+ 22.Kf1 Nc3+ 23.Kg1 axb6 24.Qb4 Ra4 25.Qxb6 Nxd1 26.h3 Rxa2 27.Kh2 Nxf2 28.Re1 Rxe1 29.Qd8+ Bf8 30.Nxe1 Bd5 31.Nf3 Ne4 32.Qb8 b5 33.h4 h5 34.Ne5 Kg7 35.Kg1 Bc5+ 36.Kf1 Ng3+ 37.Ke1 Bb4+ 38.Kd1 Bb3+ 39.Kc1 Ne2+ 40.Kb1 Nc3+ 41.Kc1 Rc2#" },
   ],
   pdfs: [
     { id:1, title:"My System", author:"Nimzowitsch", desc:"The foundational text of modern positional chess strategy.", content:"Nimzowitsch's My System, published in 1925, is arguably the most influential chess book ever written. It systematized concepts like the blockade, prophylaxis, and overprotection into a coherent framework.\n\nNimzowitsch's prose is colorful; he anthropomorphizes pawns and pieces, describing the passed pawn's 'lust to expand.' Whether this makes the book more or less accessible depends on the reader, but it is rarely dull.\n\nMy System remains essential reading for any player seeking to move beyond tactical calculation into strategic understanding.", size:"2.4 MB", url:"" },
-    { id:2, title:"Chess Fundamentals", author:"Capablanca", desc:"The World Champion's essential guide covering endings, middle games, and openings.", content:"Capablanca's Chess Fundamentals, published in 1921, is lean and direct. Capablanca believed chess knowledge should be built from the endgame backward — understand the endings first, and the rest of the game makes more sense.\n\nThe book covers king and pawn endgames, rook endgames, basic tactical motifs, and key opening principles, all illustrated with Capablanca's own games.\n\nFor the improving player, Chess Fundamentals remains one of the most efficient paths to genuine chess understanding.", size:"1.8 MB", url:"" },
+    { id:2, title:"Chess Fundamentals", author:"Capablanca", desc:"The World Champion's essential guide covering endings, middle games, and openings.", content:"Capablanca's Chess Fundamentals, published in 1921, is lean and direct. Capablanca believed chess knowledge should be built from the endgame backward -- understand the endings first, and the rest of the game makes more sense.\n\nThe book covers king and pawn endgames, rook endgames, basic tactical motifs, and key opening principles, all illustrated with Capablanca's own games.\n\nFor the improving player, Chess Fundamentals remains one of the most efficient paths to genuine chess understanding.", size:"1.8 MB", url:"" },
   ],
 };
 
 let siteData = loadData() || JSON.parse(JSON.stringify(defaultData));
 
-// ════════════════════════════════
+// ============================================
 // CHESS ENGINE
-// ════════════════════════════════
-const GLYPHS = { wK:'♔',wQ:'♕',wR:'♖',wB:'♗',wN:'♘',wP:'♙',bK:'♚',bQ:'♛',bR:'♜',bB:'♝',bN:'♞',bP:'♟' };
+// ============================================
+const GLYPHS = { wK:'\u2654',wQ:'\u2655',wR:'\u2656',wB:'\u2657',wN:'\u2658',wP:'\u2659',bK:'\u265A',bQ:'\u265B',bR:'\u265C',bB:'\u265D',bN:'\u265E',bP:'\u265F' };
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
 function fenToBoard(fen) {
@@ -113,7 +112,7 @@ function getLegalMoves(board,r,c,color){
   const type=piece[1],enemy=color==='w'?'b':'w',moves=[];
   const slide=dirs=>{for(const[dr,dc]of dirs){let nr=r+dr,nc=c+dc;while(inBounds(nr,nc)){const t=board[nr][nc];if(!t){moves.push([nr,nc]);}else{if(t[0]===enemy)moves.push([nr,nc]);break;}nr+=dr;nc+=dc;}}};
   const step=dirs=>{for(const[dr,dc]of dirs){const nr=r+dr,nc=c+dc;if(inBounds(nr,nc)){const t=board[nr][nc];if(!t||t[0]===enemy)moves.push([nr,nc]);}}};
-  if(type==='P'){const dir=color==='w'?-1:1,sr=color==='w'?6:1;if(inBounds(r+dir,c)&&!board[r+dir][c]){moves.push([r+dir,c]);if(r===sr&&!board[r+2*dir][c])moves.push([r+2*dir,c]);}for(const dc of[-1,1]){if(inBounds(r+dir,c+dc)&&board[r+dir][c+dc]?.[0]===enemy)moves.push([r+dir,c+dc]);}}
+  if(type==='P'){const dir=color==='w'?-1:1,sr=color==='w'?6:1;if(inBounds(r+dir,c)&&!board[r+dir][c]){moves.push([r+dir,c]);if(r===sr&&!board[r+2*dir][c])moves.push([r+2*dir,c]);}for(const dc of[-1,1]){if(inBounds(r+dir,c+dc)&&board[r+dir][c+dc]&&board[r+dir][c+dc][0]===enemy)moves.push([r+dir,c+dc]);}}
   else if(type==='R')slide([[1,0],[-1,0],[0,1],[0,-1]]);
   else if(type==='B')slide([[1,1],[1,-1],[-1,1],[-1,-1]]);
   else if(type==='Q')slide([[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]);
@@ -122,7 +121,7 @@ function getLegalMoves(board,r,c,color){
   return moves;
 }
 
-// ── HOME BOARD ──
+// -- HOME BOARD --
 let homeBoard=fenToBoard(START_FEN),homeSel=null,homeMoves=[],homeTurn='w';
 function buildHomeBoard(){
   const el=document.getElementById('chessBoard'); if(!el)return;
@@ -136,7 +135,7 @@ function buildHomeBoard(){
     if(homeMoves.some(m=>m[0]===r&&m[1]===c))sq.classList.add('isq-legal');
     sq.addEventListener('click',()=>homeClick(r,c)); el.appendChild(sq);
   }
-  const ti=document.getElementById('turnIndicator'); if(ti)ti.textContent=homeTurn==='w'?'⬜ White to move':'⬛ Black to move';
+  const ti=document.getElementById('turnIndicator'); if(ti)ti.textContent=homeTurn==='w'?'\u2B1C White to move':'\u2B1B Black to move';
 }
 function homeClick(r,c){
   const piece=homeBoard[r][c];
@@ -146,7 +145,7 @@ function homeClick(r,c){
 }
 function resetBoard(){homeBoard=fenToBoard(START_FEN);homeSel=null;homeMoves=[];homeTurn='w';buildHomeBoard();}
 
-// ── GAME VIEWER ──
+// -- GAME VIEWER --
 function buildGameBoard(containerId,boardState){
   const el=document.getElementById(containerId); if(!el)return;
   el.innerHTML=''; el.className='chess-board-viewer';
@@ -165,69 +164,71 @@ function initGameViewer(gameId,pgn){
 }
 function updateGameNav(gameId){
   const vs=gameViewerStates[gameId]; if(!vs)return;
-  const el=document.getElementById('movenav-'+gameId); if(el)el.textContent=`Move ${vs.idx} / ${vs.states.length-1}`;
+  const el=document.getElementById('movenav-'+gameId); if(el)el.textContent='Move '+vs.idx+' / '+(vs.states.length-1);
   const prev=document.getElementById('prev-'+gameId); const next=document.getElementById('next-'+gameId);
   if(prev)prev.disabled=vs.idx===0; if(next)next.disabled=vs.idx===vs.states.length-1;
 }
 function gameStep(gameId,dir){const vs=gameViewerStates[gameId];if(!vs)return;vs.idx=Math.max(0,Math.min(vs.states.length-1,vs.idx+dir));buildGameBoard('board-'+gameId,vs.states[vs.idx]);updateGameNav(gameId);}
 function gameJump(gameId,pos){const vs=gameViewerStates[gameId];if(!vs)return;vs.idx=pos==='start'?0:vs.states.length-1;buildGameBoard('board-'+gameId,vs.states[vs.idx]);updateGameNav(gameId);}
 
-// ════════════════════════════════
+// ============================================
 // PAGE ROUTING
-// ════════════════════════════════
+// ============================================
 let currentPage='home';
 function goHome(){currentPage='home';document.getElementById('homePage').style.display='block';document.getElementById('detailPage').style.display='none';window.scrollTo(0,0);}
 function showDetailPage(html){currentPage='detail';document.getElementById('homePage').style.display='none';document.getElementById('detailPage').style.display='block';document.getElementById('detailContent').innerHTML=html;window.scrollTo(0,0);}
 function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
 
-// ── ARTICLE DETAIL ──
+// -- ARTICLE DETAIL --
 function openArticle(id){
   const a=siteData.articles.find(x=>x.id===id); if(!a)return;
-  const bodyHTML=(a.content||a.excerpt||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join('');
-  const heroImg=a.image?`<img class="article-detail-hero-img" src="${a.image}" alt="${a.title}"/>`:'';
-  showDetailPage(`
-    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
-    <div class="article-detail">
-      ${heroImg}
-      <div class="article-detail-tag">${a.tag||'General'}</div>
-      <h1 class="article-detail-title">${a.title}</h1>
-      <div class="article-detail-meta">${a.date||''} &nbsp;·&nbsp; ${a.readTime||''} read</div>
-      <div class="article-detail-body">${bodyHTML}</div>
-    </div>`);
+  const bodyHTML=(a.content||a.excerpt||'').split('\n').filter(p=>p.trim()).map(p=>'<p>'+p.trim()+'</p>').join('');
+  const heroImg=a.image?'<img class="article-detail-hero-img" src="'+a.image+'" alt="'+a.title+'"/>'  :'';
+  showDetailPage(
+    '<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div>'+
+    '<div class="article-detail">'+
+      heroImg+
+      '<div class="article-detail-tag">'+(a.tag||'General')+'</div>'+
+      '<h1 class="article-detail-title">'+a.title+'</h1>'+
+      '<div class="article-detail-meta">'+(a.date||'')+' &nbsp;&middot;&nbsp; '+(a.readTime||'')+' read</div>'+
+      '<div class="article-detail-body">'+bodyHTML+'</div>'+
+    '</div>'
+  );
 }
 
-// ── PLAYER DETAIL ──
+// -- PLAYER DETAIL --
 function openPlayer(id){
   const p=siteData.players.find(x=>x.id===id); if(!p)return;
   const avatarHTML=p.image
-    ?`<img class="player-detail-photo" src="${p.image}" alt="${p.name}"/>`
-    :`<div class="player-detail-avatar">${p.name[0]}</div>`;
-  const achievementsHTML=(p.achievements||[]).map(a=>`<tr><td>${a.title}</td><td>${a.year}</td></tr>`).join('')||'<tr><td colspan="2" style="color:var(--mid);font-size:.8rem;">No achievements listed.</td></tr>';
-  const bestGamesHTML=(p.bestGames||[]).map(g=>`<div class="bestgame-row"><h4>${g.title}</h4><p>${g.event} · ${g.year}</p></div>`).join('')||'<p style="color:var(--mid);font-size:.9rem;">No games listed.</p>';
-  const styleBadge=p.style?`<span class="style-badge">${p.style}</span>`:'';
-  showDetailPage(`
-    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
-    <div class="player-detail">
-      <div class="player-detail-hero">
-        ${avatarHTML}
-        <div>
-          <div class="player-detail-name">${p.title?`<span style="font-family:var(--mono);font-size:.9rem;opacity:.7;margin-right:.6rem;">${p.title}</span>`:''} ${p.name}</div>
-          <div class="player-detail-country">${(p.country||'').toUpperCase()}</div>
-          <div class="player-detail-rating-badge">Peak Rating: ${p.rating||'N/A'}</div>
-          ${styleBadge}
-        </div>
-      </div>
-      <div class="player-detail-tabs">
-        <button class="pd-tab active" onclick="switchPdTab(this,'bio')">Biography</button>
-        <button class="pd-tab" onclick="switchPdTab(this,'achievements')">Achievements</button>
-        <button class="pd-tab" onclick="switchPdTab(this,'career')">Career</button>
-        <button class="pd-tab" onclick="switchPdTab(this,'bestgames')">Best Games</button>
-      </div>
-      <div class="pd-panel active" id="pd-bio"><p>${p.bio||'No biography available.'}</p></div>
-      <div class="pd-panel" id="pd-achievements"><table class="achievement-table"><tbody>${achievementsHTML}</tbody></table></div>
-      <div class="pd-panel" id="pd-career"><p>${p.career||'No career summary available.'}</p></div>
-      <div class="pd-panel" id="pd-bestgames">${bestGamesHTML}</div>
-    </div>`);
+    ?'<img class="player-detail-photo" src="'+p.image+'" alt="'+p.name+'"/>'
+    :'<div class="player-detail-avatar">'+p.name[0]+'</div>';
+  const achievementsHTML=(p.achievements||[]).map(a=>'<tr><td>'+a.title+'</td><td>'+a.year+'</td></tr>').join('')||'<tr><td colspan="2" style="color:var(--mid);font-size:.8rem;">No achievements listed.</td></tr>';
+  const bestGamesHTML=(p.bestGames||[]).map(g=>'<div class="bestgame-row"><h4>'+g.title+'</h4><p>'+g.event+' &middot; '+g.year+'</p></div>').join('')||'<p style="color:var(--mid);font-size:.9rem;">No games listed.</p>';
+  const styleBadge=p.style?'<span class="style-badge">'+p.style+'</span>':'';
+  showDetailPage(
+    '<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div>'+
+    '<div class="player-detail">'+
+      '<div class="player-detail-hero">'+
+        avatarHTML+
+        '<div>'+
+          '<div class="player-detail-name">'+(p.title?'<span style="font-family:var(--mono);font-size:.9rem;opacity:.7;margin-right:.6rem;">'+p.title+'</span>':'')+' '+p.name+'</div>'+
+          '<div class="player-detail-country">'+((p.country||'').toUpperCase())+'</div>'+
+          '<div class="player-detail-rating-badge">Peak Rating: '+(p.rating||'N/A')+'</div>'+
+          styleBadge+
+        '</div>'+
+      '</div>'+
+      '<div class="player-detail-tabs">'+
+        '<button class="pd-tab active" onclick="switchPdTab(this,\'bio\')">Biography</button>'+
+        '<button class="pd-tab" onclick="switchPdTab(this,\'achievements\')">Achievements</button>'+
+        '<button class="pd-tab" onclick="switchPdTab(this,\'career\')">Career</button>'+
+        '<button class="pd-tab" onclick="switchPdTab(this,\'bestgames\')">Best Games</button>'+
+      '</div>'+
+      '<div class="pd-panel active" id="pd-bio"><p>'+(p.bio||'No biography available.')+'</p></div>'+
+      '<div class="pd-panel" id="pd-achievements"><table class="achievement-table"><tbody>'+achievementsHTML+'</tbody></table></div>'+
+      '<div class="pd-panel" id="pd-career"><p>'+(p.career||'No career summary available.')+'</p></div>'+
+      '<div class="pd-panel" id="pd-bestgames">'+bestGamesHTML+'</div>'+
+    '</div>'
+  );
 }
 function switchPdTab(btn,id){
   document.querySelectorAll('.pd-tab').forEach(t=>t.classList.remove('active'));
@@ -235,120 +236,102 @@ function switchPdTab(btn,id){
   btn.classList.add('active'); const panel=document.getElementById('pd-'+id); if(panel)panel.classList.add('active');
 }
 
-// ── GAME DETAIL ──
+// -- GAME DETAIL --
 function openGame(id){
   const g=siteData.games.find(x=>x.id===id); if(!g)return;
   const boardId='detail-board-'+g.id;
-  showDetailPage(`
-    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
-    <div class="game-detail">
-      <div class="game-detail-header">
-        <div class="game-detail-num">Game of the Century</div>
-        <h1 class="game-detail-title">${g.title}</h1>
-        <div class="game-detail-players">${g.white} (White) vs ${g.black} (Black) &nbsp;·&nbsp; ${g.event} ${g.year} &nbsp;·&nbsp; ${g.result}</div>
-      </div>
-      <div class="game-detail-body">
-        <div class="game-detail-left">
-          <p class="game-detail-desc">${g.desc||'A landmark game in chess history.'}</p>
-          ${g.pgn?`<div class="game-detail-pgn-label">PGN Notation</div><div class="game-detail-pgn-box"><pre>${g.pgn}</pre></div>`:''}
-        </div>
-        <div class="game-detail-right">
-          <div id="${boardId}" class="chess-board-viewer"></div>
-          <div class="gv-nav">
-            <button class="gv-btn" onclick="gameJump('d${g.id}','start')">|◀</button>
-            <button class="gv-btn" id="prev-d${g.id}" onclick="gameStep('d${g.id}',-1)">◀</button>
-            <span class="gv-movenav" id="movenav-d${g.id}">Move 0</span>
-            <button class="gv-btn" id="next-d${g.id}" onclick="gameStep('d${g.id}',1)">▶</button>
-            <button class="gv-btn" onclick="gameJump('d${g.id}','end')">▶|</button>
-          </div>
-        </div>
-      </div>
-    </div>`);
-  setTimeout(()=>{
+  showDetailPage(
+    '<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div>'+
+    '<div class="game-detail">'+
+      '<div class="game-detail-header">'+
+        '<div class="game-detail-num">Game of the Century</div>'+
+        '<h1 class="game-detail-title">'+g.title+'</h1>'+
+        '<div class="game-detail-players">'+g.white+' (White) vs '+g.black+' (Black) &nbsp;&middot;&nbsp; '+g.event+' '+g.year+' &nbsp;&middot;&nbsp; '+g.result+'</div>'+
+      '</div>'+
+      '<div class="game-detail-body">'+
+        '<div class="game-detail-left">'+
+          '<p class="game-detail-desc">'+(g.desc||'A landmark game in chess history.')+'</p>'+
+          (g.pgn?'<div class="game-detail-pgn-label">PGN Notation</div><div class="game-detail-pgn-box"><pre>'+g.pgn+'</pre></div>':'')+
+        '</div>'+
+        '<div class="game-detail-right">'+
+          '<div id="'+boardId+'" class="chess-board-viewer"></div>'+
+          '<div class="gv-nav">'+
+            '<button class="gv-btn" onclick="gameJump(\'d'+g.id+'\',\'start\')">\u007C\u25C0</button>'+
+            '<button class="gv-btn" id="prev-d'+g.id+'" onclick="gameStep(\'d'+g.id+'\',-1)">\u25C0</button>'+
+            '<span class="gv-movenav" id="movenav-d'+g.id+'">Move 0</span>'+
+            '<button class="gv-btn" id="next-d'+g.id+'" onclick="gameStep(\'d'+g.id+'\',1)">\u25B6</button>'+
+            '<button class="gv-btn" onclick="gameJump(\'d'+g.id+'\',\'end\')">\u25B6\u007C</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'
+  );
+  setTimeout(function(){
     const states=g.pgn?parsePGN(g.pgn):[fenToBoard(START_FEN)];
-    gameViewerStates['d'+g.id]={states,idx:0};
+    gameViewerStates['d'+g.id]={states:states,idx:0};
     buildGameBoard(boardId,states[0]); updateGameNav('d'+g.id);
   },50);
 }
 
-// ── PDF DETAIL ──
+// -- PDF DETAIL --
 function openPdf(id){
   const p=siteData.pdfs.find(x=>x.id===id); if(!p)return;
-  const contentHTML=(p.content||'').split('\n').filter(x=>x.trim()).map(x=>`<p>${x.trim()}</p>`).join('');
-
-  // Build download/view button
+  const contentHTML=(p.content||'').split('\n').filter(x=>x.trim()).map(x=>'<p>'+x.trim()+'</p>').join('');
   let downloadBtn='';
   if(p.fileData){
-    downloadBtn=`<a class="pdf-download-btn" href="${p.fileData}" download="${p.fileName||p.title+'.pdf'}">↓ Download PDF</a>`;
+    downloadBtn='<a class="pdf-download-btn" href="'+p.fileData+'" download="'+(p.fileName||p.title+'.pdf')+'">\u2193 Download PDF</a>';
   } else if(p.url){
-    downloadBtn=`<a class="pdf-download-btn" href="${p.url}" target="_blank">↓ Open PDF</a>`;
+    downloadBtn='<a class="pdf-download-btn" href="'+p.url+'" target="_blank">\u2193 Open PDF</a>';
   } else {
-    downloadBtn=`<button class="pdf-download-btn" onclick="showToast('No file attached to this PDF.')">↓ Download PDF</button>`;
+    downloadBtn='<button class="pdf-download-btn" onclick="showToast(\'No file attached to this PDF.\')">\u2193 Download PDF</button>';
   }
-
-  // Build viewer section
   let viewerHTML='';
   if(p.fileData){
-    viewerHTML=`
-      <div style="margin-top:2rem;">
-        <p style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.8rem;">Document Preview</p>
-        <iframe class="pdf-viewer-embed" src="${p.fileData}" title="${p.title}">
-          <div class="pdf-viewer-fallback">
-            <p>Your browser cannot display this PDF inline.</p>
-            <a class="pdf-download-btn" href="${p.fileData}" download="${p.fileName||p.title+'.pdf'}">↓ Download instead</a>
-          </div>
-        </iframe>
-      </div>`;
+    viewerHTML='<div style="margin-top:2rem;"><p style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.8rem;">Document Preview</p><iframe class="pdf-viewer-embed" src="'+p.fileData+'" title="'+p.title+'"><div class="pdf-viewer-fallback"><p>Your browser cannot display this PDF inline.</p><a class="pdf-download-btn" href="'+p.fileData+'" download="'+(p.fileName||p.title+'.pdf')+'">\u2193 Download instead</a></div></iframe></div>';
   } else if(p.url){
-    viewerHTML=`
-      <div style="margin-top:2rem;">
-        <p style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.8rem;">Document Preview</p>
-        <iframe class="pdf-viewer-embed" src="${p.url}" title="${p.title}">
-          <div class="pdf-viewer-fallback"><p>Cannot display PDF inline.</p><a class="pdf-download-btn" href="${p.url}" target="_blank">↓ Open in new tab</a></div>
-        </iframe>
-      </div>`;
+    viewerHTML='<div style="margin-top:2rem;"><p style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.8rem;">Document Preview</p><iframe class="pdf-viewer-embed" src="'+p.url+'" title="'+p.title+'"><div class="pdf-viewer-fallback"><p>Cannot display PDF inline.</p><a class="pdf-download-btn" href="'+p.url+'" target="_blank">\u2193 Open in new tab</a></div></iframe></div>';
   }
-
-  const coverImg=p.coverImage?`<img src="${p.coverImage}" alt="${p.title}" style="width:100%;max-height:280px;object-fit:cover;margin-bottom:2rem;border:1px solid var(--rule);">`:'';
-
-  showDetailPage(`
-    <div onclick="goHome()" class="detail-back">← Back to Journal</div>
-    <div class="pdf-detail">
-      ${coverImg}
-      <div class="pdf-detail-header">
-        <div class="pdf-detail-icon">PDF</div>
-        <div>
-          <h1 class="pdf-detail-title">${p.title}</h1>
-          <div class="pdf-detail-author">by ${p.author}</div>
-          ${p.size?`<div class="pdf-detail-size">${p.size}</div>`:''}
-          ${p.fileName?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);margin-top:.3rem;">File: ${p.fileName}</div>`:''}
-        </div>
-      </div>
-      ${p.desc?`<p class="pdf-detail-desc">${p.desc}</p>`:''}
-      ${downloadBtn}
-      ${viewerHTML}
-      ${contentHTML?`<div class="pdf-detail-content" style="margin-top:2.5rem;padding-top:2.5rem;border-top:1px solid var(--rule);">${contentHTML}</div>`:''}
-    </div>`);
+  const coverImg=p.coverImage?'<img src="'+p.coverImage+'" alt="'+p.title+'" style="width:100%;max-height:280px;object-fit:cover;margin-bottom:2rem;border:1px solid var(--rule);">':'';
+  showDetailPage(
+    '<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div>'+
+    '<div class="pdf-detail">'+
+      coverImg+
+      '<div class="pdf-detail-header">'+
+        '<div class="pdf-detail-icon">PDF</div>'+
+        '<div>'+
+          '<h1 class="pdf-detail-title">'+p.title+'</h1>'+
+          '<div class="pdf-detail-author">by '+p.author+'</div>'+
+          (p.size?'<div class="pdf-detail-size">'+p.size+'</div>':'')+
+          (p.fileName?'<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);margin-top:.3rem;">File: '+p.fileName+'</div>':'')+
+        '</div>'+
+      '</div>'+
+      (p.desc?'<p class="pdf-detail-desc">'+p.desc+'</p>':'')+
+      downloadBtn+
+      viewerHTML+
+      (contentHTML?'<div class="pdf-detail-content" style="margin-top:2.5rem;padding-top:2.5rem;border-top:1px solid var(--rule);">'+contentHTML+'</div>':'')+
+    '</div>'
+  );
 }
 
-// ════════════════════════════════
+// ============================================
 // RENDER SECTIONS
-// ════════════════════════════════
+// ============================================
 function renderArticles(){
   const grid=document.getElementById('articlesGrid'); if(!grid)return;
   const pub=siteData.articles.filter(a=>a.published!==false);
   if(!pub.length){grid.innerHTML='<p class="empty-msg">No articles yet. Add some from the admin panel.</p>';return;}
-  grid.innerHTML=pub.map(a=>`
-    <div class="article-card fade-in" onclick="openArticle(${a.id})">
-      ${a.image?`<img class="article-card-img" src="${a.image}" alt="${a.title}"/>`:''}
-      <div class="article-card-body">
-        <div class="article-tag">${a.tag||'General'}</div>
-        <div class="article-title">${a.title}</div>
-        <div class="article-excerpt">${a.excerpt}</div>
-        <div class="article-meta">${a.date||''} &nbsp;·&nbsp; ${a.readTime||''} read</div>
-        <div class="article-arrow">→</div>
-      </div>
-    </div>`).join('');
+  grid.innerHTML=pub.map(a=>
+    '<div class="article-card fade-in" onclick="openArticle('+a.id+')">'+
+      (a.image?'<img class="article-card-img" src="'+a.image+'" alt="'+a.title+'"/>'  :'')+
+      '<div class="article-card-body">'+
+        '<div class="article-tag">'+(a.tag||'General')+'</div>'+
+        '<div class="article-title">'+a.title+'</div>'+
+        '<div class="article-excerpt">'+a.excerpt+'</div>'+
+        '<div class="article-meta">'+(a.date||'')+' &nbsp;&middot;&nbsp; '+(a.readTime||'')+' read</div>'+
+        '<div class="article-arrow">\u2192</div>'+
+      '</div>'+
+    '</div>'
+  ).join('');
 }
 
 function renderPlayers(){
@@ -356,49 +339,50 @@ function renderPlayers(){
   if(!siteData.players.length){grid.innerHTML='<p class="empty-msg">No players yet.</p>';return;}
   grid.innerHTML=siteData.players.map(p=>{
     const avatarHTML=p.image
-      ?`<img class="player-avatar-photo" src="${p.image}" alt="${p.name}"/>`
-      :`<div class="player-avatar">${p.name[0]}</div>`;
-    return `<div class="player-card fade-in" onclick="openPlayer(${p.id})">
-      <div class="player-card-header">${avatarHTML}<div><div class="player-name">${p.title?`<span class="player-title-badge">${p.title}</span>`:''} ${p.name}</div><div class="player-country">${p.country||''}</div></div></div>
-      <div class="player-card-body">
-        <div class="player-rating">Peak Rating <strong>${p.rating||'N/A'}</strong></div>
-        ${p.style?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">${p.style}</div>`:''}
-        <div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">Click to view full profile →</div>
-      </div>
-    </div>`;
+      ?'<img class="player-avatar-photo" src="'+p.image+'" alt="'+p.name+'"/>'
+      :'<div class="player-avatar">'+p.name[0]+'</div>';
+    return '<div class="player-card fade-in" onclick="openPlayer('+p.id+')">'+
+      '<div class="player-card-header">'+avatarHTML+'<div><div class="player-name">'+(p.title?'<span class="player-title-badge">'+p.title+'</span>':'')+' '+p.name+'</div><div class="player-country">'+(p.country||'')+'</div></div></div>'+
+      '<div class="player-card-body">'+
+        '<div class="player-rating">Peak Rating <strong>'+(p.rating||'N/A')+'</strong></div>'+
+        (p.style?'<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">'+p.style+'</div>':'')+
+        '<div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">Click to view full profile \u2192</div>'+
+      '</div>'+
+    '</div>';
   }).join('');
 }
 
 function renderGames(){
   const list=document.getElementById('gamesList'); if(!list)return;
   if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}
-  list.innerHTML=siteData.games.map((g,i)=>`
-    <div class="game-entry fade-in">
-      <div class="game-row" onclick="toggleGameViewer('gv-${g.id}',${g.id})">
-        <div class="game-num">${String(i+1).padStart(2,'0')}</div>
-        <div>
-          <div class="game-title">${g.title}</div>
-          <div class="game-meta">${g.white||''} vs ${g.black||''} &nbsp;·&nbsp; ${g.event||''} &nbsp;·&nbsp; ${g.result||''}</div>
-        </div>
-        <div class="game-right"><div class="game-year">${g.year||''}</div><div class="game-expand-icon">▾</div></div>
-      </div>
-      <div class="game-viewer" id="gv-${g.id}" style="display:none;">
-        <div class="game-viewer-inner">
-          <div class="gv-board-wrap"><div id="board-${g.id}" class="chess-board-viewer"></div></div>
-          <div class="gv-controls">
-            <div class="gv-pgn">${g.pgn?'<pre>'+g.pgn+'</pre>':'<em>No PGN provided</em>'}</div>
-            <div class="gv-nav">
-              <button class="gv-btn" onclick="gameJump(${g.id},'start')">|◀</button>
-              <button class="gv-btn" id="prev-${g.id}" onclick="gameStep(${g.id},-1)">◀</button>
-              <span class="gv-movenav" id="movenav-${g.id}">Move 0</span>
-              <button class="gv-btn" id="next-${g.id}" onclick="gameStep(${g.id},1)">▶</button>
-              <button class="gv-btn" onclick="gameJump(${g.id},'end')">▶|</button>
-            </div>
-            <button class="gv-open-page" onclick="openGame(${g.id})">Open full game page →</button>
-          </div>
-        </div>
-      </div>
-    </div>`).join('');
+  list.innerHTML=siteData.games.map((g,i)=>
+    '<div class="game-entry fade-in">'+
+      '<div class="game-row" onclick="toggleGameViewer(\'gv-'+g.id+'\','+g.id+')">'+
+        '<div class="game-num">'+String(i+1).padStart(2,'0')+'</div>'+
+        '<div>'+
+          '<div class="game-title">'+g.title+'</div>'+
+          '<div class="game-meta">'+(g.white||'')+' vs '+(g.black||'')+' &nbsp;&middot;&nbsp; '+(g.event||'')+' &nbsp;&middot;&nbsp; '+(g.result||'')+'</div>'+
+        '</div>'+
+        '<div class="game-right"><div class="game-year">'+(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div>'+
+      '</div>'+
+      '<div class="game-viewer" id="gv-'+g.id+'" style="display:none;">'+
+        '<div class="game-viewer-inner">'+
+          '<div class="gv-board-wrap"><div id="board-'+g.id+'" class="chess-board-viewer"></div></div>'+
+          '<div class="gv-controls">'+
+            '<div class="gv-pgn">'+(g.pgn?'<pre>'+g.pgn+'</pre>':'<em>No PGN provided</em>')+'</div>'+
+            '<div class="gv-nav">'+
+              '<button class="gv-btn" onclick="gameJump('+g.id+',\'start\')">\u007C\u25C0</button>'+
+              '<button class="gv-btn" id="prev-'+g.id+'" onclick="gameStep('+g.id+',-1)">\u25C0</button>'+
+              '<span class="gv-movenav" id="movenav-'+g.id+'">Move 0</span>'+
+              '<button class="gv-btn" id="next-'+g.id+'" onclick="gameStep('+g.id+',1)">\u25B6</button>'+
+              '<button class="gv-btn" onclick="gameJump('+g.id+',\'end\')">\u25B6\u007C</button>'+
+            '</div>'+
+            '<button class="gv-open-page" onclick="openGame('+g.id+')">Open full game page \u2192</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'
+  ).join('');
 }
 
 function toggleGameViewer(id,gameId){
@@ -414,62 +398,60 @@ function renderPDFs(){
     const hasCover=p.coverImage;
     const hasFile=p.fileData||p.url;
     const fileBadge=p.fileData?'<span style="font-family:var(--mono);font-size:.55rem;letter-spacing:.08em;padding:.2rem .5rem;background:#d4edda;color:#155724;border:1px solid #28a745;">FILE ATTACHED</span>':'';
-    return `<div class="pdf-card fade-in" onclick="openPdf(${p.id})">
-      ${hasCover?`<img class="pdf-card-cover" src="${p.coverImage}" alt="${p.title}"/>`:''}
-      <div class="pdf-icon">PDF</div>
-      <div class="pdf-title">${p.title} ${fileBadge}</div>
-      <div class="pdf-desc">${p.desc||''}<br><br><em style="font-size:.78rem;">— ${p.author}</em></div>
-      <div class="pdf-size">${hasFile?'↓ View / Download':'↓ View'} &nbsp;·&nbsp; ${p.size||''}</div>
-    </div>`;
+    return '<div class="pdf-card fade-in" onclick="openPdf('+p.id+')">'+
+      (hasCover?'<img class="pdf-card-cover" src="'+p.coverImage+'" alt="'+p.title+'"/>':'')+
+      '<div class="pdf-icon">PDF</div>'+
+      '<div class="pdf-title">'+p.title+' '+fileBadge+'</div>'+
+      '<div class="pdf-desc">'+(p.desc||'')+'<br><br><em style="font-size:.78rem;">\u2014 '+p.author+'</em></div>'+
+      '<div class="pdf-size">'+(hasFile?'\u2193 View / Download':'\u2193 View')+' &nbsp;&middot;&nbsp; '+(p.size||'')+'</div>'+
+    '</div>';
   }).join('');
 }
 
 function renderAll(){renderArticles();renderPlayers();renderGames();renderPDFs();setTimeout(initFadeIn,80);}
 
-// ════════════════════════════════
+// ============================================
 // IMAGE UPLOAD
-// ════════════════════════════════
+// ============================================
 function handleImgUpload(inputId, previewId, dataId) {
   const input = document.getElementById(inputId);
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { showToast('Image too large — max 2MB.'); input.value=''; return; }
+  if (file.size > 2 * 1024 * 1024) { showToast('Image too large -- max 2MB.'); input.value=''; return; }
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = function(e) {
     const data = e.target.result;
     document.getElementById(dataId).value = data;
     const preview = document.getElementById(previewId);
     const img = document.getElementById(previewId + '-img');
     if (img) img.src = data;
     preview.style.display = 'flex';
-    // hide dropzone
     const drop = document.getElementById(inputId.replace('-input','-drop'));
     if (drop) drop.style.display = 'none';
-    showToast('Image loaded ✓');
+    showToast('Image loaded \u2713');
   };
   reader.readAsDataURL(file);
 }
 
-// ── PDF FILE UPLOAD ──
+// -- PDF FILE UPLOAD --
 function handlePdfUpload() {
   const input = document.getElementById('d-pdf-input');
   const file = input.files[0];
   if (!file) return;
   if (file.type !== 'application/pdf') { showToast('Please select a PDF file.'); input.value = ''; return; }
-  if (file.size > 5 * 1024 * 1024) { showToast('PDF too large — max 5MB.'); input.value = ''; return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('PDF too large -- max 5MB.'); input.value = ''; return; }
   const sizeMB = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = function(e) {
     document.getElementById('d-file-data').value = e.target.result;
     document.getElementById('d-file-name').value = file.name;
     document.getElementById('d-pdf-preview-name').textContent = file.name;
     document.getElementById('d-pdf-preview-size').textContent = sizeMB;
     document.getElementById('d-pdf-preview').style.display = 'flex';
     document.getElementById('d-pdf-drop').style.display = 'none';
-    // size is computed automatically from fileData on save
-    showToast('PDF loaded ✓ — ' + sizeMB);
+    showToast('PDF loaded \u2713 -- ' + sizeMB);
   };
-  reader.onerror = () => showToast('Failed to read file.');
+  reader.onerror = function() { showToast('Failed to read file.'); };
   reader.readAsDataURL(file);
 }
 
@@ -494,9 +476,9 @@ function clearImgField(previewId, dataId, dropId, inputId) {
   if (inp) inp.value = '';
 }
 
-// ════════════════════════════════
+// ============================================
 // ADMIN PANEL
-// ════════════════════════════════
+// ============================================
 const ADMIN_PW='chess2026';
 let adminUnlocked=false, adminOpen=false;
 
@@ -504,7 +486,7 @@ function toggleAdmin(){
   if(!adminUnlocked){
     document.getElementById('adminLoginOverlay').classList.add('open');
     document.getElementById('adminPwError').classList.remove('visible');
-    setTimeout(()=>document.getElementById('adminPwInput').focus(),150);
+    setTimeout(function(){document.getElementById('adminPwInput').focus();},150);
     return;
   }
   if(adminOpen)closeAdminPanel(); else openAdminPanel();
@@ -512,14 +494,14 @@ function toggleAdmin(){
 function openAdminPanel(){
   adminOpen=true;
   document.getElementById('adminPanel').classList.add('open');
-  document.getElementById('adminToggleBtn').textContent='✕ Close Admin';
+  document.getElementById('adminToggleBtn').textContent='\u2715 Close Admin';
   showAdminTab('articles'); renderAdminLists();
   syncDarkSelects();
 }
 function closeAdminPanel(){
   adminOpen=false;
   document.getElementById('adminPanel').classList.remove('open');
-  document.getElementById('adminToggleBtn').textContent='⚙ Admin';
+  document.getElementById('adminToggleBtn').textContent='\u2699 Admin';
 }
 function submitAdminLogin(){
   const pw=document.getElementById('adminPwInput').value;
@@ -533,24 +515,23 @@ function showAdminTab(tab){
   const sec=document.getElementById('admin-'+tab); if(sec)sec.classList.add('active');
 }
 
-// ── RENDER ADMIN LISTS ──
+// -- RENDER ADMIN LISTS --
 function renderAdminLists(){
-  // Articles — split published / drafts
   const pubA=siteData.articles.filter(a=>a.published!==false);
   const draftA=siteData.articles.filter(a=>a.published===false);
   const al=document.getElementById('adminArticleList');
-  if(al)al.innerHTML=pubA.map(a=>{const i=siteData.articles.indexOf(a);return`<div class="admin-item"><span>${a.title}</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editArticle(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('articles',${i})">✕</button></div></div>`;}).join('')||'<p class="admin-empty">None yet.</p>';
+  if(al)al.innerHTML=pubA.map(a=>{const i=siteData.articles.indexOf(a);return'<div class="admin-item"><span>'+a.title+'</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editArticle('+i+')">Edit</button><button class="admin-del-btn" onclick="deleteItem(\'articles\','+i+')">\u2715</button></div></div>';}).join('')||'<p class="admin-empty">None yet.</p>';
   const dal=document.getElementById('adminArticleDraftList');
-  if(dal)dal.innerHTML=draftA.map(a=>{const i=siteData.articles.indexOf(a);return`<div class="admin-item"><span>${a.title} <span class="draft-badge">Draft</span></span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editArticle(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('articles',${i})">✕</button></div></div>`;}).join('')||'<p class="admin-empty">No drafts.</p>';
+  if(dal)dal.innerHTML=draftA.map(a=>{const i=siteData.articles.indexOf(a);return'<div class="admin-item"><span>'+a.title+' <span class="draft-badge">Draft</span></span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editArticle('+i+')">Edit</button><button class="admin-del-btn" onclick="deleteItem(\'articles\','+i+')">\u2715</button></div></div>';}).join('')||'<p class="admin-empty">No drafts.</p>';
 
   const pl=document.getElementById('adminPlayerList');
-  if(pl)pl.innerHTML=siteData.players.map((p,i)=>`<div class="admin-item"><span>${p.title?p.title+' ':''} ${p.name} ${p.country?'— '+p.country:''}</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editPlayer(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('players',${i})">✕</button></div></div>`).join('')||'<p class="admin-empty">No players yet.</p>';
+  if(pl)pl.innerHTML=siteData.players.map((p,i)=>'<div class="admin-item"><span>'+(p.title?p.title+' ':'')+p.name+(p.country?' -- '+p.country:'')+'</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editPlayer('+i+')">Edit</button><button class="admin-del-btn" onclick="deleteItem(\'players\','+i+')">\u2715</button></div></div>').join('')||'<p class="admin-empty">No players yet.</p>';
 
   const gl=document.getElementById('adminGameList');
-  if(gl)gl.innerHTML=siteData.games.map((g,i)=>`<div class="admin-item"><span>${g.title} — ${g.white} vs ${g.black} (${g.year})</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editGame(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('games',${i})">✕</button></div></div>`).join('')||'<p class="admin-empty">No games yet.</p>';
+  if(gl)gl.innerHTML=siteData.games.map((g,i)=>'<div class="admin-item"><span>'+g.title+' -- '+g.white+' vs '+g.black+' ('+g.year+')</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editGame('+i+')">Edit</button><button class="admin-del-btn" onclick="deleteItem(\'games\','+i+')">\u2715</button></div></div>').join('')||'<p class="admin-empty">No games yet.</p>';
 
   const dl=document.getElementById('adminPdfList');
-  if(dl)dl.innerHTML=siteData.pdfs.map((p,i)=>`<div class="admin-item"><span>${p.title} — ${p.author}</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editPdf(${i})">Edit</button><button class="admin-del-btn" onclick="deleteItem('pdfs',${i})">✕</button></div></div>`).join('')||'<p class="admin-empty">No PDFs yet.</p>';
+  if(dl)dl.innerHTML=siteData.pdfs.map((p,i)=>'<div class="admin-item"><span>'+p.title+' -- '+p.author+'</span><div class="admin-item-actions"><button class="admin-edit-btn" onclick="editPdf('+i+')">Edit</button><button class="admin-del-btn" onclick="deleteItem(\'pdfs\','+i+')">\u2715</button></div></div>').join('')||'<p class="admin-empty">No PDFs yet.</p>';
 }
 
 function deleteItem(type,idx){
@@ -558,7 +539,7 @@ function deleteItem(type,idx){
   siteData[type].splice(idx,1); saveData(siteData); renderAdminLists(); renderAll(); showToast('Item deleted.');
 }
 
-// ── ADD / SAVE ARTICLE ──
+// -- ADD / SAVE ARTICLE --
 function addArticle(){
   const editId=v('a-edit-id');
   const tag=v('a-tag'),title=v('a-title'),content=v('a-content'),excerpt=v('a-excerpt'),date=v('a-date'),rt=v('a-readtime');
@@ -566,8 +547,7 @@ function addArticle(){
   const image=document.getElementById('a-img-data').value||'';
   if(!title){showToast('Title is required.');return;}
   if(!content&&!excerpt){showToast('Add content or an excerpt.');return;}
-  const newExcerpt=excerpt||content.slice(0,160)+(content.length>160?'…':'');
-
+  const newExcerpt=excerpt||content.slice(0,160)+(content.length>160?'\u2026':'');
   if(editId){
     const idx=siteData.articles.findIndex(a=>String(a.id)===editId);
     if(idx>-1){
@@ -601,7 +581,7 @@ function editArticle(idx){
     const drop=document.getElementById('a-img-drop'); if(drop)drop.style.display='none';
   }
   document.getElementById('article-form-heading').textContent='Edit Article';
-  document.getElementById('a-submit-label').textContent='Save Changes →';
+  document.getElementById('a-submit-label').textContent='Save Changes \u2192';
   document.getElementById('article-cancel-edit').style.display='inline-block';
   document.querySelector('#admin-articles .admin-form').classList.add('editing');
   document.getElementById('admin-articles').scrollIntoView({behavior:'smooth',block:'start'});
@@ -610,25 +590,26 @@ function editArticle(idx){
 function previewArticle(){
   const title=v('a-title'); const content=v('a-content'); const excerpt=v('a-excerpt'); const tag=v('a-tag'); const date=v('a-date'); const rt=v('a-readtime'); const image=document.getElementById('a-img-data').value;
   if(!title&&!content){showToast('Add a title or content to preview.');return;}
-  const bodyHTML=(content||excerpt||'').split('\n').filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join('');
-  const heroImg=image?`<img class="article-detail-hero-img" src="${image}" alt="${title}"/>`:'';
-  showDetailPage(`
-    <div onclick="goHome(); setTimeout(()=>openAdminPanel(),100)" class="detail-back">← Back to Editor</div>
-    <div class="article-detail">
-      ${heroImg}
-      <div class="article-detail-tag">${tag||'General'} &nbsp;<span style="background:#fff3cd;color:#856404;padding:.2rem .5rem;font-size:.6rem;">PREVIEW</span></div>
-      <h1 class="article-detail-title">${title||'Untitled'}</h1>
-      <div class="article-detail-meta">${date||nowDate()} &nbsp;·&nbsp; ${rt||'5 min'} read</div>
-      <div class="article-detail-body">${bodyHTML||'<p style="color:var(--mid);">[No content yet]</p>'}</div>
-    </div>`);
+  const bodyHTML=(content||excerpt||'').split('\n').filter(p=>p.trim()).map(p=>'<p>'+p.trim()+'</p>').join('');
+  const heroImg=image?'<img class="article-detail-hero-img" src="'+image+'" alt="'+title+'"/>':'';
+  showDetailPage(
+    '<div onclick="goHome(); setTimeout(function(){openAdminPanel();},100)" class="detail-back">\u2190 Back to Editor</div>'+
+    '<div class="article-detail">'+
+      heroImg+
+      '<div class="article-detail-tag">'+(tag||'General')+' &nbsp;<span style="background:#fff3cd;color:#856404;padding:.2rem .5rem;font-size:.6rem;">PREVIEW</span></div>'+
+      '<h1 class="article-detail-title">'+(title||'Untitled')+'</h1>'+
+      '<div class="article-detail-meta">'+(date||nowDate())+' &nbsp;&middot;&nbsp; '+(rt||'5 min')+' read</div>'+
+      '<div class="article-detail-body">'+(bodyHTML||'<p style="color:var(--mid);">[No content yet]</p>')+'</div>'+
+    '</div>'
+  );
 }
 
-// ── ADD / SAVE PLAYER ──
+// -- ADD / SAVE PLAYER --
 function addPlayer(){
   const editId=v('p-edit-id');
-  const title=document.getElementById('p-title')?.value||'';
+  const title=document.getElementById('p-title')&&document.getElementById('p-title').value||'';
   const name=v('p-name'),country=v('p-country'),rating=v('p-rating'),bio=v('p-bio'),career=v('p-career');
-  const style=document.getElementById('p-style')?.value||'';
+  const style=document.getElementById('p-style')&&document.getElementById('p-style').value||'';
   const image=document.getElementById('p-img-data').value||'';
   if(!name||!bio){showToast('Name and bio are required.');return;}
   const achievements=v('p-achievements').split('\n').filter(l=>l.trim()).map(l=>{const parts=l.split('|');return{title:(parts[0]||'').trim(),year:(parts[1]||'').trim()};});
@@ -663,18 +644,18 @@ function editPlayer(idx){
     const drop=document.getElementById('p-img-drop'); if(drop)drop.style.display='none';
   }
   document.getElementById('player-form-heading').textContent='Edit Player';
-  document.getElementById('p-submit-label').textContent='Save Changes →';
+  document.getElementById('p-submit-label').textContent='Save Changes \u2192';
   document.getElementById('player-cancel-edit').style.display='inline-block';
   document.querySelector('#admin-players .admin-form').classList.add('editing');
   document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ── ADD / SAVE GAME ──
+// -- ADD / SAVE GAME --
 function addGame(){
   const editId=v('g-edit-id');
   const title=v('g-title');
-  const whiteTitle=document.getElementById('g-white-title')?.value||'';
-  const blackTitle=document.getElementById('g-black-title')?.value||'';
+  const whiteTitle=document.getElementById('g-white-title')&&document.getElementById('g-white-title').value||'';
+  const blackTitle=document.getElementById('g-black-title')&&document.getElementById('g-black-title').value||'';
   const whiteName=v('g-white'), blackName=v('g-black');
   const white = whiteTitle ? whiteTitle+' '+whiteName : whiteName;
   const black = blackTitle ? blackTitle+' '+blackName : blackName;
@@ -705,20 +686,19 @@ function editGame(idx){
   document.getElementById('g-desc').value=g.desc||'';
   document.getElementById('g-pgn').value=g.pgn||'';
   document.getElementById('game-form-heading').textContent='Edit Game';
-  document.getElementById('g-submit-label').textContent='Save Changes →';
+  document.getElementById('g-submit-label').textContent='Save Changes \u2192';
   document.getElementById('game-cancel-edit').style.display='inline-block';
   document.querySelector('#admin-games .admin-form').classList.add('editing');
   document.getElementById('admin-games').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ── ADD / SAVE PDF ──
+// -- ADD / SAVE PDF --
 function addPdf(){
   const editId=v('d-edit-id');
   const title=v('d-title'),author=v('d-author'),desc=v('d-desc'),content=v('d-content'),url=v('d-url');
   const fileData=document.getElementById('d-file-data').value||'';
   const fileName=document.getElementById('d-file-name').value||'';
   const coverImage=document.getElementById('d-img-data').value||'';
-  // auto-compute size from base64 if uploaded
   let size='';
   if(fileData){const bytes=Math.round((fileData.length*(3/4))/1024);size=bytes>1024?(bytes/1024).toFixed(1)+' MB':bytes+' KB';}
   if(!title||!author){showToast('Title and author are required.');return;}
@@ -751,7 +731,6 @@ function editPdf(idx){
   document.getElementById('d-desc').value=p.desc||'';
   document.getElementById('d-content').value=p.content||'';
   document.getElementById('d-url').value=p.url||'';
-  // Restore uploaded PDF if present
   if(p.fileData){
     document.getElementById('d-file-data').value=p.fileData;
     document.getElementById('d-file-name').value=p.fileName||p.title+'.pdf';
@@ -760,7 +739,6 @@ function editPdf(idx){
     document.getElementById('d-pdf-preview').style.display='flex';
     document.getElementById('d-pdf-drop').style.display='none';
   }
-  // Restore cover image if present
   if(p.coverImage){
     document.getElementById('d-img-data').value=p.coverImage;
     const prev=document.getElementById('d-img-preview'); const img=document.getElementById('d-img-preview-img');
@@ -768,35 +746,31 @@ function editPdf(idx){
     const drop=document.getElementById('d-img-drop'); if(drop)drop.style.display='none';
   }
   document.getElementById('pdf-form-heading').textContent='Edit PDF';
-  document.getElementById('d-submit-label').textContent='Save Changes →';
+  document.getElementById('d-submit-label').textContent='Save Changes \u2192';
   document.getElementById('pdf-cancel-edit').style.display='inline-block';
   document.querySelector('#admin-pdfs .admin-form').classList.add('editing');
   document.getElementById('admin-pdfs').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ── CANCEL EDIT ──
+// -- CANCEL EDIT --
 function cancelEdit(type){
   const map={article:'articles',player:'players',game:'games',pdf:'pdfs'};
   const formMap={article:'a',player:'p',game:'g',pdf:'d'};
   const p=formMap[type];
-  // Clear hidden ID
   const editId=document.getElementById(p+'-edit-id'); if(editId)editId.value='';
-  // Reset heading & button
   const headings={article:'Add Article',player:'Add Player Profile',game:'Add Game of the Century',pdf:'Add PDF to Library'};
   const hEl=document.getElementById(type+'-form-heading'); if(hEl)hEl.textContent=headings[type];
-  const submitLabels={article:'Add Article →',player:'Add Player →',game:'Add Game →',pdf:'Add PDF →'};
-  const sEl=document.getElementById(p+'-submit-label'); if(sEl)sEl.textContent=submitLabels[type]||'Submit →';
+  const submitLabels={article:'Add Article \u2192',player:'Add Player \u2192',game:'Add Game \u2192',pdf:'Add PDF \u2192'};
+  const sEl=document.getElementById(p+'-submit-label'); if(sEl)sEl.textContent=submitLabels[type]||'Submit \u2192';
   const cancelBtn=document.getElementById(type+'-cancel-edit'); if(cancelBtn)cancelBtn.style.display='none';
-  document.querySelector('#admin-'+map[type]+' .admin-form')?.classList.remove('editing');
-  // Clear all inputs
+  document.querySelector('#admin-'+map[type]+' .admin-form')&&document.querySelector('#admin-'+map[type]+' .admin-form').classList.remove('editing');
   const section=document.getElementById('admin-'+map[type]);
   if(section){
-    section.querySelectorAll('input:not([type=hidden]):not([type=checkbox]):not([type=file])').forEach(el=>el.value='');
-    section.querySelectorAll('textarea').forEach(el=>el.value='');
-    section.querySelectorAll('select').forEach(el=>el.selectedIndex=0);
-    section.querySelectorAll('input[type=checkbox]').forEach(el=>{if(el.id.endsWith('-published'))el.checked=true;});
+    section.querySelectorAll('input:not([type=hidden]):not([type=checkbox]):not([type=file])').forEach(function(el){el.value='';});
+    section.querySelectorAll('textarea').forEach(function(el){el.value='';});
+    section.querySelectorAll('select').forEach(function(el){el.selectedIndex=0;});
+    section.querySelectorAll('input[type=checkbox]').forEach(function(el){if(el.id.endsWith('-published'))el.checked=true;});
   }
-  // Clear image previews
   if(type==='article'){clearImgField('a-img-preview','a-img-data','a-img-drop','a-img-input');}
   if(type==='player'){clearImgField('p-img-preview','p-img-data','p-img-drop','p-img-input');}
   if(type==='pdf'){
@@ -810,37 +784,38 @@ function resetToDefault(){
   siteData=JSON.parse(JSON.stringify(defaultData)); saveData(siteData); renderAdminLists(); renderAll(); showToast('Content reset to defaults.');
 }
 
-// ── TOGGLE LABEL ──
-document.addEventListener('change',e=>{
+// -- TOGGLE LABEL --
+document.addEventListener('change',function(e){
   if(e.target.id==='a-published'){
     const lbl=document.getElementById('a-published-label');
     if(lbl)lbl.textContent=e.target.checked?'Published':'Draft';
   }
 });
 
-// ── UTILITIES ──
-function v(id){return(document.getElementById(id)?.value||'').trim();}
+// -- UTILITIES --
+function v(id){return(document.getElementById(id)&&document.getElementById(id).value||'').trim();}
 function nowDate(){return new Date().toLocaleDateString('en-GB',{month:'short',year:'numeric'});}
-function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2800);}
 
 function initFadeIn(){
-  const obs=new IntersectionObserver(entries=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}});},{threshold:0.1});
-  document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+  const obs=new IntersectionObserver(function(entries){entries.forEach(function(e,i){if(e.isIntersecting){setTimeout(function(){e.target.classList.add('visible');},i*80);obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll('.fade-in').forEach(function(el){obs.observe(el);});
 }
 function initScrollSpy(){
   const sections=['articles','players','games','library'];
   const links=document.querySelectorAll('.nav-links a');
-  window.addEventListener('scroll',()=>{
+  window.addEventListener('scroll',function(){
     if(currentPage!=='home')return;
     let cur='';
-    sections.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-120)cur=id;});
-    links.forEach((l,i)=>l.classList.toggle('active',sections[i]===cur));
+    sections.forEach(function(id){const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-120)cur=id;});
+    links.forEach(function(l,i){l.classList.toggle('active',sections[i]===cur);});
   });
 }
 
-window.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('DOMContentLoaded',function(){
   applyStoredTheme();
   syncDarkSelects();
   renderAll(); buildHomeBoard(); initScrollSpy(); setTimeout(initFadeIn,120);
-  document.getElementById('adminPwInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitAdminLogin();});
+  const pwInput=document.getElementById('adminPwInput');
+  if(pwInput)pwInput.addEventListener('keydown',function(e){if(e.key==='Enter')submitAdminLogin();});
 });
