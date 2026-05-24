@@ -1,11 +1,49 @@
 // ===================================================
-// 64 SQUARES -- script.js  (v4 -- full admin)
+// 64 SQUARES -- script.js  (v6 -- Supabase edition)
 // ===================================================
-const SUPABASE_URL = 'https://amhotjblrmctyisrpuub.supabase.co';
 
-const SUPABASE_KEY =
-  'sb_publishable_Mr7Q-_rHblJ8qczzYZnkQw_X7Rkdsq3';
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ============================================
+// SUPABASE CONFIG  — direct REST API (no SDK needed)
+// ============================================
+const SUPABASE_REST = 'https://amhotjblrmctyisrpuub.supabase.co/rest/v1';
+const SUPABASE_KEY  = 'sb_publishable_Mr7Q-_rHblJ8qczzYZnkQw_X7Rkdsq3';
+
+// Base headers sent with every request
+const SB_HEADERS = {
+  'Content-Type':  'application/json',
+  'apikey':        SUPABASE_KEY,
+  'Authorization': 'Bearer ' + SUPABASE_KEY,
+  'Prefer':        'return=representation',
+};
+
+// ---- tiny REST helpers ----
+async function sbSelect(table, order) {
+  const url = SUPABASE_REST + '/' + table + '?order=' + (order || 'created_at.asc') + '&select=*';
+  const res = await fetch(url, { headers: SB_HEADERS });
+  if (!res.ok) { const t = await res.text(); console.error('[sb] GET ' + table + ':', res.status, t); return []; }
+  return res.json();
+}
+
+async function sbUpsert(table, row) {
+  // Remove undefined values so PostgREST doesn't choke
+  const clean = Object.fromEntries(Object.entries(row).filter(([,v]) => v !== undefined && v !== null || typeof v === 'boolean'));
+  const res = await fetch(SUPABASE_REST + '/' + table, {
+    method:  'POST',
+    headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+    body:    JSON.stringify(clean),
+  });
+  if (!res.ok) { const t = await res.text(); console.error('[sb] UPSERT ' + table + ':', res.status, t); return false; }
+  return true;
+}
+
+async function sbDelete(table, id) {
+  const res = await fetch(SUPABASE_REST + '/' + table + '?id=eq.' + id, {
+    method:  'DELETE',
+    headers: SB_HEADERS,
+  });
+  if (!res.ok) { const t = await res.text(); console.error('[sb] DELETE ' + table + ':', res.status, t); return false; }
+  return true;
+}
 
 const THEME_KEY = 'chess64_theme';
 const VIEWS_KEY = 'chess64_views';
@@ -75,40 +113,44 @@ const defaultData = {
 };
 
 // ============================================
-// SUPABASE DATA LAYER
+// SUPABASE DATA LAYER  (pure fetch — no SDK)
 // ============================================
 async function loadData() {
-  const [articles, players, games, pdfs] = await Promise.all([
-    db.from('articles').select('*').order('created_at', { ascending: false }),
-    db.from('players').select('*').order('created_at', { ascending: true }),
-    db.from('games').select('*').order('created_at', { ascending: true }),
-    db.from('pdfs').select('*').order('created_at', { ascending: true }),
-  ]);
-  return {
-    articles: articles.data || [],
-    players:  players.data  || [],
-    games:    games.data    || [],
-    pdfs:     pdfs.data     || [],
-  };
+  try {
+    const [articles, players, games, pdfs] = await Promise.all([
+      sbSelect('articles', 'created_at.desc'),
+      sbSelect('players',  'created_at.asc'),
+      sbSelect('games',    'created_at.asc'),
+      sbSelect('pdfs',     'created_at.asc'),
+    ]);
+    console.log('[64sq] loaded', articles.length, 'articles,', players.length,
+      'players,', games.length, 'games,', pdfs.length, 'pdfs');
+    return { articles, players, games, pdfs };
+  } catch (err) {
+    console.error('[64sq] loadData crashed:', err);
+    return { articles: [], players: [], games: [], pdfs: [] };
+  }
 }
 
 async function upsertItem(table, item) {
-  const { error } = await db.from(table).upsert(item);
-  if (error) { showToast('Save failed: ' + error.message); return false; }
-  return true;
+  const ok = await sbUpsert(table, item);
+  if (!ok) showToast('Save failed — check console.');
+  return ok;
 }
 
 async function deleteItemById(table, id) {
-  const { error } = await db.from(table).delete().eq('id', id);
-  if (error) { showToast('Delete failed: ' + error.message); return false; }
-  return true;
+  const ok = await sbDelete(table, id);
+  if (!ok) showToast('Delete failed — check console.');
+  return ok;
 }
 
 async function seedDefaultData() {
-  for (const a of defaultData.articles) await upsertItem('articles', a);
-  for (const p of defaultData.players)  await upsertItem('players',  p);
-  for (const g of defaultData.games)    await upsertItem('games',    g);
-  for (const d of defaultData.pdfs)     await upsertItem('pdfs',     d);
+  console.log('[64sq] Seeding default data...');
+  for (const a of defaultData.articles) await sbUpsert('articles', a);
+  for (const p of defaultData.players)  await sbUpsert('players',  p);
+  for (const g of defaultData.games)    await sbUpsert('games',    g);
+  for (const d of defaultData.pdfs)     await sbUpsert('pdfs',     d);
+  console.log('[64sq] Seed complete.');
 }
 
 // ============================================
@@ -1137,20 +1179,31 @@ window.addEventListener('DOMContentLoaded', async function () {
   applyStoredTheme();
   syncDarkSelects();
 
-  // Show loading state
+  // Render board immediately so the hero isn't empty while DB loads
+  buildHomeBoard();
+
+  // Verify the Supabase client was created properly
+  if (!db) {
+    console.error('[supabase] client is undefined — check CDN script order');
+    showToast('Database not connected. Check console.');
+    return;
+  }
+
   showToast('Loading content\u2026');
 
   siteData = await loadData();
+  console.log('[64squares] loaded:', siteData.articles.length, 'articles,',
+    siteData.players.length, 'players,', siteData.games.length, 'games,', siteData.pdfs.length, 'pdfs');
 
-  // Seed default data if DB is empty
+  // Auto-seed defaults only when DB is completely empty
   if (!siteData.articles.length && !siteData.players.length && !siteData.games.length) {
-    showToast('Setting up default content\u2026');
+    showToast('First run — loading default content\u2026');
     await seedDefaultData();
     siteData = await loadData();
   }
 
   renderAll();
-  buildHomeBoard();
+  buildHomeBoard();   // rebuild now that player names are loaded
   buildLatestStrip();
   initScrollSpy();
   setTimeout(initFadeIn, 120);
