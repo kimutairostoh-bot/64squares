@@ -355,3 +355,171 @@ footer { border-top:1px solid var(--rule); padding:3rem; display:flex; justify-c
 .pdf-viewer-embed { width:100%; height:600px; border:1px solid var(--rule); background:#f5f5f5; display:block; margin-top:1.5rem; }
 .pdf-viewer-fallback { background:#f0ece6; padding:2rem; text-align:center; margin-top:1.5rem; }
 .pdf-viewer-fallback p { font-family:var(--mono); font-size:.75rem; color:var(--mid); margin-bottom:1rem; }
+
+/* ════════════════════════════════════════
+   DARK MODE THEME
+════════════════════════════════════════ */
+.nav-theme-btn {
+  font-family: var(--mono);
+  font-size: 1rem;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  color: var(--mid);
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all .2s;
+  padding: 0;
+}
+.nav-theme-btn:hover { color: var(--ink); border-color: var(--ink); }
+
+/* Dark mode root overrides */
+body.dark {
+  --bg: #0d0d0d;
+  --ink: #e8e4dc;
+  --mid: #7a7570;
+  --rule: #2a2826;
+  --white: #141414;
+  --board-light: #b5a48a;
+  --board-dark: #3a2b1e;
+  --board-sel: #d4a017;
+  --board-legal: rgba(212,160,23,.7);
+}
+
+/* Nav dark */
+body.dark nav { background: #0d0d0d; border-bottom-color: #2a2826; }
+body.dark .nav-theme-btn { color: #7a7570; border-color: #2a2826; }
+body.dark .nav-theme-btn:hover { color: #e8e4dc; border-color: #e8e4dc; }
+body.dark .nav-admin-btn { background: #e8e4dc; color: #0d0d0d; }
+body.dark .nav-admin-btn:hover { background: #ccc; }
+
+/* Hero dark */
+body.dark .hero-right { background: #060606; }
+body.dark .hero-cta { background: #e8e4dc; color: #0d0d0d; }
+body.dark .hero-cta:hover { background: #ccc; }
+
+/* Sections dark */
+body.dark section { border-top-color: #2a2826; }
+body.dark footer { border-top-color: #2a2826; }
+
+/* Article cards dark */
+body.dark .article-card { border-color: #2a2826; background: #111; }
+body.dark .article-card:hover { background: #e8e4dc; color: #0d0d0d; }
+body.dark .article-card:hover .article-tag,
+body.dark .article-card:hover .article-meta,
+body.dark .article-card:hover .article-excerpt { color: rgba(0,0,0,.5); }
+
+/* Player cards dark */
+body.dark .player-card { background: #141414; border-color: #2a2826; }
+body.dark .player-card-header { background: #1c1c1c; }
+body.dark .player-tab-pill { border-color: #2a2826; }
+
+/* Game rows dark */
+body.dark .game-entry { border-bottom-color: #2a2826; }
+body.dark .game-entry:first-child { border-top-color: #2a2826; }
+body.dark .game-row:hover { background: #e8e4dc; color: #0d0d0d; }
+body.dark .game-row:hover .game-meta,
+body.dark .game-row:hover .game-year,
+body.dark .game-row:hover .game-num,
+body.dark .game-row:hover .game-expand-icon { color: rgba(0,0,0,.4); }
+body.dark .game-viewer { background: #111; border-top-color: #2a2826; }
+body.dark .gv-pgn { background: #1a1a1a; }
+body.dark .gv-btn { background: #e8e4dc; color: #0d0d0d; }
+body.dark .gv-btn:hover { background: #ccc; }
+body.dark .gv-open-page { border-color: #3a3a3a; color: #7a7570; }
+body.dark .gv-open-page:hover { background: #e8e4dc; color: #0d0d0d; border-color: #e8e4dc; }
+
+/* PDF cards dark */
+body.dark .pdf-card { background: #141414; border-color: #2a2826; }
+body.dark .pdf-icon { background: #e8e4dc; color: #0d0d0d; }
+
+/* Detail pages dark */
+body.dark .detail-back { border-bottom-color: #2a2826; }
+body.dark .article-detail-body { color: #c8c4bc; }
+body.dark .article-detail-meta { color: #7a7570; }
+body.dark .player-detail-hero { background: #1c1c1c; }
+body.dark .player-detail-tabs { border-bottom-color: #2a2826; }
+body.dark .pd-tab.active { color: #e8e4dc; border-bottom-color: #e8e4dc; }
+body.dark .achievement-table tr { border-bottom-color: #2a2826; }
+body.dark .bestgame-row { border-color: #2a2826; }
+body.dark .bestgame-row:hover { background: #e8e4dc; color: #0d0d0d; }
+body.dark .game-detail-header { border-bottom-color: #2a2826; }
+body.dark .game-detail-pgn-box { background: #1a1a1a; }
+body.dark .pdf-detail-header { border-bottom-color: #2a2826; }  /* already handled by --rule */
+body.dark .pdf-download-btn { background: #e8e4dc; color: #0d0d0d; }
+body.dark .pdf-download-btn:hover { background: #ccc; }
+body.dark .pdf-viewer-embed { border-color: #2a2826; }
+
+/* Admin panel dark */
+body.dark .admin-panel { background: #111; box-shadow: -8px 0 40px rgba(0,0,0,.6); }
+body.dark .admin-panel-header { background: #1c1c1c; }
+body.dark .admin-tabs { background: #111; border-bottom-color: #2a2826; }
+body.dark .admin-tab-btn.active { color: #e8e4dc; border-bottom-color: #e8e4dc; }
+body.dark .admin-form input,
+body.dark .admin-form textarea,
+body.dark .admin-form select { background: #1a1a1a; border-color: #2a2826; color: #e8e4dc; }
+body.dark .admin-form input:focus,
+body.dark .admin-form textarea:focus { border-color: #e8e4dc; }
+body.dark .admin-item { border-color: #2a2826; }
+body.dark .admin-submit-btn { background: #e8e4dc; color: #0d0d0d; }
+body.dark .admin-submit-btn:hover { background: #ccc; }
+body.dark .admin-preview-btn { color: #e8e4dc; border-color: #e8e4dc; }
+body.dark .admin-preview-btn:hover { background: #e8e4dc; color: #0d0d0d; }
+body.dark .admin-section h3 { color: #e8e4dc; }
+body.dark .admin-list-title { color: #7a7570; }
+body.dark .admin-section-title-row h3 { color: #e8e4dc; }
+body.dark .img-upload-dropzone { border-color: #2a2826; }
+body.dark .img-upload-dropzone:hover { border-color: #e8e4dc; background: rgba(255,255,255,.03); }
+body.dark .img-upload-text { color: #e8e4dc; }
+body.dark .img-preview-wrap { background: #1a1a1a; border-color: #2a2826; }
+body.dark .pdf-upload-dropzone { border-color: #2a2826; }
+body.dark .pdf-upload-dropzone:hover { border-color: #e8e4dc; background: rgba(255,255,255,.03); }
+body.dark .pdf-upload-text { color: #e8e4dc; }
+body.dark .pdf-upload-preview { background: #1a1a1a; border-color: #2a2826; }
+body.dark .admin-login-box { background: #141414; }
+body.dark .admin-login-box h2 { color: #e8e4dc; }
+body.dark .admin-input { background: #1a1a1a; border-color: #2a2826; color: #e8e4dc; }
+body.dark .admin-login-btn { background: #e8e4dc; color: #0d0d0d; }
+body.dark .admin-login-btn:hover { background: #ccc; }
+body.dark .admin-cancel-btn { color: #7a7570; border-color: #2a2826; }
+body.dark .admin-cancel-btn:hover { color: #e8e4dc; border-color: #e8e4dc; }
+body.dark .toggle-slider { background: #2a2826; }
+body.dark .toggle-switch input:checked + .toggle-slider { background: #e8e4dc; }
+body.dark .toggle-switch input:checked + .toggle-slider::before { background: #0d0d0d; }
+body.dark .admin-form.editing { border-color: #e8e4dc; background: rgba(255,255,255,.02); }
+body.dark .draft-badge { background: #2d2500; color: #d4a017; border-color: #d4a017; }
+body.dark .published-badge { background: #0d2010; color: #4caf50; border-color: #4caf50; }
+
+/* Toast dark */
+body.dark .toast { background: #e8e4dc; color: #0d0d0d; }
+
+/* Section line dark */
+body.dark .section-line { background: #2a2826; }
+
+/* Player title badge */
+.player-title-badge {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .2rem .5rem;
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.8);
+  border: 1px solid rgba(255,255,255,.2);
+  margin-right: .4rem;
+  vertical-align: middle;
+}
+body.dark .player-title-badge { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.15); }
+
+/* Games admin — title prefix */
+.game-player-title {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  padding: .15rem .4rem;
+  border: 1px solid var(--rule);
+  margin-right: .3rem;
+}
