@@ -53,20 +53,12 @@
       <button class="hero-cta" onclick="scrollToSection('articles')">Explore Articles &#8594;</button>
     </div>
 
-    <!-- RIGHT: chess.com style board with player name strips -->
+    <!-- RIGHT: interactive board with player name strips -->
     <div class="hero-right">
       <p class="board-label">&#9817; Play — click a piece to move</p>
-
-      <!-- Black player name (top of board) -->
       <div class="board-player-strip board-player-black" id="boardPlayerBlack">&#9818; Black</div>
-
-      <!-- The interactive board -->
       <div id="chessBoard"></div>
-
-      <!-- White player name (bottom of board) -->
       <div class="board-player-strip board-player-white" id="boardPlayerWhite">&#9812; White</div>
-
-      <!-- Turn indicator + reset -->
       <div class="board-controls">
         <span id="turnIndicator"></span>
         <button class="board-reset-btn" onclick="resetBoard()">&#8634; Reset</button>
@@ -148,7 +140,7 @@
   </div>
   <div class="admin-body">
 
-    <!-- ── ARTICLES TAB ─────────────────────── -->
+    <!-- ARTICLES TAB -->
     <div class="admin-section active" id="admin-articles">
       <div class="admin-section-title-row">
         <h3 id="article-form-heading">Add Article</h3>
@@ -211,7 +203,7 @@
       <div id="adminArticleDraftList"></div>
     </div>
 
-    <!-- ── PLAYERS TAB ──────────────────────── -->
+    <!-- PLAYERS TAB -->
     <div class="admin-section" id="admin-players">
       <div class="admin-section-title-row">
         <h3 id="player-form-heading">Add Player Profile</h3>
@@ -222,7 +214,7 @@
         <div style="display:grid;grid-template-columns:150px 1fr;gap:.7rem;">
           <div style="display:flex;flex-direction:column;gap:.4rem;">
             <label>Title / Rank</label>
-            <select id="p-title" style="padding:.7rem .9rem;font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:100%;">
+            <select id="p-title">
               <option value="">— None —</option>
               <option>GM</option><option>IM</option><option>FM</option><option>CM</option>
               <option>WGM</option><option>WIM</option><option>WFM</option>
@@ -240,7 +232,7 @@
           <div class="img-upload-dropzone" id="p-img-drop" onclick="document.getElementById('p-img-input').click()">
             <span class="img-upload-icon">&#128100;</span>
             <span class="img-upload-text">Click to upload profile photo</span>
-            <span class="img-upload-hint">JPG, PNG &mdash; stored in Supabase</span>
+            <span class="img-upload-hint">JPG, PNG &mdash; max 2MB</span>
           </div>
           <input type="file" id="p-img-input" accept="image/*" style="display:none" onchange="handleImgUpload('p-img-input','p-img-preview','p-img-data')"/>
           <div class="img-preview-wrap" id="p-img-preview" style="display:none;">
@@ -261,7 +253,7 @@
           </div>
         </div>
         <label>Playing Style</label>
-        <select id="p-style" style="padding:.7rem .9rem;font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:100%;">
+        <select id="p-style">
           <option value="">— Select style —</option>
           <option>Tactical</option><option>Positional</option><option>Universal</option>
           <option>Endgame Specialist</option><option>Attacking</option><option>Defensive</option>
@@ -282,7 +274,7 @@
       <div id="adminPlayerList"></div>
     </div>
 
-    <!-- ── GAMES TAB ────────────────────────── -->
+    <!-- GAMES TAB -->
     <div class="admin-section" id="admin-games">
       <div class="admin-section-title-row">
         <h3 id="game-form-heading">Add Game of the Century</h3>
@@ -296,7 +288,7 @@
           <div style="display:flex;flex-direction:column;gap:.5rem;">
             <label>White Player *</label>
             <div style="display:flex;gap:.4rem;">
-              <select id="g-white-title" style="padding:.7rem .6rem;font-family:var(--mono);font-size:.75rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:80px;flex-shrink:0;">
+              <select id="g-white-title" style="width:80px;flex-shrink:0;">
                 <option value="">—</option>
                 <option>GM</option><option>IM</option><option>FM</option>
                 <option>WGM</option><option>WIM</option><option>NM</option>
@@ -307,7 +299,7 @@
           <div style="display:flex;flex-direction:column;gap:.5rem;">
             <label>Black Player *</label>
             <div style="display:flex;gap:.4rem;">
-              <select id="g-black-title" style="padding:.7rem .6rem;font-family:var(--mono);font-size:.75rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:80px;flex-shrink:0;">
+              <select id="g-black-title" style="width:80px;flex-shrink:0;">
                 <option value="">—</option>
                 <option>GM</option><option>IM</option><option>FM</option>
                 <option>WGM</option><option>WIM</option><option>NM</option>
@@ -342,7 +334,7 @@
       <div id="adminGameList"></div>
     </div>
 
-    <!-- ── PDFS TAB ─────────────────────────── -->
+    <!-- PDFS TAB -->
     <div class="admin-section" id="admin-pdfs">
       <div class="admin-section-title-row">
         <h3 id="pdf-form-heading">Add PDF to Library</h3>
@@ -359,7 +351,7 @@
         <input id="d-author" type="text" placeholder="e.g. Nimzowitsch"/>
 
         <label>Category Tag</label>
-        <select id="d-tag" style="padding:.7rem .9rem;font-family:var(--sans);font-size:.88rem;border:1px solid var(--rule);background:var(--bg);color:var(--ink);outline:none;width:100%;">
+        <select id="d-tag">
           <option value="">— Select tag —</option>
           <option>Strategy</option><option>Tactics</option><option>Endgames</option>
           <option>Openings</option><option>History</option><option>Biography</option>
@@ -421,7 +413,6 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- No SDK needed — we use the REST API directly -->
 <script src="script.js"></script>
 </body>
 </html>
