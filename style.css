@@ -1086,3 +1086,17 @@ body.dark .chess-board-interactive { border-color: #1a1a1a; }
 @media (max-width: 480px) {
   .toast { width: 90%; text-align: center; }
 }
+/* Era header */
+.era-year { background: #e6f1fb; color: #0c447c; font-size: 11px; padding: 3px 10px; border-radius: 6px; }
+.era-title { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; }
+
+/* Highlight box */
+.highlight { background: #faeeda; border-left: 3px solid #ba7517; border-radius: 0 6px 6px 0; padding: 0.9rem 1.1rem; }
+
+/* Stat cards */
+.stat { background: #f5f5f3; border-radius: 8px; padding: 0.8rem; text-align: center; }
+.stat-n { font-size: 22px; font-weight: 700; }
+.stat-l { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #888; }
+
+/* Result cards */
+.wc-card { border: 0.5px solid #e0e0dd; border-radius: 12px; padding: 0.85rem 1rem; }
