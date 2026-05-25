@@ -16,10 +16,11 @@ const SB_HEADERS = {
 };
 
 // ---- REST helpers ----
-async function sbSelect(table, order) {
+// cols = comma-separated column list e.g. 'id,title,author' — defaults to '*'
+async function sbSelect(table, order, cols) {
   const url = SUPABASE_REST + '/' + table
     + '?order=' + (order || 'created_at.asc')
-    + '&select=*';
+    + '&select=' + (cols || '*');
   const res = await fetch(url, { headers: SB_HEADERS });
   if (!res.ok) {
     const t = await res.text();
@@ -27,6 +28,19 @@ async function sbSelect(table, order) {
     return [];
   }
   return res.json();
+}
+
+// Fetch a single row by id (used to load heavy columns like file_data on demand)
+async function sbSelectOne(table, id) {
+  const url = SUPABASE_REST + '/' + table + '?id=eq.' + id + '&select=*&limit=1';
+  const res = await fetch(url, { headers: SB_HEADERS });
+  if (!res.ok) {
+    const t = await res.text();
+    console.error('[sb] GET ONE ' + table + ':', res.status, t);
+    return null;
+  }
+  const rows = await res.json();
+  return rows[0] || null;
 }
 
 async function sbUpsert(table, row) {
@@ -232,11 +246,14 @@ const defaultData = {
 // ============================================
 async function loadData() {
   try {
+    // NOTE: pdfs excludes file_data to avoid statement timeout on large rows.
+    // file_data is fetched on demand in openPdf() via sbSelectOne().
+    const PDF_COLS = 'id,title,author,tag,description,content,url,file_name,size,cover_image,created_at';
     const [articles, players, games, pdfs] = await Promise.all([
       sbSelect('articles', 'created_at.desc'),
       sbSelect('players',  'created_at.asc'),
       sbSelect('games',    'created_at.asc'),
-      sbSelect('pdfs',     'created_at.asc'),
+      sbSelect('pdfs',     'created_at.asc', PDF_COLS),
     ]);
     console.log('[64sq] loaded', articles.length, 'articles,',
       players.length, 'players,', games.length, 'games,', pdfs.length, 'pdfs');
@@ -1121,9 +1138,15 @@ function openGame(id) {
 // ============================================
 // PDF DETAIL
 // ============================================
-function openPdf(id) {
-  const p = siteData.pdfs.find(function (x) { return x.id === id; });
-  if (!p) return;
+async function openPdf(id) {
+  // Fetch full row including file_data (excluded from list query to avoid timeout)
+  showToast('Loading…');
+  let p = await sbSelectOne('pdfs', id);
+  if (!p) {
+    // Fallback to cached version without file_data
+    p = siteData.pdfs.find(function (x) { return x.id === id; });
+  }
+  if (!p) { showToast('PDF not found.'); return; }
   trackView('pdf', id);
 
   const contentHTML = (p.content || '')
@@ -1837,9 +1860,11 @@ async function addPdf() {
 }
 
 
-function editPdf(id) {
-  const p = siteData.pdfs.find(function (x) { return x.id === id; });
-  if (!p) return;
+async function editPdf(id) {
+  // Fetch full row so file_data is available for re-saving
+  let p = await sbSelectOne('pdfs', id);
+  if (!p) p = siteData.pdfs.find(function (x) { return x.id === id; });
+  if (!p) { showToast('PDF not found.'); return; }
   showAdminTab('pdfs');
   document.getElementById('d-edit-id').value  = String(p.id);
   document.getElementById('d-title').value    = p.title       || '';
