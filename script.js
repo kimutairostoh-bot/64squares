@@ -30,18 +30,30 @@ async function sbSelect(table, order) {
 }
 
 async function sbUpsert(table, row) {
-  // Fix: correct operator precedence — wrap null/undefined check in parens
+  // Only strip undefined — keep nulls, empty strings, booleans, 0 etc.
   const clean = Object.fromEntries(
-    Object.entries(row).filter(([, v]) => (v !== undefined && v !== null) || typeof v === 'boolean')
+    Object.entries(row).filter(([, val]) => val !== undefined)
   );
   const res = await fetch(SUPABASE_REST + '/' + table, {
     method:  'POST',
-    headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-    body:    JSON.stringify(clean),
+    headers: {
+      'Content-Type':  'application/json',
+      'apikey':        SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Prefer':        'resolution=merge-duplicates,return=minimal',
+    },
+    body: JSON.stringify(clean),
   });
   if (!res.ok) {
     const t = await res.text();
     console.error('[sb] UPSERT ' + table + ':', res.status, t);
+    // Show a human-readable error in the toast
+    try {
+      const err = JSON.parse(t);
+      showToast('Save failed: ' + (err.message || err.hint || res.status));
+    } catch (_) {
+      showToast('Save failed (' + res.status + ') — check console.');
+    }
     return false;
   }
   return true;
@@ -1766,43 +1778,64 @@ function editGame(id) {
 }
 
 async function addPdf() {
-  const editId      = v('d-edit-id');
-  const title       = v('d-title');
-  const author      = v('d-author');
-  const description = v('d-desc');
-  const content     = v('d-content');
-  const url         = v('d-url');
-  const tag         = document.getElementById('d-tag').value || '';
-  const file_data   = document.getElementById('d-file-data').value || '';
-  const file_name   = document.getElementById('d-file-name').value || '';
-  const cover_image = document.getElementById('d-img-data').value || '';
+  var editId      = v('d-edit-id');
+  var title       = v('d-title');
+  var author      = v('d-author');
+  var description = v('d-desc');
+  var pdfContent  = v('d-content');
+  var url         = v('d-url');
+  var tag         = document.getElementById('d-tag').value || '';
+  var file_data   = document.getElementById('d-file-data').value || '';
+  var file_name   = document.getElementById('d-file-name').value || '';
+  var cover_image = document.getElementById('d-img-data').value || '';
 
-  let size = '';
-  if (file_data) {
-    const bytes = Math.round((file_data.length * (3 / 4)) / 1024);
-    size = bytes > 1024 ? (bytes / 1024).toFixed(1) + ' MB' : bytes + ' KB';
-  }
   if (!title || !author) { showToast('Title and author are required.'); return; }
 
-  const existing = editId ? siteData.pdfs.find(function (p) { return String(p.id) === editId; }) : null;
-  const item = {
-    id:           editId ? Number(editId) : Date.now(),
-    title, author, tag,
-    description:  description || '',
-    content:      content     || '',
-    url:          url         || (existing ? existing.url        : ''),
-    file_data:    file_data   || (existing ? existing.file_data  : ''),
-    file_name:    file_name   || (existing ? existing.file_name  : ''),
-    size:         size        || (existing ? existing.size       : ''),
-    cover_image:  cover_image || (existing ? existing.cover_image : ''),
+  // Supabase REST has ~1MB row limit. Base64 PDFs can blow past this easily.
+  // Warn and drop file_data if too large; user should paste an external URL.
+  var MAX_B64     = 900 * 1024;
+  var safeFile    = file_data;
+  var size        = '';
+
+  if (file_data) {
+    var approxBytes = Math.round(file_data.length * 0.75);
+    size = approxBytes > 1048576
+      ? (approxBytes / 1048576).toFixed(1) + ' MB'
+      : Math.round(approxBytes / 1024) + ' KB';
+
+    if (file_data.length > MAX_B64) {
+      safeFile = '';
+      showToast('PDF too large to embed — paste an external URL instead.');
+    }
+  }
+
+  var existing = editId
+    ? siteData.pdfs.find(function (p) { return String(p.id) === editId; })
+    : null;
+
+  var item = {
+    id:          editId ? Number(editId) : Date.now(),
+    title:       title,
+    author:      author,
+    tag:         tag          || '',
+    description: description  || '',
+    content:     pdfContent   || '',
+    url:         url          || (existing && existing.url)          || '',
+    file_data:   safeFile     || (existing && existing.file_data)    || '',
+    file_name:   file_name    || (existing && existing.file_name)    || '',
+    size:        size         || (existing && existing.size)         || '',
+    cover_image: cover_image  || (existing && existing.cover_image)  || '',
   };
-  const ok = await upsertItem('pdfs', item);
+
+  var ok = await upsertItem('pdfs', item);
   if (!ok) return;
   showToast(editId ? 'PDF updated!' : 'PDF added!');
   cancelEdit('pdf');
   siteData = await loadData();
-  renderAdminLists(); renderAll();
+  renderAdminLists();
+  renderAll();
 }
+
 
 function editPdf(id) {
   const p = siteData.pdfs.find(function (x) { return x.id === id; });
