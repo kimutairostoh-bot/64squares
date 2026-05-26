@@ -140,9 +140,87 @@ function resetBoard(){homeBoard=fenToBoard(START_FEN);homeSel=null;homeMoves=[];
 const gameViewerStates={};
 function buildGameBoard(containerId,boardState,flipped){const el=document.getElementById(containerId);if(!el)return;el.innerHTML='';el.className='chess-board-viewer';for(let rr=0;rr<8;rr++){for(let cc=0;cc<8;cc++){const r=flipped?7-rr:rr;const c=flipped?7-cc:cc;const sq=document.createElement('div');sq.className='vsq '+((r+c)%2===0?'vsq-light':'vsq-dark');const piece=boardState[r][c];if(piece){const sp=document.createElement('span');sp.className='vpiece '+(piece[0]==='w'?'wpiece':'bpiece');sp.textContent=GLYPHS[piece];sq.appendChild(sp);}el.appendChild(sq);}}}
 function initGameViewer(vid,pgn){const key=String(vid);const states=pgn?parsePGN(pgn):[fenToBoard(START_FEN)];gameViewerStates[key]={states,idx:0,flipped:false,playing:false,timer:null};buildGameBoard('board-'+key,states[0],false);updateGameNav(key);renderClickablePgn(key,pgn);}
-function renderClickablePgn(vid,pgn){const key=String(vid);const el=document.getElementById('pgn-'+key);if(!el||!pgn)return;const tokens=pgn.replace(/\s+/g,' ').trim().split(' ');let html='',mi=0;for(const tok of tokens){if(tok.match(/^\d+\./)){html+='<span class="pgn-movenum">'+tok+'</span> ';}else if(['1-0','0-1','1/2-1/2'].includes(tok)){html+='<span class="pgn-result">'+tok+'</span>';}else{mi++;html+='<span class="pgn-move" data-idx="'+mi+'" onclick="pgnMoveClick(\''+key+'\','+mi+')">'+tok+'</span> ';}}el.innerHTML=html;}
-function pgnMoveClick(vid,idx){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.idx=Math.min(idx,vs.states.length-1);buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);updateGameNav(key);}
-function updateGameNav(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;const el=document.getElementById('movenav-'+key);if(el)el.textContent='Move '+vs.idx+' / '+(vs.states.length-1);const prev=document.getElementById('prev-'+key);const next=document.getElementById('next-'+key);if(prev)prev.disabled=vs.idx===0;if(next)next.disabled=vs.idx===vs.states.length-1;const pgnel=document.getElementById('pgn-'+key);if(pgnel){pgnel.querySelectorAll('.pgn-move').forEach(function(m){m.classList.toggle('pgn-move-active',parseInt(m.dataset.idx)===vs.idx);});}if(vs.playing&&vs.idx===vs.states.length-1)stopAutoPlay(key);}
+function renderClickablePgn(vid,pgn){
+  const key=String(vid);
+  // Try movelist container first (new dark UI), fall back to pgn div
+  const mlEl=document.getElementById('ml-'+key);
+  const pgnEl=document.getElementById('pgn-'+key);
+  if(!pgn)return;
+  const tokens=pgn.replace(/\s+/g,' ').trim().split(' ');
+  // Build structured move pairs
+  const moves=[];
+  let pair=null,mi=0,result='';
+  for(const tok of tokens){
+    if(tok.match(/^\d+\./)){
+      if(pair)moves.push(pair);
+      pair={num:tok.replace('.',''),w:null,wIdx:0,b:null,bIdx:0};
+    } else if(['1-0','0-1','1/2-1/2'].includes(tok)){
+      result=tok;
+    } else if(pair){
+      mi++;
+      if(!pair.w){pair.w=tok;pair.wIdx=mi;}
+      else{pair.b=tok;pair.bIdx=mi;}
+    }
+  }
+  if(pair)moves.push(pair);
+  // Render into movelist (dark UI)
+  if(mlEl){
+    mlEl.innerHTML=moves.map(function(m){
+      return '<div class="gv-move-row">'
+        +'<span class="gv-move-num">'+m.num+'.</span>'
+        +'<span class="gv-move-w pgn-move" data-idx="'+m.wIdx+'" onclick="pgnMoveClick(\''+key+'\','+m.wIdx+')">'+m.w+'</span>'
+        +(m.b?'<span class="gv-move-b pgn-move" data-idx="'+m.bIdx+'" onclick="pgnMoveClick(\''+key+'\','+m.bIdx+')">'+m.b+'</span>':'<span></span>')
+        +'</div>';
+    }).join('')+(result?'<div style="font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.3);padding:.4rem .7rem;">'+result+'</div>':'');
+  }
+  // Also render into legacy pgn div if present
+  if(pgnEl){
+    let html='',idx=0;
+    for(const tok of tokens){
+      if(tok.match(/^\d+\./)){html+='<span class="pgn-movenum">'+tok+'</span> ';}
+      else if(['1-0','0-1','1/2-1/2'].includes(tok)){html+='<span class="pgn-result">'+tok+'</span>';}
+      else{idx++;html+='<span class="pgn-move" data-idx="'+idx+'" onclick="pgnMoveClick(\''+key+'\','+idx+')">'+tok+'</span> ';}
+    }
+    pgnEl.innerHTML=html;
+  }
+}
+function pgnMoveClick(vid,idx){
+  const key=String(vid);
+  const vs=gameViewerStates[key];
+  if(!vs)return;
+  vs.idx=Math.min(idx,vs.states.length-1);
+  buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);
+  updateGameNav(key);
+}
+function updateGameNav(vid){
+  const key=String(vid);
+  const vs=gameViewerStates[key];
+  if(!vs)return;
+  const el=document.getElementById('movenav-'+key);
+  if(el)el.textContent='Move '+vs.idx+' / '+(vs.states.length-1);
+  const prev=document.getElementById('prev-'+key);
+  const next=document.getElementById('next-'+key);
+  if(prev)prev.disabled=vs.idx===0;
+  if(next)next.disabled=vs.idx===vs.states.length-1;
+  // Highlight in movelist (dark UI)
+  const mlEl=document.getElementById('ml-'+key);
+  if(mlEl){
+    mlEl.querySelectorAll('.pgn-move').forEach(function(m){
+      const active=parseInt(m.dataset.idx)===vs.idx;
+      m.classList.toggle('gv-move-active',active);
+      m.classList.toggle('pgn-move-active',active);
+      if(active){m.scrollIntoView({block:'nearest'});}
+    });
+  }
+  // Also highlight in legacy pgn div
+  const pgnel=document.getElementById('pgn-'+key);
+  if(pgnel){
+    pgnel.querySelectorAll('.pgn-move').forEach(function(m){
+      m.classList.toggle('pgn-move-active',parseInt(m.dataset.idx)===vs.idx);
+    });
+  }
+  if(vs.playing&&vs.idx===vs.states.length-1)stopAutoPlay(key);
+}
 function gameStep(vid,dir){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.idx=Math.max(0,Math.min(vs.states.length-1,vs.idx+dir));buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);updateGameNav(key);}
 function gameJump(vid,pos){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.idx=pos==='start'?0:vs.states.length-1;buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);updateGameNav(key);}
 function flipBoard(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.flipped=!vs.flipped;buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);}
@@ -345,12 +423,36 @@ function openPlayer(id) {
   // BEST GAMES PANEL
   // ────────────────────────────────────────────
   const gamesHTML = bestGames.length
-    ? bestGames.map(function (g) {
-        return '<div class="pd-bestgame">'
-          + '<div class="pd-bestgame-title">' + escHtml(g.title) + '</div>'
+    ? bestGames.map(function (g, gi) {
+        const bgvid = 'bgv-' + id + '-' + gi;
+        const hasPgn = !!(g.pgn && g.pgn.trim());
+        return '<div class="pd-bestgame" onclick="toggleBestGameViewer(\'' + bgvid + '\',\'' + escHtml(g.pgn||'') + '\')">'
+          + '<div class="pd-bestgame-title">' + escHtml(g.title) + (hasPgn ? ' <span style="font-family:var(--mono);font-size:.55rem;opacity:.5;margin-left:.4rem;">▶ view</span>' : '') + '</div>'
           + '<div class="pd-bestgame-meta">'
             + escHtml(g.event) + ' &nbsp;&middot;&nbsp; ' + escHtml(g.year)
           + '</div>'
+          + '</div>'
+          + '<div class="pd-bestgame-viewer" id="' + bgvid + '" style="display:none;">'
+            + '<div class="pd-bgv-game-title">' + escHtml(g.title) + ' — ' + escHtml(g.event||'') + ' ' + escHtml(g.year||'') + '</div>'
+            + '<div class="pd-bestgame-viewer-inner">'
+              + '<div class="pd-bgv-board-wrap">'
+                + '<div class="board-player-strip" style="color:rgba(255,255,255,.5);font-size:.62rem;">&#9818; Black</div>'
+                + '<div id="board-' + bgvid + '" class="chess-board-viewer"></div>'
+                + '<div class="board-player-strip" style="color:rgba(255,255,255,.5);font-size:.62rem;">&#9812; White</div>'
+              + '</div>'
+              + '<div class="pd-bgv-controls">'
+                + '<div class="pd-bgv-movelist gv-movelist" id="ml-' + bgvid + '"></div>'
+                + '<div class="pd-bgv-nav gv-nav">'
+                  + '<button class="gv-btn" onclick="gameJump(\'' + bgvid + '\',\'start\')">&#124;&#9664;</button>'
+                  + '<button class="gv-btn" id="prev-' + bgvid + '" onclick="gameStep(\'' + bgvid + '\',-1)">&#9664;</button>'
+                  + '<button class="gv-btn" id="play-' + bgvid + '" onclick="toggleAutoPlay(\'' + bgvid + '\')">&#9654;</button>'
+                  + '<span class="gv-movenav" id="movenav-' + bgvid + '">Move 0</span>'
+                  + '<button class="gv-btn" id="next-' + bgvid + '" onclick="gameStep(\'' + bgvid + '\',1)">&#9654;</button>'
+                  + '<button class="gv-btn" onclick="gameJump(\'' + bgvid + '\',\'end\')">&#9654;&#124;</button>'
+                  + '<button class="gv-btn" onclick="flipBoard(\'' + bgvid + '\')">&#8645;</button>'
+                + '</div>'
+              + '</div>'
+            + '</div>'
           + '</div>';
       }).join('')
     : '<p style="color:var(--mid);font-size:.9rem;">No games listed yet.</p>';
@@ -404,6 +506,24 @@ function pdSwitchTab(btn, id) {
   if (panel) panel.classList.add('active');
 }
 
+// Toggle best-game viewer inside player detail
+function toggleBestGameViewer(vid, pgn) {
+  const el = document.getElementById(vid);
+  if (!el) return;
+  const isOpen = el.style.display !== 'none';
+  // Close all other viewers first
+  document.querySelectorAll('.pd-bestgame-viewer').forEach(function(v) {
+    if (v.id !== vid) v.style.display = 'none';
+  });
+  el.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen && pgn && pgn.trim()) {
+    _activeViewerGameId = vid;
+    setTimeout(function() { initGameViewer(vid, pgn); }, 50);
+  }
+}
+
+
+
 
 
 
@@ -451,7 +571,7 @@ function renderArticles() {
 function renderPlayers(){const grid=document.getElementById('playersGrid');if(!grid)return;if(!siteData.players.length){grid.innerHTML='<p class="empty-msg">No players yet.</p>';return;}grid.innerHTML=siteData.players.map(function(p){const avatarHTML=p.image?'<img class="player-avatar-photo" src="'+p.image+'" alt="'+escHtml(p.name)+'"/>':'<div class="player-avatar">'+escHtml(p.name[0])+'</div>';return'<div class="player-card fade-in" onclick="openPlayer('+p.id+')"><div class="player-card-header">'+avatarHTML+'<div><div class="player-name">'+(p.title?'<span class="player-title-badge">'+escHtml(p.title)+'</span> ':'')+escHtml(p.name)+'</div><div class="player-country">'+escHtml(p.country||'')+'</div></div></div><div class="player-card-body"><div class="player-rating">Peak Rating <strong>'+escHtml(p.rating||'N/A')+'</strong></div>'+(p.style?'<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">'+escHtml(p.style)+'</div>':'')+'<div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">Click to view full profile \u2192</div></div></div>';}).join('');}
 
 let activePdfTag='All';
-function renderGames(){const list=document.getElementById('gamesList');if(!list)return;if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}list.innerHTML=siteData.games.map(function(g,i){const opening=detectOpening(g.pgn);const gid=String(g.id);const blackName=escHtml(g.black_name||g.black||'Black');const whiteName=escHtml(g.white_name||g.white||'White');return'<div class="game-entry fade-in"><div class="game-row" onclick="toggleGameViewer(\'gv-'+gid+'\','+gid+')"><div class="game-num">'+String(i+1).padStart(2,'0')+'</div><div><div class="game-title">'+escHtml(g.title)+(opening?' <span class="opening-badge-sm">\u265E '+escHtml(opening)+'</span>':'')+'</div><div class="game-meta">'+escHtml(g.white||'')+' vs '+escHtml(g.black||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-right"><div class="game-year">'+escHtml(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div></div><div class="game-viewer" id="gv-'+gid+'" style="display:none;"><div class="game-viewer-inner"><div class="gv-board-wrap"><div class="board-player-strip board-player-black">\u265A '+blackName+'</div><div id="board-'+gid+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+whiteName+'</div></div><div class="gv-controls"><div class="gv-pgn" id="pgn-'+gid+'"></div><div class="gv-nav"><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+gid+'" onclick="gameStep(\''+gid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+gid+'" onclick="toggleAutoPlay(\''+gid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+gid+'">Move 0</span><button class="gv-btn" id="next-'+gid+'" onclick="gameStep(\''+gid+'\',1)">\u25B6</button><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+gid+'" onclick="flipBoard(\''+gid+'\')">&#8645;</button></div><button class="gv-open-page" onclick="openGame('+gid+')">Open full game page \u2192</button></div></div></div></div>';}).join('');}
+function renderGames(){const list=document.getElementById('gamesList');if(!list)return;if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}list.innerHTML=siteData.games.map(function(g,i){const opening=detectOpening(g.pgn);const gid=String(g.id);const blackName=escHtml(g.black_name||g.black||'Black');const whiteName=escHtml(g.white_name||g.white||'White');return'<div class="game-entry fade-in"><div class="game-row" onclick="toggleGameViewer(\'gv-'+gid+'\','+gid+')"><div class="game-num">'+String(i+1).padStart(2,'0')+'</div><div><div class="game-title">'+escHtml(g.title)+(opening?' <span class="opening-badge-sm">\u265E '+escHtml(opening)+'</span>':'')+'</div><div class="game-meta">'+escHtml(g.white||'')+' vs '+escHtml(g.black||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-right"><div class="game-year">'+escHtml(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div></div><div class="game-viewer" id="gv-'+gid+'" style="display:none;"><div class="game-viewer-inner"><div class="gv-board-wrap"><div class="board-player-strip board-player-black">\u265A '+blackName+'</div><div id="board-'+gid+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+whiteName+'</div></div><div class="gv-controls"><div class="gv-movelist" id="ml-\'+gid+\'"></div><div class="gv-pgn" id="pgn-'+gid+'"></div><div class="gv-nav"><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+gid+'" onclick="gameStep(\''+gid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+gid+'" onclick="toggleAutoPlay(\''+gid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+gid+'">Move 0</span><button class="gv-btn" id="next-'+gid+'" onclick="gameStep(\''+gid+'\',1)">\u25B6</button><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+gid+'" onclick="flipBoard(\''+gid+'\')">&#8645;</button></div><button class="gv-open-page" onclick="openGame('+gid+')">Open full game page \u2192</button></div></div></div></div>';}).join('');}
 
 function toggleGameViewer(id,gameId){const el=document.getElementById(id);if(!el)return;const isOpen=el.style.display!=='none';el.style.display=isOpen?'none':'block';if(!isOpen){const gid=String(gameId);_activeViewerGameId=gid;const game=siteData.games.find(function(g){return String(g.id)===gid;});if(game){setTimeout(function(){initGameViewer(gid,game.pgn||'');},50);}}}
 
@@ -481,8 +601,8 @@ async function deleteItem(type,id){if(!confirm('Delete this item?'))return;const
 async function addArticle(){const editId=v('a-edit-id');const tag=v('a-tag');const title=v('a-title');const content=v('a-content');const excerpt=v('a-excerpt');const date=v('a-date');const rt=v('a-readtime');const published=document.getElementById('a-published').checked;const image=document.getElementById('a-img-data').value||'';if(!title){showToast('Title is required.');return;}if(!content&&!excerpt){showToast('Add content or an excerpt.');return;}const newExcerpt=excerpt||content.slice(0,160)+(content.length>160?'\u2026':'');const item={id:editId?Number(editId):Date.now(),tag:tag||'General',title,content,excerpt:newExcerpt,date:date||nowDate(),read_time:rt||'5 min',published,image};const ok=await upsertItem('articles',item);if(!ok)return;showToast(published?'Article published!':'Draft saved!');cancelEdit('article');siteData=await loadData();renderAdminLists();renderAll();}
 function editArticle(id){const a=siteData.articles.find(function(x){return x.id===id;});if(!a)return;showAdminTab('articles');document.getElementById('a-edit-id').value=String(a.id);document.getElementById('a-tag').value=a.tag||'';document.getElementById('a-title').value=a.title||'';document.getElementById('a-content').value=a.content||'';document.getElementById('a-excerpt').value=a.excerpt||'';document.getElementById('a-date').value=a.date||'';document.getElementById('a-readtime').value=a.read_time||'';document.getElementById('a-published').checked=a.published!==false;document.getElementById('a-published-label').textContent=a.published!==false?'Published':'Draft';if(a.image){document.getElementById('a-img-data').value=a.image;const prev=document.getElementById('a-img-preview');const img=document.getElementById('a-img-preview-img');if(img)img.src=a.image;if(prev)prev.style.display='flex';const drop=document.getElementById('a-img-drop');if(drop)drop.style.display='none';}document.getElementById('article-form-heading').textContent='Edit Article';document.getElementById('a-submit-label').textContent='Save Changes \u2192';document.getElementById('article-cancel-edit').style.display='inline-block';document.querySelector('#admin-articles .admin-form').classList.add('editing');document.getElementById('admin-articles').scrollIntoView({behavior:'smooth',block:'start'});}
 function previewArticle(){const title=v('a-title');const content=v('a-content');const excerpt=v('a-excerpt');const tag=v('a-tag');const date=v('a-date');const rt=v('a-readtime');const image=document.getElementById('a-img-data').value;if(!title&&!content){showToast('Add a title or content to preview.');return;}const bodyHTML=(content||excerpt||'').split('\n').filter(function(p){return p.trim();}).map(function(p){return'<p>'+p.trim()+'</p>';}).join('');showDetailPage('<div onclick="goHome();setTimeout(function(){openAdminPanel();},100)" class="detail-back">\u2190 Back to Editor</div><div class="article-detail">'+(image?'<img class="article-detail-hero-img" src="'+image+'" alt="'+escHtml(title)+'"/>':'')+'<div class="article-detail-tag">'+escHtml(tag||'General')+' &nbsp;<span style="background:#fff3cd;color:#856404;padding:.2rem .5rem;font-size:.6rem;">PREVIEW</span></div><h1 class="article-detail-title">'+escHtml(title||'Untitled')+'</h1><div class="article-detail-meta">'+escHtml(date||nowDate())+' &nbsp;&middot;&nbsp; '+escHtml(rt||'5 min')+' read</div><div class="article-detail-body">'+(bodyHTML||'<p style="color:var(--mid);">[No content yet]</p>')+'</div></div>');}
-async function addPlayer(){const editId=v('p-edit-id');const title=document.getElementById('p-title').value||'';const name=v('p-name');const country=v('p-country');const rating=v('p-rating');const bio=v('p-bio');const career=v('p-career');const style=document.getElementById('p-style').value||'';const image=document.getElementById('p-img-data').value||'';if(!name||!bio){showToast('Name and bio are required.');return;}const achievements=v('p-achievements').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),year:(parts[1]||'').trim()};});const best_games=v('p-bestgames').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),event:(parts[1]||'').trim(),year:(parts[2]||'').trim()};});const item={id:editId?Number(editId):Date.now(),title,name,country:country||'',rating:rating||'N/A',style,bio,career:career||'',achievements,best_games,image};const ok=await upsertItem('players',item);if(!ok)return;showToast(editId?'Player updated!':'Player added!');cancelEdit('player');siteData=await loadData();renderAdminLists();renderAll();}
-function editPlayer(id){const p=siteData.players.find(function(x){return x.id===id;});if(!p)return;showAdminTab('players');document.getElementById('p-edit-id').value=String(p.id);document.getElementById('p-name').value=p.name||'';document.getElementById('p-country').value=p.country||'';document.getElementById('p-rating').value=p.rating||'';document.getElementById('p-bio').value=p.bio||'';document.getElementById('p-career').value=p.career||'';document.getElementById('p-title').value=p.title||'';document.getElementById('p-style').value=p.style||'';const achievements=Array.isArray(p.achievements)?p.achievements:[];const best_games=Array.isArray(p.best_games)?p.best_games:[];document.getElementById('p-achievements').value=achievements.map(function(a){return a.title+'|'+a.year;}).join('\n');document.getElementById('p-bestgames').value=best_games.map(function(g){return g.title+'|'+g.event+'|'+g.year;}).join('\n');if(p.image){document.getElementById('p-img-data').value=p.image;const prev=document.getElementById('p-img-preview');const img=document.getElementById('p-img-preview-img');if(img)img.src=p.image;if(prev)prev.style.display='flex';const drop=document.getElementById('p-img-drop');if(drop)drop.style.display='none';}document.getElementById('player-form-heading').textContent='Edit Player';document.getElementById('p-submit-label').textContent='Save Changes \u2192';document.getElementById('player-cancel-edit').style.display='inline-block';document.querySelector('#admin-players .admin-form').classList.add('editing');document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});}
+async function addPlayer(){const editId=v('p-edit-id');const title=document.getElementById('p-title').value||'';const name=v('p-name');const country=v('p-country');const rating=v('p-rating');const bio=v('p-bio');const career=v('p-career');const style=document.getElementById('p-style').value||'';const image=document.getElementById('p-img-data').value||'';if(!name||!bio){showToast('Name and bio are required.');return;}const achievements=v('p-achievements').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),year:(parts[1]||'').trim()};});const best_games=v('p-bestgames').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),event:(parts[1]||'').trim(),year:(parts[2]||'').trim(),pgn:(parts[3]||'').trim()};});const item={id:editId?Number(editId):Date.now(),title,name,country:country||'',rating:rating||'N/A',style,bio,career:career||'',achievements,best_games,image};const ok=await upsertItem('players',item);if(!ok)return;showToast(editId?'Player updated!':'Player added!');cancelEdit('player');siteData=await loadData();renderAdminLists();renderAll();}
+function editPlayer(id){const p=siteData.players.find(function(x){return x.id===id;});if(!p)return;showAdminTab('players');document.getElementById('p-edit-id').value=String(p.id);document.getElementById('p-name').value=p.name||'';document.getElementById('p-country').value=p.country||'';document.getElementById('p-rating').value=p.rating||'';document.getElementById('p-bio').value=p.bio||'';document.getElementById('p-career').value=p.career||'';document.getElementById('p-title').value=p.title||'';document.getElementById('p-style').value=p.style||'';const achievements=Array.isArray(p.achievements)?p.achievements:[];const best_games=Array.isArray(p.best_games)?p.best_games:[];document.getElementById('p-achievements').value=achievements.map(function(a){return a.title+'|'+a.year;}).join('\n');document.getElementById('p-bestgames').value=best_games.map(function(g){return g.title+'|'+g.event+'|'+g.year+(g.pgn?'|'+g.pgn:'');}).join('\n');if(p.image){document.getElementById('p-img-data').value=p.image;const prev=document.getElementById('p-img-preview');const img=document.getElementById('p-img-preview-img');if(img)img.src=p.image;if(prev)prev.style.display='flex';const drop=document.getElementById('p-img-drop');if(drop)drop.style.display='none';}document.getElementById('player-form-heading').textContent='Edit Player';document.getElementById('p-submit-label').textContent='Save Changes \u2192';document.getElementById('player-cancel-edit').style.display='inline-block';document.querySelector('#admin-players .admin-form').classList.add('editing');document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});}
 async function addGame(){const editId=v('g-edit-id');const title=v('g-title');const white_title=document.getElementById('g-white-title').value||'';const black_title=document.getElementById('g-black-title').value||'';const white_name=v('g-white');const black_name=v('g-black');const white=white_title?white_title+' '+white_name:white_name;const black=black_title?black_title+' '+black_name:black_name;const year=v('g-year');const event=v('g-event');const result=v('g-result');const description=v('g-desc');const pgn=v('g-pgn');if(!title||!white_name||!black_name){showToast('Title, White, and Black are required.');return;}const item={id:editId?Number(editId):Date.now(),title,white,black,white_title,black_title,white_name,black_name,year:year||'',event:event||'',result:result||'',description:description||'',pgn:pgn||''};const ok=await upsertItem('games',item);if(!ok)return;showToast(editId?'Game updated!':'Game added!');cancelEdit('game');siteData=await loadData();renderAdminLists();renderAll();}
 function editGame(id){const g=siteData.games.find(function(x){return x.id===id;});if(!g)return;showAdminTab('games');document.getElementById('g-edit-id').value=String(g.id);document.getElementById('g-title').value=g.title||'';document.getElementById('g-white').value=g.white_name||g.white||'';document.getElementById('g-black').value=g.black_name||g.black||'';document.getElementById('g-white-title').value=g.white_title||'';document.getElementById('g-black-title').value=g.black_title||'';document.getElementById('g-year').value=g.year||'';document.getElementById('g-event').value=g.event||'';document.getElementById('g-result').value=g.result||'';document.getElementById('g-desc').value=g.description||'';document.getElementById('g-pgn').value=g.pgn||'';document.getElementById('game-form-heading').textContent='Edit Game';document.getElementById('g-submit-label').textContent='Save Changes \u2192';document.getElementById('game-cancel-edit').style.display='inline-block';document.querySelector('#admin-games .admin-form').classList.add('editing');document.getElementById('admin-games').scrollIntoView({behavior:'smooth',block:'start'});}
 async function addPdf(){var editId=v('d-edit-id');var title=v('d-title');var author=v('d-author');var description=v('d-desc');var pdfContent=v('d-content');var url=v('d-url');var tag=document.getElementById('d-tag').value||'';var file_data=document.getElementById('d-file-data').value||'';var file_name=document.getElementById('d-file-name').value||'';var cover_image=document.getElementById('d-img-data').value||'';if(!title||!author){showToast('Title and author are required.');return;}var MAX_B64=900*1024;var safeFile=file_data;var size='';if(file_data){var approxBytes=Math.round(file_data.length*0.75);size=approxBytes>1048576?(approxBytes/1048576).toFixed(1)+' MB':Math.round(approxBytes/1024)+' KB';if(file_data.length>MAX_B64){safeFile='';showToast('PDF too large to embed — paste an external URL instead.');}}var existing=editId?siteData.pdfs.find(function(p){return String(p.id)===editId;}):null;var item={id:editId?Number(editId):Date.now(),title,author,tag:tag||'',description:description||'',content:pdfContent||'',url:url||(existing&&existing.url)||'',file_data:safeFile||(existing&&existing.file_data)||'',file_name:file_name||(existing&&existing.file_name)||'',size:size||(existing&&existing.size)||'',cover_image:cover_image||(existing&&existing.cover_image)||''};var ok=await upsertItem('pdfs',item);if(!ok)return;showToast(editId?'PDF updated!':'PDF added!');cancelEdit('pdf');siteData=await loadData();renderAdminLists();renderAll();}
