@@ -29,7 +29,7 @@
   <div class="search-box">
     <div class="search-top">
       <span class="search-icon">&#9906;</span>
-      <input id="searchInput" type="text" placeholder="Search articles, players, games, books…" oninput="runSearch()"/>
+      <input id="searchInput" type="text" placeholder="Search articles, players, games, books&hellip;" oninput="runSearch()"/>
       <button class="search-close-btn" onclick="closeSearch()">&#10005;</button>
     </div>
     <div id="searchResults">
@@ -44,18 +44,14 @@
 <!-- HOME PAGE -->
 <div id="homePage">
   <section id="home" style="border-top:none;padding:0;">
-
-    <!-- LEFT: hero text -->
     <div class="hero-left">
       <p class="hero-tag">&#9817; Chess Journal &amp; Archive</p>
       <h1 class="hero-title">Where the board <em>tells</em> its stories.</h1>
-      <p class="hero-desc">Deep dives into the game's greatest minds, immortal games, strategic ideas, and a growing library of chess literature.</p>
+      <p class="hero-desc">Deep dives into the game&#39;s greatest minds, immortal games, strategic ideas, and a growing library of chess literature.</p>
       <button class="hero-cta" onclick="scrollToSection('articles')">Explore Articles &#8594;</button>
     </div>
-
-    <!-- RIGHT: interactive board with player name strips -->
     <div class="hero-right">
-      <p class="board-label">&#9817; Play — click a piece to move</p>
+      <p class="board-label">&#9817; Play &mdash; click a piece to move</p>
       <div class="board-player-strip board-player-black" id="boardPlayerBlack">&#9818; Black</div>
       <div id="chessBoard"></div>
       <div class="board-player-strip board-player-white" id="boardPlayerWhite">&#9812; White</div>
@@ -64,7 +60,6 @@
         <button class="board-reset-btn" onclick="resetBoard()">&#8634; Reset</button>
       </div>
     </div>
-
   </section>
 
   <section id="articles">
@@ -152,7 +147,6 @@
         <input id="a-tag" type="text" placeholder="e.g. Strategy, History, Tactics"/>
         <label>Title *</label>
         <input id="a-title" type="text" placeholder="Article title"/>
-
         <label>Cover Image</label>
         <div class="img-upload-wrap" id="a-img-wrap">
           <div class="img-upload-dropzone" id="a-img-drop" onclick="document.getElementById('a-img-input').click()">
@@ -167,9 +161,8 @@
           </div>
           <input type="hidden" id="a-img-data"/>
         </div>
-
         <label>Full Content *</label>
-        <textarea id="a-content" rows="7" placeholder="Write the full article here…"></textarea>
+        <textarea id="a-content" rows="7" placeholder="Write the full article here&hellip;"></textarea>
         <label>Excerpt <span style="font-weight:300;opacity:.7">(auto-generated if blank)</span></label>
         <textarea id="a-excerpt" rows="2" placeholder="Short preview shown on the card"></textarea>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
@@ -191,9 +184,7 @@
           <span class="toggle-label" id="a-published-label">Published</span>
         </div>
         <div style="display:flex;gap:.8rem;flex-wrap:wrap;">
-          <button class="admin-submit-btn" onclick="addArticle()">
-            <span id="a-submit-label">Add Article &#8594;</span>
-          </button>
+          <button class="admin-submit-btn" onclick="addArticle()"><span id="a-submit-label">Add Article &#8594;</span></button>
           <button class="admin-preview-btn" onclick="previewArticle()">Preview &#8599;</button>
         </div>
       </div>
@@ -215,7 +206,7 @@
           <div style="display:flex;flex-direction:column;gap:.4rem;">
             <label>Title / Rank</label>
             <select id="p-title">
-              <option value="">— None —</option>
+              <option value="">&#8212; None &#8212;</option>
               <option>GM</option><option>IM</option><option>FM</option><option>CM</option>
               <option>WGM</option><option>WIM</option><option>WFM</option>
               <option>NM</option><option>World Champion</option>
@@ -226,7 +217,6 @@
             <input id="p-name" type="text" placeholder="e.g. Garry Kasparov"/>
           </div>
         </div>
-
         <label>Profile Photo</label>
         <div class="img-upload-wrap">
           <div class="img-upload-dropzone" id="p-img-drop" onclick="document.getElementById('p-img-input').click()">
@@ -241,7 +231,6 @@
           </div>
           <input type="hidden" id="p-img-data"/>
         </div>
-
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
           <div style="display:flex;flex-direction:column;gap:.4rem;">
             <label>Country</label>
@@ -254,21 +243,27 @@
         </div>
         <label>Playing Style</label>
         <select id="p-style">
-          <option value="">— Select style —</option>
+          <option value="">&#8212; Select style &#8212;</option>
           <option>Tactical</option><option>Positional</option><option>Universal</option>
           <option>Endgame Specialist</option><option>Attacking</option><option>Defensive</option>
         </select>
         <label>Bio *</label>
         <textarea id="p-bio" rows="4" placeholder="Player biography"></textarea>
         <label>Career Summary</label>
-        <textarea id="p-career" rows="3" placeholder="Career highlights and timeline"></textarea>
+        <textarea id="p-career" rows="3" placeholder="Use year headings for era sections e.g.&#10;2004: The prodigy emerges&#10;At just 13 years old...&#10;&#10;2013&#8211;2023: World Champion&#10;Carlsen defeated Anand..."></textarea>
         <label>Achievements <span style="font-weight:300;opacity:.7">(one per line: Title | Year)</span></label>
-        <textarea id="p-achievements" rows="3" placeholder="World Chess Champion | 1985–2000&#10;Peak FIDE Rating 2851 | 1999"></textarea>
-        <label>Best Games <span style="font-weight:300;opacity:.7">(one per line: Title | Event | Year)</span></label>
-        <textarea id="p-bestgames" rows="3" placeholder="Immortal Game vs GM Topalov | Wijk aan Zee | 1999"></textarea>
-        <button class="admin-submit-btn" onclick="addPlayer()">
-          <span id="p-submit-label">Add Player &#8594;</span>
-        </button>
+        <textarea id="p-achievements" rows="3" placeholder="World Chess Champion | 1985&#8211;2000&#10;Peak FIDE Rating 2851 | 1999"></textarea>
+
+        <!-- BEST GAMES — updated with PGN field -->
+        <label>Best Games <span style="font-weight:300;opacity:.7">(one per line: Title | Event | Year | PGN)</span></label>
+        <div style="background:#f5f4f0;border:1px solid var(--rule);padding:.7rem .9rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);line-height:1.7;margin-bottom:.3rem;">
+          &#9817; Format: <strong>Game Title | Event Name | Year | 1.e4 e5 2.Nf3&hellip;</strong><br/>
+          The PGN (moves) field is optional — if provided a playable board appears on the player page.<br/>
+          Example: <em>Immortal Game vs Topalov | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6&hellip;</em>
+        </div>
+        <textarea id="p-bestgames" rows="5" placeholder="Immortal Game vs Topalov | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6 3.Bb5&#10;Game of the Century | Rosenwald Trophy | 1956 | 1.Nf3 Nf6 2.c4 g6&#10;&#10;(Leave PGN blank if you don&#39;t have moves yet)"></textarea>
+
+        <button class="admin-submit-btn" onclick="addPlayer()"><span id="p-submit-label">Add Player &#8594;</span></button>
       </div>
       <p class="admin-list-title">Players</p>
       <div id="adminPlayerList"></div>
@@ -289,7 +284,7 @@
             <label>White Player *</label>
             <div style="display:flex;gap:.4rem;">
               <select id="g-white-title" style="width:80px;flex-shrink:0;">
-                <option value="">—</option>
+                <option value="">&#8212;</option>
                 <option>GM</option><option>IM</option><option>FM</option>
                 <option>WGM</option><option>WIM</option><option>NM</option>
               </select>
@@ -300,7 +295,7 @@
             <label>Black Player *</label>
             <div style="display:flex;gap:.4rem;">
               <select id="g-black-title" style="width:80px;flex-shrink:0;">
-                <option value="">—</option>
+                <option value="">&#8212;</option>
                 <option>GM</option><option>IM</option><option>FM</option>
                 <option>WGM</option><option>WIM</option><option>NM</option>
               </select>
@@ -319,16 +314,14 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:.4rem;">
             <label>Result</label>
-            <input id="g-result" type="text" placeholder="e.g. 1–0"/>
+            <input id="g-result" type="text" placeholder="e.g. 1&#8211;0"/>
           </div>
         </div>
         <label>Description / Analysis</label>
-        <textarea id="g-desc" rows="4" placeholder="What makes this game significant…"></textarea>
+        <textarea id="g-desc" rows="4" placeholder="What makes this game significant&hellip;"></textarea>
         <label>PGN (paste moves)</label>
-        <textarea id="g-pgn" rows="5" placeholder="1.e4 e5 2.Nf3 Nc6 …"></textarea>
-        <button class="admin-submit-btn" onclick="addGame()">
-          <span id="g-submit-label">Add Game &#8594;</span>
-        </button>
+        <textarea id="g-pgn" rows="5" placeholder="1.e4 e5 2.Nf3 Nc6 &hellip;"></textarea>
+        <button class="admin-submit-btn" onclick="addGame()"><span id="g-submit-label">Add Game &#8594;</span></button>
       </div>
       <p class="admin-list-title">Published Games</p>
       <div id="adminGameList"></div>
@@ -344,19 +337,16 @@
         <input type="hidden" id="d-edit-id"/>
         <input type="hidden" id="d-file-data"/>
         <input type="hidden" id="d-file-name"/>
-
         <label>Title *</label>
         <input id="d-title" type="text" placeholder="e.g. My System"/>
         <label>Author *</label>
         <input id="d-author" type="text" placeholder="e.g. Nimzowitsch"/>
-
         <label>Category Tag</label>
         <select id="d-tag">
-          <option value="">— Select tag —</option>
+          <option value="">&#8212; Select tag &#8212;</option>
           <option>Strategy</option><option>Tactics</option><option>Endgames</option>
           <option>Openings</option><option>History</option><option>Biography</option>
         </select>
-
         <label>Upload PDF File</label>
         <div class="pdf-upload-wrap">
           <div class="pdf-upload-dropzone" id="d-pdf-drop" onclick="document.getElementById('d-pdf-input').click()">
@@ -374,10 +364,8 @@
             <button class="img-remove-btn" onclick="removePdfUpload()">&#10005; Remove</button>
           </div>
         </div>
-
         <label>&mdash; or paste an external URL instead &mdash;</label>
         <input id="d-url" type="text" placeholder="https://example.com/file.pdf"/>
-
         <label>Cover Image <span style="font-weight:300;opacity:.7">(optional)</span></label>
         <div class="img-upload-wrap">
           <div class="img-upload-dropzone" id="d-img-drop" onclick="document.getElementById('d-img-input').click()">
@@ -392,16 +380,12 @@
           </div>
           <input type="hidden" id="d-img-data"/>
         </div>
-
         <label>Description</label>
         <textarea id="d-desc" rows="3" placeholder="Brief description of the book or document"></textarea>
         <label>Full Content / Summary</label>
-        <textarea id="d-content" rows="4" placeholder="Extended summary, table of contents, or key excerpts…"></textarea>
-        <button class="admin-submit-btn" onclick="addPdf()">
-          <span id="d-submit-label">Add PDF &#8594;</span>
-        </button>
+        <textarea id="d-content" rows="4" placeholder="Extended summary, table of contents, or key excerpts&hellip;"></textarea>
+        <button class="admin-submit-btn" onclick="addPdf()"><span id="d-submit-label">Add PDF &#8594;</span></button>
       </div>
-
       <p class="admin-list-title">Published PDFs</p>
       <div id="adminPdfList"></div>
       <button class="admin-reset-btn" onclick="resetToDefault()">&#9888; Reset all content to defaults</button>
