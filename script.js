@@ -1,3 +1,4 @@
+// 64 SQUARES v4 — built 2026-05-27 03:30:12
 // ===================================================
 // 64 SQUARES — script.js
 // ===================================================
@@ -699,11 +700,49 @@ function showAllArticles() {
 function renderPlayers(){const grid=document.getElementById('playersGrid');if(!grid)return;if(!siteData.players.length){grid.innerHTML='<p class="empty-msg">No players yet.</p>';return;}grid.innerHTML=siteData.players.map(function(p){const avatarHTML=p.image?'<img class="player-avatar-photo" src="'+p.image+'" alt="'+escHtml(p.name)+'"/>':'<div class="player-avatar">'+escHtml(p.name[0])+'</div>';return'<div class="player-card fade-in" onclick="openPlayer('+p.id+')"><div class="player-card-header">'+avatarHTML+'<div><div class="player-name">'+(p.title?'<span class="player-title-badge">'+escHtml(p.title)+'</span> ':'')+escHtml(p.name)+'</div><div class="player-country">'+escHtml(p.country||'')+'</div></div></div><div class="player-card-body"><div class="player-rating">Peak Rating <strong>'+escHtml(p.rating||'N/A')+'</strong></div>'+(p.style?'<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">'+escHtml(p.style)+'</div>':'')+'<div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">Click to view full profile \u2192</div></div></div>';}).join('');}
 
 let activePdfTag='All';
-function renderGames(){const list=document.getElementById('gamesList');if(!list)return;if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}list.innerHTML=siteData.games.map(function(g,i){const opening=detectOpening(g.pgn);const gid=String(g.id);const blackName=escHtml(g.black_name||g.black||'Black');const whiteName=escHtml(g.white_name||g.white||'White');return'<div class="game-entry fade-in"><div class="game-row" onclick="toggleGameViewer(\'gv-'+gid+'\','+gid+')"><div class="game-num">'+String(i+1).padStart(2,'0')+'</div><div><div class="game-title">'+escHtml(g.title)+(opening?' <span class="opening-badge-sm">\u265E '+escHtml(opening)+'</span>':'')+'</div><div class="game-meta">'+escHtml(g.white||'')+' vs '+escHtml(g.black||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-right"><div class="game-year">'+escHtml(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div></div><div class="game-viewer" id="gv-'+gid+'" style="display:none;"><div class="game-viewer-inner"><div class="gv-board-wrap"><div class="board-player-strip board-player-black">\u265A '+blackName+'</div><div id="board-'+gid+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+whiteName+'</div></div><div class="gv-controls"><div class="gv-movelist" id="ml-\'+gid+\'"></div><div class="gv-pgn" id="pgn-'+gid+'"></div><div class="gv-nav"><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+gid+'" onclick="gameStep(\''+gid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+gid+'" onclick="toggleAutoPlay(\''+gid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+gid+'">Move 0</span><button class="gv-btn" id="next-'+gid+'" onclick="gameStep(\''+gid+'\',1)">\u25B6</button><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+gid+'" onclick="flipBoard(\''+gid+'\')">&#8645;</button></div><button class="gv-open-page" onclick="openGame('+gid+')">Open full game page \u2192</button></div></div></div></div>';}).join('');}
+function renderGames(){const list=document.getElementById('gamesList');if(!list)return;if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}list.innerHTML=siteData.games.map(function(g,i){const opening=detectOpening(g.pgn);const gid=String(g.id);const blackName=escHtml(g.black_name||g.black||'Black');const whiteName=escHtml(g.white_name||g.white||'White');return'<div class="game-entry fade-in"><div class="game-row" onclick="toggleGameViewer(\'gv-'+gid+'\','+gid+')"><div class="game-num">'+String(i+1).padStart(2,'0')+'</div><div><div class="game-title">'+escHtml(g.title)+(opening?' <span class="opening-badge-sm">\u265E '+escHtml(opening)+'</span>':'')+'</div><div class="game-meta">'+escHtml(g.white||'')+' vs '+escHtml(g.black||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-right"><div class="game-year">'+escHtml(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div></div><div class="game-viewer" id="gv-'+gid+'" style="display:none;"><div class="game-viewer-inner"><div class="gv-board-wrap"><div class="board-player-strip board-player-black">\u265A '+blackName+'</div><div id="board-'+gid+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+whiteName+'</div></div><div class="gv-controls"><div class="gv-pgn" id="pgn-'+gid+'"></div><div class="gv-nav"><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+gid+'" onclick="gameStep(\''+gid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+gid+'" onclick="toggleAutoPlay(\''+gid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+gid+'">Move 0</span><button class="gv-btn" id="next-'+gid+'" onclick="gameStep(\''+gid+'\',1)">\u25B6</button><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+gid+'" onclick="flipBoard(\''+gid+'\')">&#8645;</button></div><button class="gv-open-page" onclick="openGame('+gid+')">Open full game page \u2192</button></div></div></div></div>';}).join('');}
 
 function toggleGameViewer(id,gameId){const el=document.getElementById(id);if(!el)return;const isOpen=el.style.display!=='none';el.style.display=isOpen?'none':'block';if(!isOpen){const gid=String(gameId);_activeViewerGameId=gid;const game=siteData.games.find(function(g){return String(g.id)===gid;});if(game){setTimeout(function(){initGameViewer(gid,game.pgn||'');},50);}}}
 
-function renderPDFs(){const grid=document.getElementById('pdfGrid');if(!grid)return;if(!siteData.pdfs.length){grid.innerHTML='<p class="empty-msg">No PDFs yet.</p>';return;}const tags=['All',...new Set(siteData.pdfs.map(function(p){return p.tag;}).filter(Boolean))];const filterBar='<div class="pdf-tag-filter">'+tags.map(function(t){return'<button class="pdf-tag-btn'+(t===activePdfTag?' active':'')+'" onclick="setPdfTag(\''+t+'\')">'+escHtml(t)+'</button>';}).join('')+'</div>';const filtered=activePdfTag==='All'?siteData.pdfs:siteData.pdfs.filter(function(p){return p.tag===activePdfTag;});const cards=filtered.map(function(p){const hasFile=p.file_data||p.url;return'<div class="pdf-h-card fade-in" onclick="openPdf('+p.id+')">' +(p.cover_image?'<div class="pdf-h-cover"><img src="'+p.cover_image+'" alt="'+escHtml(p.title)+'"/></div>':'<div class="pdf-h-cover pdf-h-cover-placeholder"><span>PDF</span></div>')+'<div class="pdf-h-body">'+(p.tag?'<div class="pdf-h-tag">'+escHtml(p.tag)+'</div>':'')+'<div class="pdf-h-title">'+escHtml(p.title)+'</div>'+'<div class="pdf-h-author">by '+escHtml(p.author)+'</div>'+'<div class="pdf-h-desc">'+escHtml(p.description||'')+'</div>'+'<div class="pdf-h-footer">'+'<span class="pdf-h-action">'+(hasFile?'&#8595; Download':'&#8599; View')+'</span>'+(p.size?'<span class="pdf-h-size">'+escHtml(p.size)+'</span>':'')+'</div></div></div>';}).join('')||'<p class="empty-msg">No books in this category.</p>';grid.innerHTML=filterBar+'<div class="pdf-h-grid">'+cards+'</div>';setTimeout(initFadeIn,50);}
+function renderPDFs() {
+  const grid = document.getElementById('pdfGrid');
+  if (!grid) return;
+  if (!siteData.pdfs.length) {
+    grid.innerHTML = '<p class="empty-msg">No PDFs yet.</p>';
+    return;
+  }
+  const tags = ['All', ...new Set(siteData.pdfs.map(function(p) { return p.tag; }).filter(Boolean))];
+  const filterBar = '<div class="pdf-tag-filter">'
+    + tags.map(function(t) {
+        return '<button class="pdf-tag-btn' + (t === activePdfTag ? ' active' : '')
+          + '" onclick="setPdfTag(\'' + t + '\')">' + escHtml(t) + '</button>';
+      }).join('') + '</div>';
+
+  const filtered = activePdfTag === 'All'
+    ? siteData.pdfs
+    : siteData.pdfs.filter(function(p) { return p.tag === activePdfTag; });
+
+  const cards = filtered.map(function(p) {
+    const hasFile = p.file_data || p.url;
+    const coverHTML = p.cover_image
+      ? '<div class="pdf-h-cover"><img src="' + p.cover_image + '" alt="' + escHtml(p.title) + '"/></div>'
+      : '<div class="pdf-h-cover pdf-h-cover-placeholder"><span>PDF</span></div>';
+    return '<div class="pdf-h-card fade-in" onclick="openPdf(' + p.id + ')">'
+      + coverHTML
+      + '<div class="pdf-h-body">'
+      + (p.tag ? '<div class="pdf-h-tag">' + escHtml(p.tag) + '</div>' : '')
+      + '<div class="pdf-h-title">' + escHtml(p.title) + '</div>'
+      + '<div class="pdf-h-author">by ' + escHtml(p.author) + '</div>'
+      + '<div class="pdf-h-desc">' + escHtml(p.description || '') + '</div>'
+      + '<div class="pdf-h-footer">'
+      + '<span class="pdf-h-action">' + (hasFile ? '&#8595; Download' : '&#8599; View') + '</span>'
+      + (p.size ? '<span class="pdf-h-size">' + escHtml(p.size) + '</span>' : '')
+      + '</div></div></div>';
+  }).join('') || '<p class="empty-msg">No books in this category.</p>';
+
+  grid.innerHTML = filterBar + '<div class="pdf-h-grid">' + cards + '</div>';
+  setTimeout(initFadeIn, 50);
+}
 
 function setPdfTag(tag){activePdfTag=tag;renderPDFs();}
 function renderAll(){renderArticles();renderPlayers();renderGames();renderPDFs();buildLatestStrip();buildHomeBoard();setTimeout(initFadeIn,80);}
