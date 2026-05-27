@@ -1849,7 +1849,7 @@ body.dark .gv-btn { background: #1e1e1e; border-color: #2a2a2a; }
 body.dark .gv-btn:hover { background: #2a2a2a; }
 
 /* ============================================
-   MODERN SVG PIECES
+   MERIDA CHESS PIECES
    ============================================ */
 .piece-svg-wrap,
 .ipiece.piece-svg,
@@ -1857,8 +1857,8 @@ body.dark .gv-btn:hover { background: #2a2a2a; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 88%;
-  height: 88%;
+  width: 92%;
+  height: 92%;
   font-size: inherit;
   line-height: 1;
   user-select: none;
@@ -1872,14 +1872,14 @@ body.dark .gv-btn:hover { background: #2a2a2a; }
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,.4));
 }
-/* White pieces get a subtle outline for readability on light squares */
+/* White pieces — subtle shadow so they lift off light squares */
 .wpiece.piece-svg svg {
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.45));
 }
+/* Black pieces — lighter shadow on dark squares */
 .bpiece.piece-svg svg {
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,.6));
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.7));
 }
 
 /* ============================================
