@@ -13,7 +13,6 @@
   --sans:         'DM Sans', sans-serif;
   --serif:        'Playfair Display', serif;
   --board-light:  #f0d9b5;
-  --board-dark:   #b58863;
   --board-sel:    #f6f669;
   --board-legal:  rgba(0,0,0,.18);
   --board-last:   rgba(246,246,105,.5);
@@ -1555,8 +1554,6 @@ body.dark .article-card-footer { border-color: #2a2826; }
 
 /* Override board colours site-wide */
 :root {
-  --board-light:  #f0d9b5;
-  --board-dark:   #b58863;
   --board-sel:    rgba(255,255,100,.55);
   --board-legal:  rgba(0,0,0,.22);
 }
@@ -2764,4 +2761,26 @@ body.dark .bestgames-format-hint {
   background: #0d1a2e;
   border-color: #1e3a60;
   color: #5aabf5;
+}
+
+/* ============================================
+   LICHESS CBURNETT PIECES — rendering
+   ============================================ */
+.ipiece.piece-svg,
+.vpiece.piece-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+.ipiece.piece-svg svg,
+.vpiece.piece-svg svg {
+  width: 88%;
+  height: 88%;
+  display: block;
 }
