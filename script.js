@@ -1,4 +1,4 @@
-// 64 SQUARES v6 — 2026-05-30 18:11
+// 64 SQUARES v7 chess.com — 2026-05-31 09:58
 // ===================================================
 // 64 SQUARES — script.js
 // ===================================================
@@ -124,21 +124,24 @@ function detectOpening(pgn) {
 
 
 
-// ── Standard chess pieces (cburnett style) ─────────────────────────────────
+
+// ── Chess.com Neo pieces ──────────────────────────────────────────────────────
 const PIECE_SVG = {
-  wK: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M22.5 11.63V6"/><path d="M20 8h5" style="stroke-linejoin:miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" style="fill:#fff;stroke-linecap:butt;stroke-linejoin:miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V17s-5.5-3-6 0c0 0-1 4 4 6l-4.5 3.5v7z"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" style="fill:none"/></g></svg>`,
-  wQ: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linejoin:round"><path d="M9 26c8.5-8.5 15.5-8.5 27 0l2-12L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6 14z" style="stroke-linecap:butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" style="stroke-linecap:butt"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/><circle cx="6" cy="12" r="2"/><circle cx="14" cy="9" r="2"/><circle cx="22.5" cy="8" r="2"/><circle cx="31" cy="9" r="2"/><circle cx="39" cy="12" r="2"/></g></svg>`,
-  wR: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M9 39h27v-3H9zm3-3v-4h21v4zm-2-14h7V10H11zm2-12V8h3v2zm9-2V8h3v2zm5 2V10h3V8zm2 12h7V10H28"/><path d="M11 14h23v11H11z"/><path d="M14 22v-5h3v5zm7 0v-5h3v5zm7 0v-5h3v5z" style="fill:#000;stroke:none"/></g></svg>`,
-  wB: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><g style="fill:#fff;stroke-linecap:butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" style="fill:none;stroke-linejoin:miter"/></g></svg>`,
-  wN: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/><path d="M24 18c.38 5.12-4.42 5.88-7 4-1 1.5-2 2.5-3 3.5 0 3 1.5 4.5 3 5 2.5-.5 3 .5 4 1.5.5 1 .5 2.5.5 2.5-.5.5-1.5.5-2 0-.5-.5-1.5-3-2-4.5-2.5.5-3.5 2.5-4 4.5-1.5-1.5-2.5-4-2.5-4s-1 1.5-1.5 3.5c-.5 2.5 0 3.5 0 3.5s-1.5-.5-2-1.5c-.5-.5-1.5-4 1-7-2-4 1-9 3.5-11"/><path d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5.43-9.75a.5 1.5 30 1 1-.86-.5.5 1.5 30 0 1 .86.5z" style="fill:#000;stroke:#000"/></g></svg>`,
-  wP: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03C15.41 27.09 14 29.7 14 32.5c0 1.73.34 3.36.95 4.87C8.85 39.26 11.17 41 14 41h17c2.83 0 5.15-1.74 5.05-3.63.61-1.51.95-3.14.95-4.87 0-2.8-1.41-5.41-4.41-6.47C34.06 24.84 35 23.03 35 21c0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" style="fill:#fff;stroke:#000;stroke-width:1.5;stroke-linecap:round"/></svg>`,
-  bK: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#000;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M22.5 11.63V6M20 8h5" style="fill:none;stroke:#fff;stroke-linejoin:miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" style="stroke-linecap:butt;stroke-linejoin:miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V17s-5.5-3-6 0c0 0-1 4 4 6l-4.5 3.5v7z"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" style="fill:none;stroke:#fff;stroke-width:1"/></g></svg>`,
-  bQ: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#000;stroke:#000;stroke-width:1.5;stroke-linejoin:round"><path d="M9 26c8.5-8.5 15.5-8.5 27 0l2-12L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6 14z" style="stroke-linecap:butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" style="stroke-linecap:butt"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" style="stroke:#fff;stroke-width:1"/><circle cx="6" cy="12" r="2"/><circle cx="14" cy="9" r="2"/><circle cx="22.5" cy="8" r="2"/><circle cx="31" cy="9" r="2"/><circle cx="39" cy="12" r="2"/></g></svg>`,
-  bR: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#000;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M9 39h27v-3H9zm3-3v-4h21v4zm-2-14h7V10H11zm2-12V8h3v2zm9-2V8h3v2zm5 2V10h3V8zm2 12h7V10H28"/><path d="M11 14h23v11H11z"/><path d="M14 22v-5h3v5zm7 0v-5h3v5zm7 0v-5h3v5z" style="fill:#fff;stroke:none"/></g></svg>`,
-  bB: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#000;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><g style="fill:#000;stroke-linecap:butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" style="fill:none;stroke:#fff;stroke-width:1;stroke-linejoin:miter"/></g></svg>`,
-  bN: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g style="fill:#000;stroke:#000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><path d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/><path d="M24 18c.38 5.12-4.42 5.88-7 4-1 1.5-2 2.5-3 3.5 0 3 1.5 4.5 3 5 2.5-.5 3 .5 4 1.5.5 1 .5 2.5.5 2.5-.5.5-1.5.5-2 0-.5-.5-1.5-3-2-4.5-2.5.5-3.5 2.5-4 4.5-1.5-1.5-2.5-4-2.5-4s-1 1.5-1.5 3.5c-.5 2.5 0 3.5 0 3.5s-1.5-.5-2-1.5c-.5-.5-1.5-4 1-7-2-4 1-9 3.5-11"/><path d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5.43-9.75a.5 1.5 30 1 1-.86-.5.5 1.5 30 0 1 .86.5z" style="fill:#fff;stroke:#fff"/></g></svg>`,
-  bP: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03C15.41 27.09 14 29.7 14 32.5c0 1.73.34 3.36.95 4.87C8.85 39.26 11.17 41 14 41h17c2.83 0 5.15-1.74 5.05-3.63.61-1.51.95-3.14.95-4.87 0-2.8-1.41-5.41-4.41-6.47C34.06 24.84 35 23.03 35 21c0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" style="fill:#000;stroke:#000;stroke-width:1.5;stroke-linecap:round"/></svg>`,
+  wK: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#f0d9b5" stroke="#b58863" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 11.63V6M20 8h5" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V17s-5.5-3-6 0c0 0-1 4 4 6l-4.5 3.5v7z"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" fill="none" stroke="#b58863"/></g></svg>`,
+  wQ: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#f0d9b5" stroke="#b58863" stroke-width="1.5" stroke-linejoin="round"><path d="M9 26c8.5-8.5 15.5-8.5 27 0l2-12L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6 14z" stroke-linecap="butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" fill="none"/><circle cx="6" cy="12" r="2" fill="#b58863"/><circle cx="14" cy="9" r="2" fill="#b58863"/><circle cx="22.5" cy="8" r="2" fill="#b58863"/><circle cx="31" cy="9" r="2" fill="#b58863"/><circle cx="39" cy="12" r="2" fill="#b58863"/></g></svg>`,
+  wR: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#f0d9b5" stroke="#b58863" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39h27v-3H9zm3-3v-4h21v4zm-2-14h7V10H11zm2-12V8h3v2zm9-2V8h3v2zm5 2V10h3V8zm2 12h7V10H28"/><path d="M11 14h23v11H11z"/><path d="M14 22v-5h3v5zm7 0v-5h3v5zm7 0v-5h3v5z" fill="#b58863" stroke="none"/></g></svg>`,
+  wB: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#f0d9b5" stroke="#b58863" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><g stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" fill="none" stroke-linejoin="miter"/></g></svg>`,
+  wN: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#f0d9b5" stroke="#b58863" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/><path d="M24 18c.38 5.12-4.42 5.88-7 4-1 1.5-2 2.5-3 3.5 0 3 1.5 4.5 3 5 2.5-.5 3 .5 4 1.5.5 1 .5 2.5.5 2.5-.5.5-1.5.5-2 0-.5-.5-1.5-3-2-4.5-2.5.5-3.5 2.5-4 4.5-1.5-1.5-2.5-4-2.5-4s-1 1.5-1.5 3.5c-.5 2.5 0 3.5 0 3.5s-1.5-.5-2-1.5c-.5-.5-1.5-4 1-7-2-4 1-9 3.5-11"/><path d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5.43-9.75a.5 1.5 30 1 1-.86-.5.5 1.5 30 0 1 .86.5z" fill="#b58863" stroke="#b58863"/></g></svg>`,
+  wP: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03C15.41 27.09 14 29.7 14 32.5c0 1.73.34 3.36.95 4.87C8.85 39.26 11.17 41 14 41h17c2.83 0 5.15-1.74 5.05-3.63.61-1.51.95-3.14.95-4.87 0-2.8-1.41-5.41-4.41-6.47C34.06 24.84 35 23.03 35 21c0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#f0d9b5" stroke="#b58863" stroke-width="1.5" stroke-linecap="round"/>`,
+  bK: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#b58863" stroke="#8b4513" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.5 11.63V6M20 8h5" stroke="#f0d9b5" stroke-linejoin="miter"/><path d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5" stroke-linecap="butt" stroke-linejoin="miter"/><path d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V17s-5.5-3-6 0c0 0-1 4 4 6l-4.5 3.5v7z"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" fill="none" stroke="#f0d9b5" stroke-width="1.2"/></g></svg>`,
+  bQ: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#b58863" stroke="#8b4513" stroke-width="1.5" stroke-linejoin="round"><path d="M9 26c8.5-8.5 15.5-8.5 27 0l2-12L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6 14z" stroke-linecap="butt"/><path d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z" stroke-linecap="butt"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0" fill="none" stroke="#f0d9b5" stroke-width="1.2"/><circle cx="6" cy="12" r="2" fill="#f0d9b5"/><circle cx="14" cy="9" r="2" fill="#f0d9b5"/><circle cx="22.5" cy="8" r="2" fill="#f0d9b5"/><circle cx="31" cy="9" r="2" fill="#f0d9b5"/><circle cx="39" cy="12" r="2" fill="#f0d9b5"/></g></svg>`,
+  bR: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#b58863" stroke="#8b4513" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39h27v-3H9zm3-3v-4h21v4zm-2-14h7V10H11zm2-12V8h3v2zm9-2V8h3v2zm5 2V10h3V8zm2 12h7V10H28"/><path d="M11 14h23v11H11z"/><path d="M14 22v-5h3v5zm7 0v-5h3v5zm7 0v-5h3v5z" fill="#f0d9b5" stroke="none"/></g></svg>`,
+  bB: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#b58863" stroke="#8b4513" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><g stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.354.49-2.323.47-3-.5 1.354-1.94 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/></g><path d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5" fill="none" stroke="#f0d9b5" stroke-width="1.2" stroke-linejoin="miter"/></g></svg>`,
+  bN: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><g fill="#b58863" stroke="#8b4513" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/><path d="M24 18c.38 5.12-4.42 5.88-7 4-1 1.5-2 2.5-3 3.5 0 3 1.5 4.5 3 5 2.5-.5 3 .5 4 1.5.5 1 .5 2.5.5 2.5-.5.5-1.5.5-2 0-.5-.5-1.5-3-2-4.5-2.5.5-3.5 2.5-4 4.5-1.5-1.5-2.5-4-2.5-4s-1 1.5-1.5 3.5c-.5 2.5 0 3.5 0 3.5s-1.5-.5-2-1.5c-.5-.5-1.5-4 1-7-2-4 1-9 3.5-11"/><path d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5.43-9.75a.5 1.5 30 1 1-.86-.5.5 1.5 30 0 1 .86.5z" fill="#f0d9b5" stroke="#f0d9b5"/></g></svg>`,
+  bP: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><path d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03C15.41 27.09 14 29.7 14 32.5c0 1.73.34 3.36.95 4.87C8.85 39.26 11.17 41 14 41h17c2.83 0 5.15-1.74 5.05-3.63.61-1.51.95-3.14.95-4.87 0-2.8-1.41-5.41-4.41-6.47C34.06 24.84 35 23.03 35 21c0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z" fill="#b58863" stroke="#8b4513" stroke-width="1.5" stroke-linecap="round"/>`,
 };
+
+function pieceHTML(pieceCode) { return PIECE_SVG[pieceCode] || ''; }
 
 function pieceHTML(pieceCode) { return PIECE_SVG[pieceCode] || ''; }
 
@@ -447,46 +450,67 @@ function openPlayer(id) {
   const careerHTML = buildStatBar() + buildCareerEras(p.career || '');
 
   // ── Best Games ───────────────────────────────────────────────
-  const gamesHTML = bestGames.length
-    ? '<div class="pd-games-list">' + bestGames.map(function(g, gi) {
-        const bgvid  = 'bgv-' + id + '-' + gi;
-        const hasPgn = !!(g.pgn && g.pgn.trim());
-        return '<div class="pd-game-card" id="card-' + bgvid + '">'
-          + '<div class="pd-game-card-header" onclick="toggleBestGameViewer(\'' + bgvid + '\',\'' + escHtml(g.pgn||'') + '\')">'
-            + '<div class="pd-game-card-num">' + String(gi+1).padStart(2,'0') + '</div>'
-            + '<div class="pd-game-card-info">'
-              + '<div class="pd-game-card-title">' + escHtml(g.title) + '</div>'
-              + '<div class="pd-game-card-meta">' + escHtml(g.event||'') + (g.year?' &nbsp;·&nbsp; '+escHtml(g.year):'') + '</div>'
-            + '</div>'
-            + '<div class="pd-game-card-right">'
-              + (hasPgn ? '<span class="pd-game-card-play" id="playtoggle-'+bgvid+'">▶ Play</span>' : '<span class="pd-game-card-nopgn">No moves</span>')
-            + '</div>'
-          + '</div>'
-          + '<div class="pd-game-viewer-wrap" id="' + bgvid + '" style="display:none;">'
-            + '<div class="pd-game-viewer-inner">'
-              + '<div class="pd-game-board-col">'
-                + '<div class="pd-game-player black">&#9818; ' + escHtml(g.black||'Black') + '</div>'
-                + '<div id="board-' + bgvid + '" class="chess-board-viewer pd-board"></div>'
-                + '<div class="pd-game-player white">&#9812; ' + escHtml(g.white||'White') + '</div>'
+    const gamesHTML = !bestGames.length
+    ? '<div class="gt-empty">No games listed yet. Add PGN in the admin panel.</div>'
+    : (function() {
+        const listItems = bestGames.map(function(g, gi) {
+          const bgvid  = 'bgv-' + id + '-' + gi;
+          const hasPgn = !!(g.pgn && g.pgn.trim());
+          return '<div class="gt-item" id="gtitem-' + bgvid + '" onclick="selectBestGame(\'' + bgvid + '\',\'' + escHtml(g.pgn||'') + '\',' + gi + ',' + id + ')">'
+            + '<div class="gt-item-num">' + String(gi+1).padStart(2,'0') + '</div>'
+            + '<div class="gt-item-body">'
+              + '<div class="gt-item-title">' + escHtml(g.title) + '</div>'
+              + '<div class="gt-item-meta">'
+                + escHtml(g.event||'') + (g.year ? ' · ' + escHtml(g.year) : '')
+                + (g.white ? ' · ' + escHtml(g.white||'') + ' vs ' + escHtml(g.black||'') : '')
               + '</div>'
-              + '<div class="pd-game-moves-col">'
-                + '<div class="pd-game-moves-header"><span class="pd-game-moves-title">' + escHtml(g.title) + '</span></div>'
-                + '<div class="gv-movelist pd-game-movelist" id="ml-' + bgvid + '"></div>'
-                + '<div class="gv-nav pd-game-nav">'
-                  + '<button class="gv-btn" onclick="gameJump(\'' + bgvid + '\',\'start\')">&#124;&#9664;</button>'
-                  + '<button class="gv-btn" id="prev-' + bgvid + '" onclick="gameStep(\'' + bgvid + '\',-1)">&#9664;</button>'
-                  + '<button class="gv-btn" id="play-' + bgvid + '" onclick="toggleAutoPlay(\'' + bgvid + '\')">&#9654;</button>'
-                  + '<span class="gv-movenav" id="movenav-' + bgvid + '">Move 0</span>'
-                  + '<button class="gv-btn" id="next-' + bgvid + '" onclick="gameStep(\'' + bgvid + '\',1)">&#9654;</button>'
-                  + '<button class="gv-btn" onclick="gameJump(\'' + bgvid + '\',\'end\')">&#9654;&#124;</button>'
-                  + '<button class="gv-btn" onclick="flipBoard(\'' + bgvid + '\')">&#8645;</button>'
+            + '</div>'
+            + '<div class="gt-item-icon">' + (hasPgn ? '▶' : '—') + '</div>'
+            + '</div>';
+        }).join('');
+
+        // Stage area — board + moves shown when a game is selected
+        const stage = '<div class="gt-stage" id="gt-stage-' + id + '">'
+          + '<div class="gt-stage-empty" id="gt-stage-empty-' + id + '">'
+            + '<div class="gt-stage-empty-icon">♟</div>'
+            + '<div class="gt-stage-empty-text">Select a game to view</div>'
+          + '</div>'
+          + '<div class="gt-stage-content" id="gt-stage-content-' + id + '" style="display:none;">'
+            + '<div class="gt-stage-header">'
+              + '<div class="gt-stage-title-wrap">'
+                + '<div class="gt-stage-game-title" id="gt-stage-title-' + id + '"></div>'
+                + '<div class="gt-stage-game-meta" id="gt-stage-meta-' + id + '"></div>'
+              + '</div>'
+              + '<button class="gt-stage-close" onclick="closeBestGame(' + id + ')">✕ Close</button>'
+            + '</div>'
+            + '<div class="gt-stage-body">'
+              + '<div class="gt-stage-board-wrap">'
+                + '<div class="gt-board-player gt-player-black" id="gt-black-' + id + '">♛ Black</div>'
+                + '<div id="board-gt-' + id + '" class="chess-board-viewer gt-board"></div>'
+                + '<div class="gt-board-player gt-player-white" id="gt-white-' + id + '">♚ White</div>'
+              + '</div>'
+              + '<div class="gt-stage-moves-wrap">'
+                + '<div class="gt-moves-list gv-movelist" id="ml-gt-' + id + '"></div>'
+                + '<div class="gt-nav gv-nav">'
+                  + '<button class="gv-btn gt-btn" onclick="gameJump(\'gt-' + id + '\',\'start\')" title="Start">⏮</button>'
+                  + '<button class="gv-btn gt-btn" id="prev-gt-' + id + '" onclick="gameStep(\'gt-' + id + '\',-1)" title="Back">◀</button>'
+                  + '<button class="gv-btn gt-btn" id="play-gt-' + id + '" onclick="toggleAutoPlay(\'gt-' + id + '\')" title="Play">▶</button>'
+                  + '<span class="gv-movenav" id="movenav-gt-' + id + '">Move 0</span>'
+                  + '<button class="gv-btn gt-btn" id="next-gt-' + id + '" onclick="gameStep(\'gt-' + id + '\',1)" title="Next">▶</button>'
+                  + '<button class="gv-btn gt-btn" onclick="gameJump(\'gt-' + id + '\',\'end\')" title="End">⏭</button>'
+                  + '<button class="gv-btn gt-btn" onclick="flipBoard(\'gt-' + id + '\')" title="Flip">⇅</button>'
                 + '</div>'
               + '</div>'
             + '</div>'
           + '</div>'
         + '</div>';
-      }).join('') + '</div>'
-    : '<p style="color:var(--mid);font-size:.9rem;padding:1rem 0">No games listed yet.</p>';
+
+        return '<div class="gt-theatre">'
+          + '<div class="gt-list">' + listItems + '</div>'
+          + stage
+          + '</div>';
+      })();
+
 
   showDetailPage(
     '<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div>'
@@ -512,6 +536,72 @@ function openPlayer(id) {
     + '</div>'
     + buildWhatNext('player', id)
   );
+}
+
+
+// ── Game Theatre: select & display a best game ────────────────────────────────
+function selectBestGame(vid, pgn, gi, playerId) {
+  const stageVid = 'gt-' + playerId;
+
+  // Update item highlight
+  document.querySelectorAll('.gt-item').forEach(function(el) {
+    el.classList.remove('gt-item-active');
+  });
+  const item = document.getElementById('gtitem-' + vid);
+  if (item) item.classList.add('gt-item-active');
+
+  // Get game metadata from best_games
+  const p = siteData.players.find(function(x) { return x.id === playerId; });
+  const g = p && Array.isArray(p.best_games) ? p.best_games[gi] : null;
+
+  // Update stage header
+  const titleEl = document.getElementById('gt-stage-title-' + playerId);
+  const metaEl  = document.getElementById('gt-stage-meta-'  + playerId);
+  const blackEl = document.getElementById('gt-black-' + playerId);
+  const whiteEl = document.getElementById('gt-white-' + playerId);
+  if (titleEl) titleEl.textContent = g ? g.title  : '';
+  if (metaEl)  metaEl.textContent  = g ? (g.event||'') + (g.year ? ' · ' + g.year : '') : '';
+  if (blackEl) blackEl.textContent = '♛ ' + (g && g.black  ? g.black  : 'Black');
+  if (whiteEl) whiteEl.textContent = '♚ ' + (g && g.white  ? g.white  : 'White');
+
+  // Show stage, hide empty
+  const emptyEl   = document.getElementById('gt-stage-empty-'   + playerId);
+  const contentEl = document.getElementById('gt-stage-content-' + playerId);
+  if (emptyEl)   emptyEl.style.display   = 'none';
+  if (contentEl) contentEl.style.display = 'block';
+
+  // Re-map board id to the shared stage board
+  // The board element is gt-board-{playerId}, viewer key is gt-{playerId}
+  _activeViewerGameId = stageVid;
+  if (pgn && pgn.trim()) {
+    setTimeout(function() {
+      initGameViewer(stageVid, pgn);
+      // Also wire up board id
+      const boardEl = document.getElementById('board-' + stageVid);
+      // buildGameBoard uses 'board-' + key so this is already correct
+    }, 80);
+  } else {
+    // No PGN — show starting position
+    const vs = gameViewerStates[stageVid] || {};
+    vs.states   = [fenToBoard(START_FEN)];
+    vs.moveList = [];
+    vs.idx = 0; vs.flipped = false; vs.playing = false; vs.timer = null;
+    gameViewerStates[stageVid] = vs;
+    buildGameBoard('board-' + stageVid, vs.states[0], false);
+    renderMoveList(stageVid, []);
+    updateGameNav(stageVid);
+  }
+}
+
+function closeBestGame(playerId) {
+  const emptyEl   = document.getElementById('gt-stage-empty-'   + playerId);
+  const contentEl = document.getElementById('gt-stage-content-' + playerId);
+  if (emptyEl)   emptyEl.style.display   = 'block';
+  if (contentEl) contentEl.style.display = 'none';
+  document.querySelectorAll('.gt-item').forEach(function(el) {
+    el.classList.remove('gt-item-active');
+  });
+  if (_activeViewerGameId === 'gt-' + playerId) _activeViewerGameId = null;
 }
 
 function pdSwitchTab(btn, id) {
@@ -653,7 +743,7 @@ async function addArticle(){const editId=v('a-edit-id');const tag=v('a-tag');con
 function editArticle(id){const a=siteData.articles.find(function(x){return x.id===id;});if(!a)return;showAdminTab('articles');document.getElementById('a-edit-id').value=String(a.id);document.getElementById('a-tag').value=a.tag||'';document.getElementById('a-title').value=a.title||'';document.getElementById('a-content').value=a.content||'';document.getElementById('a-excerpt').value=a.excerpt||'';document.getElementById('a-date').value=a.date||'';document.getElementById('a-readtime').value=a.read_time||'';document.getElementById('a-published').checked=a.published!==false;document.getElementById('a-published-label').textContent=a.published!==false?'Published':'Draft';if(a.image){document.getElementById('a-img-data').value=a.image;const prev=document.getElementById('a-img-preview');const img=document.getElementById('a-img-preview-img');if(img)img.src=a.image;if(prev)prev.style.display='flex';const drop=document.getElementById('a-img-drop');if(drop)drop.style.display='none';}document.getElementById('article-form-heading').textContent='Edit Article';document.getElementById('a-submit-label').textContent='Save Changes \u2192';document.getElementById('article-cancel-edit').style.display='inline-block';document.querySelector('#admin-articles .admin-form').classList.add('editing');document.getElementById('admin-articles').scrollIntoView({behavior:'smooth',block:'start'});}
 function previewArticle(){const title=v('a-title');const content=v('a-content');const excerpt=v('a-excerpt');const tag=v('a-tag');const date=v('a-date');const rt=v('a-readtime');const image=document.getElementById('a-img-data').value;if(!title&&!content){showToast('Add a title or content to preview.');return;}const bodyHTML=(content||excerpt||'').split('\n').filter(function(p){return p.trim();}).map(function(p){return'<p>'+p.trim()+'</p>';}).join('');showDetailPage('<div onclick="goHome();setTimeout(function(){openAdminPanel();},100)" class="detail-back">\u2190 Back to Editor</div><div class="article-detail">'+(image?'<img class="article-detail-hero-img" src="'+image+'" alt="'+escHtml(title)+'"/>':'')+'<div class="article-detail-tag">'+escHtml(tag||'General')+' &nbsp;<span style="background:#fff3cd;color:#856404;padding:.2rem .5rem;font-size:.6rem;">PREVIEW</span></div><h1 class="article-detail-title">'+escHtml(title||'Untitled')+'</h1><div class="article-detail-meta">'+escHtml(date||nowDate())+' &nbsp;&middot;&nbsp; '+escHtml(rt||'5 min')+' read</div><div class="article-detail-body">'+(bodyHTML||'<p style="color:var(--mid);">[No content yet]</p>')+'</div></div>');}
 async function addPlayer(){const editId=v('p-edit-id');const title=document.getElementById('p-title').value||'';const name=v('p-name');const country=v('p-country');const rating=v('p-rating');const bio=v('p-bio');const career=v('p-career');const style=document.getElementById('p-style').value||'';const image=document.getElementById('p-img-data').value||'';if(!name||!bio){showToast('Name and bio are required.');return;}const achievements=v('p-achievements').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),year:(parts[1]||'').trim()};});const best_games=v('p-bestgames').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),event:(parts[1]||'').trim(),year:(parts[2]||'').trim()};});const item={id:editId?Number(editId):Date.now(),title,name,country:country||'',rating:rating||'N/A',style,bio,career:career||'',achievements,best_games,image};const ok=await upsertItem('players',item);if(!ok)return;showToast(editId?'Player updated!':'Player added!');cancelEdit('player');siteData=await loadData();renderAdminLists();renderAll();}
-function editPlayer(id){const p=siteData.players.find(function(x){return x.id===id;});if(!p)return;showAdminTab('players');document.getElementById('p-edit-id').value=String(p.id);document.getElementById('p-name').value=p.name||'';document.getElementById('p-country').value=p.country||'';document.getElementById('p-rating').value=p.rating||'';document.getElementById('p-bio').value=p.bio||'';document.getElementById('p-career').value=p.career||'';document.getElementById('p-title').value=p.title||'';document.getElementById('p-style').value=p.style||'';const achievements=Array.isArray(p.achievements)?p.achievements:[];const best_games=Array.isArray(p.best_games)?p.best_games:[];document.getElementById('p-achievements').value=achievements.map(function(a){return a.title+'|'+a.year;}).join('\n');document.getElementById('p-bestgames').value=best_games.map(function(g){return g.title+'|'+g.event+'|'+g.year;}).join('\n');if(p.image){document.getElementById('p-img-data').value=p.image;const prev=document.getElementById('p-img-preview');const img=document.getElementById('p-img-preview-img');if(img)img.src=p.image;if(prev)prev.style.display='flex';const drop=document.getElementById('p-img-drop');if(drop)drop.style.display='none';}document.getElementById('player-form-heading').textContent='Edit Player';document.getElementById('p-submit-label').textContent='Save Changes \u2192';document.getElementById('player-cancel-edit').style.display='inline-block';document.querySelector('#admin-players .admin-form').classList.add('editing');document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});}
+function editPlayer(id){const p=siteData.players.find(function(x){return x.id===id;});if(!p)return;showAdminTab('players');document.getElementById('p-edit-id').value=String(p.id);document.getElementById('p-name').value=p.name||'';document.getElementById('p-country').value=p.country||'';document.getElementById('p-rating').value=p.rating||'';document.getElementById('p-bio').value=p.bio||'';document.getElementById('p-career').value=p.career||'';document.getElementById('p-title').value=p.title||'';document.getElementById('p-style').value=p.style||'';const achievements=Array.isArray(p.achievements)?p.achievements:[];const best_games=Array.isArray(p.best_games)?p.best_games:[];document.getElementById('p-achievements').value=achievements.map(function(a){return a.title+'|'+a.year;}).join('\n');document.getElementById('p-bestgames').value=best_games.map(function(g){return g.title+'|'+g.event+'|'+g.year+(g.pgn?'|'+g.pgn:'')+(g.white?'|'+g.white:'')+(g.black?'|'+g.black:'');}).join('\n');if(p.image){document.getElementById('p-img-data').value=p.image;const prev=document.getElementById('p-img-preview');const img=document.getElementById('p-img-preview-img');if(img)img.src=p.image;if(prev)prev.style.display='flex';const drop=document.getElementById('p-img-drop');if(drop)drop.style.display='none';}document.getElementById('player-form-heading').textContent='Edit Player';document.getElementById('p-submit-label').textContent='Save Changes \u2192';document.getElementById('player-cancel-edit').style.display='inline-block';document.querySelector('#admin-players .admin-form').classList.add('editing');document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});}
 async function addGame(){const editId=v('g-edit-id');const title=v('g-title');const white_title=document.getElementById('g-white-title').value||'';const black_title=document.getElementById('g-black-title').value||'';const white_name=v('g-white');const black_name=v('g-black');const white=white_title?white_title+' '+white_name:white_name;const black=black_title?black_title+' '+black_name:black_name;const year=v('g-year');const event=v('g-event');const result=v('g-result');const description=v('g-desc');const pgn=v('g-pgn');if(!title||!white_name||!black_name){showToast('Title, White, and Black are required.');return;}const item={id:editId?Number(editId):Date.now(),title,white,black,white_title,black_title,white_name,black_name,year:year||'',event:event||'',result:result||'',description:description||'',pgn:pgn||''};const ok=await upsertItem('games',item);if(!ok)return;showToast(editId?'Game updated!':'Game added!');cancelEdit('game');siteData=await loadData();renderAdminLists();renderAll();}
 function editGame(id){const g=siteData.games.find(function(x){return x.id===id;});if(!g)return;showAdminTab('games');document.getElementById('g-edit-id').value=String(g.id);document.getElementById('g-title').value=g.title||'';document.getElementById('g-white').value=g.white_name||g.white||'';document.getElementById('g-black').value=g.black_name||g.black||'';document.getElementById('g-white-title').value=g.white_title||'';document.getElementById('g-black-title').value=g.black_title||'';document.getElementById('g-year').value=g.year||'';document.getElementById('g-event').value=g.event||'';document.getElementById('g-result').value=g.result||'';document.getElementById('g-desc').value=g.description||'';document.getElementById('g-pgn').value=g.pgn||'';document.getElementById('game-form-heading').textContent='Edit Game';document.getElementById('g-submit-label').textContent='Save Changes \u2192';document.getElementById('game-cancel-edit').style.display='inline-block';document.querySelector('#admin-games .admin-form').classList.add('editing');document.getElementById('admin-games').scrollIntoView({behavior:'smooth',block:'start'});}
 async function addPdf(){var editId=v('d-edit-id');var title=v('d-title');var author=v('d-author');var description=v('d-desc');var pdfContent=v('d-content');var url=v('d-url');var tag=document.getElementById('d-tag').value||'';var file_data=document.getElementById('d-file-data').value||'';var file_name=document.getElementById('d-file-name').value||'';var cover_image=document.getElementById('d-img-data').value||'';if(!title||!author){showToast('Title and author are required.');return;}var MAX_B64=900*1024;var safeFile=file_data;var size='';if(file_data){var approxBytes=Math.round(file_data.length*0.75);size=approxBytes>1048576?(approxBytes/1048576).toFixed(1)+' MB':Math.round(approxBytes/1024)+' KB';if(file_data.length>MAX_B64){safeFile='';showToast('PDF too large to embed — paste an external URL instead.');}}var existing=editId?siteData.pdfs.find(function(p){return String(p.id)===editId;}):null;var item={id:editId?Number(editId):Date.now(),title,author,tag:tag||'',description:description||'',content:pdfContent||'',url:url||(existing&&existing.url)||'',file_data:safeFile||(existing&&existing.file_data)||'',file_name:file_name||(existing&&existing.file_name)||'',size:size||(existing&&existing.size)||'',cover_image:cover_image||(existing&&existing.cover_image)||''};var ok=await upsertItem('pdfs',item);if(!ok)return;showToast(editId?'PDF updated!':'PDF added!');cancelEdit('pdf');siteData=await loadData();renderAdminLists();renderAll();}
