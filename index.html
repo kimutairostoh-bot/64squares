@@ -6,7 +6,7 @@
   <title>64 Squares — Chess Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css?v=202605301811"/>
+  <link rel="stylesheet" href="style.css?v=202605310958"/>
 </head>
 <body>
 
@@ -255,13 +255,17 @@
         <textarea id="p-achievements" rows="3" placeholder="World Chess Champion | 1985&#8211;2000&#10;Peak FIDE Rating 2851 | 1999"></textarea>
 
         <!-- BEST GAMES — updated with PGN field -->
-        <label>Best Games <span style="font-weight:300;opacity:.7">(one per line: Title | Event | Year | PGN)</span></label>
-        <div style="background:#f5f4f0;border:1px solid var(--rule);padding:.7rem .9rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);line-height:1.7;margin-bottom:.3rem;">
-          &#9817; Format: <strong>Game Title | Event Name | Year | 1.e4 e5 2.Nf3&hellip;</strong><br/>
-          The PGN (moves) field is optional — if provided a playable board appears on the player page.<br/>
-          Example: <em>Immortal Game vs Topalov | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6&hellip;</em>
+                <label>Best Games <span style="font-weight:300;opacity:.7">(one per line — 4 fields)</span></label>
+        <div class="bestgames-format-hint">
+          &#9817; <strong>Format:</strong> Title | Event | Year | PGN moves<br/>
+          &#9812; <strong>Optional extra fields:</strong> White player | Black player<br/>
+          Full format: <strong>Title | Event | Year | PGN | White | Black</strong><br/><br/>
+          <strong>Example:</strong><br/>
+          Immortal Game | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6 | Kasparov | Topalov<br/>
+          Game of the Century | Rosenwald Trophy | 1956 | 1.Nf3 Nf6 2.c4 g6 | Byrne | Fischer<br/><br/>
+          &#9888; Leave PGN blank if you don&rsquo;t have moves yet &mdash; game still appears in the list.
         </div>
-        <textarea id="p-bestgames" rows="5" placeholder="Immortal Game vs Topalov | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6 3.Bb5&#10;Game of the Century | Rosenwald Trophy | 1956 | 1.Nf3 Nf6 2.c4 g6&#10;&#10;(Leave PGN blank if you don&#39;t have moves yet)"></textarea>
+        <textarea id="p-bestgames" rows="6" placeholder="Immortal Game | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6 3.Bb5 | Kasparov | Topalov&#10;Game of the Century | Rosenwald Trophy | 1956 | 1.Nf3 Nf6 2.c4 | Byrne | Fischer&#10;World Championship Game 6 | Dubai | 2021 | 1.d4 Nf6 | Carlsen | Nepomniachtchi"></textarea>
 
         <button class="admin-submit-btn" onclick="addPlayer()"><span id="p-submit-label">Add Player &#8594;</span></button>
       </div>
@@ -397,6 +401,6 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="script.js?v=202605301811"></script>
+<script src="script.js?v=202605310958"></script>
 </body>
 </html>
