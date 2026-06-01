@@ -1,4 +1,4 @@
-// 64 SQUARES v8 cburnett — 2026-05-31 10:11
+// 64 SQUARES v9 — best-games-autoshow — 2026-06-01 06:05
 // ===================================================
 // 64 SQUARES — script.js
 // ===================================================
@@ -297,7 +297,7 @@ document.addEventListener('keydown',function(e){if(!_activeViewerGameId)return;i
 
 let currentPage='home';
 function goHome(){currentPage='home';document.getElementById('homePage').style.display='block';document.getElementById('detailPage').style.display='none';window.scrollTo(0,0);}
-function showDetailPage(html){currentPage='detail';document.getElementById('homePage').style.display='none';document.getElementById('detailPage').style.display='block';document.getElementById('detailContent').innerHTML=html;window.scrollTo(0,0);setTimeout(initArticleBoards,120);}
+function showDetailPage(html){currentPage='detail';document.getElementById('homePage').style.display='none';document.getElementById('detailPage').style.display='block';document.getElementById('detailContent').innerHTML=html;window.scrollTo(0,0);setTimeout(initArticleBoards,120); setTimeout(initBestGameBoards,200);}
 function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
 
 function buildWhatNext(currentType,currentId){const items=[];const arts=siteData.articles.filter(function(a){return a.published!==false&&(currentType!=='article'||a.id!==currentId);});const plrs=siteData.players.filter(function(p){return currentType!=='player'||p.id!==currentId;});const gms=siteData.games.filter(function(g){return currentType!=='game'||g.id!==currentId;});const pick=function(arr){return arr.length?arr[currentId%arr.length]:null;};const a=pick(arts);const p=pick(plrs);const g=pick(gms);if(a)items.push({type:'article',id:a.id,label:a.tag||'Article',title:a.title,sub:(a.date||'')+(a.read_time?' &middot; '+a.read_time+' read':'')});if(p)items.push({type:'player',id:p.id,label:'Player',title:(p.title?p.title+' ':'')+p.name,sub:p.country||''});if(g)items.push({type:'game',id:g.id,label:'Game',title:g.title,sub:g.white+' vs '+g.black});if(!items.length)return'';return'<div class="whatnext-strip"><div class="whatnext-title">What to read next</div><div class="whatnext-cards">'+items.map(function(it){const oc=it.type==='article'?'openArticle('+it.id+')':it.type==='player'?'openPlayer('+it.id+')':'openGame('+it.id+')';return'<div class="whatnext-card" onclick="'+oc+'"><div class="whatnext-label">'+it.label+'</div><div class="whatnext-card-title">'+it.title+'</div><div class="whatnext-card-sub">'+it.sub+'</div></div>';}).join('')+'</div></div>';}
@@ -454,65 +454,56 @@ function openPlayer(id) {
 
   // ── Best Games ───────────────────────────────────────────────
     const gamesHTML = !bestGames.length
-    ? '<div class="gt-empty">No games listed yet. Add PGN in the admin panel.</div>'
-    : (function() {
-        const listItems = bestGames.map(function(g, gi) {
-          const bgvid  = 'bgv-' + id + '-' + gi;
-          const hasPgn = !!(g.pgn && g.pgn.trim());
-          return '<div class="gt-item" id="gtitem-' + bgvid + '" onclick="selectBestGame(\'' + bgvid + '\',\'' + escHtml(g.pgn||'') + '\',' + gi + ',' + id + ')">'
-            + '<div class="gt-item-num">' + String(gi+1).padStart(2,'0') + '</div>'
-            + '<div class="gt-item-body">'
-              + '<div class="gt-item-title">' + escHtml(g.title) + '</div>'
-              + '<div class="gt-item-meta">'
-                + escHtml(g.event||'') + (g.year ? ' · ' + escHtml(g.year) : '')
-                + (g.white ? ' · ' + escHtml(g.white||'') + ' vs ' + escHtml(g.black||'') : '')
-              + '</div>'
-            + '</div>'
-            + '<div class="gt-item-icon">' + (hasPgn ? '▶' : '—') + '</div>'
-            + '</div>';
-        }).join('');
-
-        // Stage area — board + moves shown when a game is selected
-        const stage = '<div class="gt-stage" id="gt-stage-' + id + '">'
-          + '<div class="gt-stage-empty" id="gt-stage-empty-' + id + '">'
-            + '<div class="gt-stage-empty-icon">♟</div>'
-            + '<div class="gt-stage-empty-text">Select a game to view</div>'
-          + '</div>'
-          + '<div class="gt-stage-content" id="gt-stage-content-' + id + '" style="display:none;">'
-            + '<div class="gt-stage-header">'
-              + '<div class="gt-stage-title-wrap">'
-                + '<div class="gt-stage-game-title" id="gt-stage-title-' + id + '"></div>'
-                + '<div class="gt-stage-game-meta" id="gt-stage-meta-' + id + '"></div>'
-              + '</div>'
-              + '<button class="gt-stage-close" onclick="closeBestGame(' + id + ')">✕ Close</button>'
-            + '</div>'
-            + '<div class="gt-stage-body">'
-              + '<div class="gt-stage-board-wrap">'
-                + '<div class="gt-board-player gt-player-black" id="gt-black-' + id + '">♛ Black</div>'
-                + '<div id="board-gt-' + id + '" class="chess-board-viewer gt-board"></div>'
-                + '<div class="gt-board-player gt-player-white" id="gt-white-' + id + '">♚ White</div>'
-              + '</div>'
-              + '<div class="gt-stage-moves-wrap">'
-                + '<div class="gt-moves-list gv-movelist" id="ml-gt-' + id + '"></div>'
-                + '<div class="gt-nav gv-nav">'
-                  + '<button class="gv-btn gt-btn" onclick="gameJump(\'gt-' + id + '\',\'start\')" title="Start">⏮</button>'
-                  + '<button class="gv-btn gt-btn" id="prev-gt-' + id + '" onclick="gameStep(\'gt-' + id + '\',-1)" title="Back">◀</button>'
-                  + '<button class="gv-btn gt-btn" id="play-gt-' + id + '" onclick="toggleAutoPlay(\'gt-' + id + '\')" title="Play">▶</button>'
-                  + '<span class="gv-movenav" id="movenav-gt-' + id + '">Move 0</span>'
-                  + '<button class="gv-btn gt-btn" id="next-gt-' + id + '" onclick="gameStep(\'gt-' + id + '\',1)" title="Next">▶</button>'
-                  + '<button class="gv-btn gt-btn" onclick="gameJump(\'gt-' + id + '\',\'end\')" title="End">⏭</button>'
-                  + '<button class="gv-btn gt-btn" onclick="flipBoard(\'gt-' + id + '\')" title="Flip">⇅</button>'
-                + '</div>'
+    ? '<div style="color:var(--mid);font-family:var(--mono);font-size:.8rem;padding:1.5rem 0;">No games listed yet.</div>'
+    : '<div class="bgc-grid">' + bestGames.slice(0, 10).map(function(g, gi) {
+        const bgvid  = 'bgv-' + id + '-' + gi;
+        const hasPgn = !!(g.pgn && g.pgn.trim());
+        const result = g.result || '';
+        const resultBadge = result === '1-0'   ? '<span class="bgc-result win">1–0</span>'
+                          : result === '0-1'   ? '<span class="bgc-result loss">0–1</span>'
+                          : result === '1/2'   ? '<span class="bgc-result draw">½–½</span>'
+                          : '';
+        return '<div class="bgc-card" id="bgc-' + bgvid + '">'
+          // Card header
+          + '<div class="bgc-header">'
+            + '<div class="bgc-num">' + String(gi + 1).padStart(2, '0') + '</div>'
+            + '<div class="bgc-info">'
+              + '<div class="bgc-title">' + escHtml(g.title) + ' ' + resultBadge + '</div>'
+              + '<div class="bgc-meta">'
+                + (g.white ? escHtml(g.white) + ' <span class="bgc-vs">vs</span> ' + escHtml(g.black) : '')
+                + (g.event ? (g.white ? ' &nbsp;·&nbsp; ' : '') + escHtml(g.event) : '')
+                + (g.year  ? ' &nbsp;·&nbsp; ' + escHtml(g.year)  : '')
               + '</div>'
             + '</div>'
           + '</div>'
+          // Board always visible
+          + '<div class="bgc-board-wrap">'
+            + '<div class="bgc-body">'
+              + '<div class="bgc-board-col">'
+                + '<div class="bgc-player black">&#9818; ' + escHtml(g.black || 'Black') + '</div>'
+                + '<div id="board-' + bgvid + '" class="chess-board-viewer bgc-board"></div>'
+                + '<div class="bgc-player white">&#9812; ' + escHtml(g.white || 'White') + '</div>'
+              + '</div>'
+              + '<div class="bgc-moves-col">'
+                + (hasPgn
+                    ? '<div class="gv-movelist bgc-movelist" id="ml-' + bgvid + '"></div>'
+                      + '<div class="gv-nav bgc-nav">'
+                        + '<button class="gv-btn" onclick="gameJump(\'' + bgvid + '\',\'start\')" title="Start">&#124;&#9664;</button>'
+                        + '<button class="gv-btn" id="prev-' + bgvid + '" onclick="gameStep(\'' + bgvid + '\',-1)">&#9664;</button>'
+                        + '<button class="gv-btn" id="play-' + bgvid + '" onclick="toggleAutoPlay(\'' + bgvid + '\')">&#9654;</button>'
+                        + '<span class="gv-movenav" id="movenav-' + bgvid + '">Move 0</span>'
+                        + '<button class="gv-btn" id="next-' + bgvid + '" onclick="gameStep(\'' + bgvid + '\',1)">&#9654;</button>'
+                        + '<button class="gv-btn" onclick="gameJump(\'' + bgvid + '\',\'end\')">&#9654;&#124;</button>'
+                        + '<button class="gv-btn" onclick="flipBoard(\'' + bgvid + '\')">&#8645;</button>'
+                      + '</div>'
+                    : '<div class="bgc-no-pgn">No moves available</div>')
+              + '</div>'
+            + '</div>'
+          + '</div>'
+          // Hidden PGN data
+          + (hasPgn ? '<div class="bgc-pgn-data" style="display:none" data-vid="' + bgvid + '">' + escHtml(g.pgn) + '</div>' : '')
         + '</div>';
-
-        return '<div class="gt-theatre">'
-          + '<div class="gt-list">' + listItems + '</div>'
-          + stage
-          + '</div>';
-      })();
+      }).join('') + '</div>';
 
 
   showDetailPage(
@@ -605,6 +596,18 @@ function closeBestGame(playerId) {
     el.classList.remove('gt-item-active');
   });
   if (_activeViewerGameId === 'gt-' + playerId) _activeViewerGameId = null;
+}
+
+
+// Auto-init all best game boards on player detail page
+function initBestGameBoards() {
+  document.querySelectorAll('.bgc-pgn-data').forEach(function(el) {
+    const vid = el.dataset.vid;
+    const pgn = el.textContent;
+    if (vid && pgn && pgn.trim()) {
+      setTimeout(function() { initGameViewer(vid, pgn); }, 80);
+    }
+  });
 }
 
 function pdSwitchTab(btn, id) {
@@ -745,8 +748,8 @@ async function deleteItem(type,id){if(!confirm('Delete this item?'))return;const
 async function addArticle(){const editId=v('a-edit-id');const tag=v('a-tag');const title=v('a-title');const content=v('a-content');const excerpt=v('a-excerpt');const date=v('a-date');const rt=v('a-readtime');const published=document.getElementById('a-published').checked;const image=document.getElementById('a-img-data').value||'';if(!title){showToast('Title is required.');return;}if(!content&&!excerpt){showToast('Add content or an excerpt.');return;}const newExcerpt=excerpt||content.slice(0,160)+(content.length>160?'\u2026':'');const item={id:editId?Number(editId):Date.now(),tag:tag||'General',title,content,excerpt:newExcerpt,date:date||nowDate(),read_time:rt||'5 min',published,image};const ok=await upsertItem('articles',item);if(!ok)return;showToast(published?'Article published!':'Draft saved!');cancelEdit('article');siteData=await loadData();renderAdminLists();renderAll();}
 function editArticle(id){const a=siteData.articles.find(function(x){return x.id===id;});if(!a)return;showAdminTab('articles');document.getElementById('a-edit-id').value=String(a.id);document.getElementById('a-tag').value=a.tag||'';document.getElementById('a-title').value=a.title||'';document.getElementById('a-content').value=a.content||'';document.getElementById('a-excerpt').value=a.excerpt||'';document.getElementById('a-date').value=a.date||'';document.getElementById('a-readtime').value=a.read_time||'';document.getElementById('a-published').checked=a.published!==false;document.getElementById('a-published-label').textContent=a.published!==false?'Published':'Draft';if(a.image){document.getElementById('a-img-data').value=a.image;const prev=document.getElementById('a-img-preview');const img=document.getElementById('a-img-preview-img');if(img)img.src=a.image;if(prev)prev.style.display='flex';const drop=document.getElementById('a-img-drop');if(drop)drop.style.display='none';}document.getElementById('article-form-heading').textContent='Edit Article';document.getElementById('a-submit-label').textContent='Save Changes \u2192';document.getElementById('article-cancel-edit').style.display='inline-block';document.querySelector('#admin-articles .admin-form').classList.add('editing');document.getElementById('admin-articles').scrollIntoView({behavior:'smooth',block:'start'});}
 function previewArticle(){const title=v('a-title');const content=v('a-content');const excerpt=v('a-excerpt');const tag=v('a-tag');const date=v('a-date');const rt=v('a-readtime');const image=document.getElementById('a-img-data').value;if(!title&&!content){showToast('Add a title or content to preview.');return;}const bodyHTML=(content||excerpt||'').split('\n').filter(function(p){return p.trim();}).map(function(p){return'<p>'+p.trim()+'</p>';}).join('');showDetailPage('<div onclick="goHome();setTimeout(function(){openAdminPanel();},100)" class="detail-back">\u2190 Back to Editor</div><div class="article-detail">'+(image?'<img class="article-detail-hero-img" src="'+image+'" alt="'+escHtml(title)+'"/>':'')+'<div class="article-detail-tag">'+escHtml(tag||'General')+' &nbsp;<span style="background:#fff3cd;color:#856404;padding:.2rem .5rem;font-size:.6rem;">PREVIEW</span></div><h1 class="article-detail-title">'+escHtml(title||'Untitled')+'</h1><div class="article-detail-meta">'+escHtml(date||nowDate())+' &nbsp;&middot;&nbsp; '+escHtml(rt||'5 min')+' read</div><div class="article-detail-body">'+(bodyHTML||'<p style="color:var(--mid);">[No content yet]</p>')+'</div></div>');}
-async function addPlayer(){const editId=v('p-edit-id');const title=document.getElementById('p-title').value||'';const name=v('p-name');const country=v('p-country');const rating=v('p-rating');const bio=v('p-bio');const career=v('p-career');const style=document.getElementById('p-style').value||'';const image=document.getElementById('p-img-data').value||'';if(!name||!bio){showToast('Name and bio are required.');return;}const achievements=v('p-achievements').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),year:(parts[1]||'').trim()};});const best_games=v('p-bestgames').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),event:(parts[1]||'').trim(),year:(parts[2]||'').trim()};});const item={id:editId?Number(editId):Date.now(),title,name,country:country||'',rating:rating||'N/A',style,bio,career:career||'',achievements,best_games,image};const ok=await upsertItem('players',item);if(!ok)return;showToast(editId?'Player updated!':'Player added!');cancelEdit('player');siteData=await loadData();renderAdminLists();renderAll();}
-function editPlayer(id){const p=siteData.players.find(function(x){return x.id===id;});if(!p)return;showAdminTab('players');document.getElementById('p-edit-id').value=String(p.id);document.getElementById('p-name').value=p.name||'';document.getElementById('p-country').value=p.country||'';document.getElementById('p-rating').value=p.rating||'';document.getElementById('p-bio').value=p.bio||'';document.getElementById('p-career').value=p.career||'';document.getElementById('p-title').value=p.title||'';document.getElementById('p-style').value=p.style||'';const achievements=Array.isArray(p.achievements)?p.achievements:[];const best_games=Array.isArray(p.best_games)?p.best_games:[];document.getElementById('p-achievements').value=achievements.map(function(a){return a.title+'|'+a.year;}).join('\n');document.getElementById('p-bestgames').value=best_games.map(function(g){return g.title+'|'+g.event+'|'+g.year+(g.pgn?'|'+g.pgn:'')+(g.white?'|'+g.white:'')+(g.black?'|'+g.black:'');}).join('\n');if(p.image){document.getElementById('p-img-data').value=p.image;const prev=document.getElementById('p-img-preview');const img=document.getElementById('p-img-preview-img');if(img)img.src=p.image;if(prev)prev.style.display='flex';const drop=document.getElementById('p-img-drop');if(drop)drop.style.display='none';}document.getElementById('player-form-heading').textContent='Edit Player';document.getElementById('p-submit-label').textContent='Save Changes \u2192';document.getElementById('player-cancel-edit').style.display='inline-block';document.querySelector('#admin-players .admin-form').classList.add('editing');document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});}
+async function addPlayer(){const editId=v('p-edit-id');const title=document.getElementById('p-title').value||'';const name=v('p-name');const country=v('p-country');const rating=v('p-rating');const bio=v('p-bio');const career=v('p-career');const style=document.getElementById('p-style').value||'';const image=document.getElementById('p-img-data').value||'';if(!name||!bio){showToast('Name and bio are required.');return;}const achievements=v('p-achievements').split('\n').filter(function(l){return l.trim();}).map(function(l){const parts=l.split('|');return{title:(parts[0]||'').trim(),year:(parts[1]||'').trim()};});const best_games=v('p-bestgames').split('\n').filter(function(l){return l.trim();}).map(function(l){const p=l.split('|');return{title:(p[0]||'').trim(),event:(p[1]||'').trim(),year:(p[2]||'').trim(),pgn:(p[3]||'').trim(),white:(p[4]||'').trim(),black:(p[5]||'').trim(),result:(p[6]||'').trim()};});const item={id:editId?Number(editId):Date.now(),title,name,country:country||'',rating:rating||'N/A',style,bio,career:career||'',achievements,best_games,image};const ok=await upsertItem('players',item);if(!ok)return;showToast(editId?'Player updated!':'Player added!');cancelEdit('player');siteData=await loadData();renderAdminLists();renderAll();}
+function editPlayer(id){const p=siteData.players.find(function(x){return x.id===id;});if(!p)return;showAdminTab('players');document.getElementById('p-edit-id').value=String(p.id);document.getElementById('p-name').value=p.name||'';document.getElementById('p-country').value=p.country||'';document.getElementById('p-rating').value=p.rating||'';document.getElementById('p-bio').value=p.bio||'';document.getElementById('p-career').value=p.career||'';document.getElementById('p-title').value=p.title||'';document.getElementById('p-style').value=p.style||'';const achievements=Array.isArray(p.achievements)?p.achievements:[];const best_games=Array.isArray(p.best_games)?p.best_games:[];document.getElementById('p-achievements').value=achievements.map(function(a){return a.title+'|'+a.year;}).join('\n');document.getElementById('p-bestgames').value=best_games.map(function(g){return g.title+'|'+(g.event||'')+'|'+(g.year||'')+'|'+(g.pgn||'')+'|'+(g.white||'')+'|'+(g.black||'')+'|'+(g.result||'');}).join('\n');if(p.image){document.getElementById('p-img-data').value=p.image;const prev=document.getElementById('p-img-preview');const img=document.getElementById('p-img-preview-img');if(img)img.src=p.image;if(prev)prev.style.display='flex';const drop=document.getElementById('p-img-drop');if(drop)drop.style.display='none';}document.getElementById('player-form-heading').textContent='Edit Player';document.getElementById('p-submit-label').textContent='Save Changes \u2192';document.getElementById('player-cancel-edit').style.display='inline-block';document.querySelector('#admin-players .admin-form').classList.add('editing');document.getElementById('admin-players').scrollIntoView({behavior:'smooth',block:'start'});}
 async function addGame(){const editId=v('g-edit-id');const title=v('g-title');const white_title=document.getElementById('g-white-title').value||'';const black_title=document.getElementById('g-black-title').value||'';const white_name=v('g-white');const black_name=v('g-black');const white=white_title?white_title+' '+white_name:white_name;const black=black_title?black_title+' '+black_name:black_name;const year=v('g-year');const event=v('g-event');const result=v('g-result');const description=v('g-desc');const pgn=v('g-pgn');if(!title||!white_name||!black_name){showToast('Title, White, and Black are required.');return;}const item={id:editId?Number(editId):Date.now(),title,white,black,white_title,black_title,white_name,black_name,year:year||'',event:event||'',result:result||'',description:description||'',pgn:pgn||''};const ok=await upsertItem('games',item);if(!ok)return;showToast(editId?'Game updated!':'Game added!');cancelEdit('game');siteData=await loadData();renderAdminLists();renderAll();}
 function editGame(id){const g=siteData.games.find(function(x){return x.id===id;});if(!g)return;showAdminTab('games');document.getElementById('g-edit-id').value=String(g.id);document.getElementById('g-title').value=g.title||'';document.getElementById('g-white').value=g.white_name||g.white||'';document.getElementById('g-black').value=g.black_name||g.black||'';document.getElementById('g-white-title').value=g.white_title||'';document.getElementById('g-black-title').value=g.black_title||'';document.getElementById('g-year').value=g.year||'';document.getElementById('g-event').value=g.event||'';document.getElementById('g-result').value=g.result||'';document.getElementById('g-desc').value=g.description||'';document.getElementById('g-pgn').value=g.pgn||'';document.getElementById('game-form-heading').textContent='Edit Game';document.getElementById('g-submit-label').textContent='Save Changes \u2192';document.getElementById('game-cancel-edit').style.display='inline-block';document.querySelector('#admin-games .admin-form').classList.add('editing');document.getElementById('admin-games').scrollIntoView({behavior:'smooth',block:'start'});}
 async function addPdf(){var editId=v('d-edit-id');var title=v('d-title');var author=v('d-author');var description=v('d-desc');var pdfContent=v('d-content');var url=v('d-url');var tag=document.getElementById('d-tag').value||'';var file_data=document.getElementById('d-file-data').value||'';var file_name=document.getElementById('d-file-name').value||'';var cover_image=document.getElementById('d-img-data').value||'';if(!title||!author){showToast('Title and author are required.');return;}var MAX_B64=900*1024;var safeFile=file_data;var size='';if(file_data){var approxBytes=Math.round(file_data.length*0.75);size=approxBytes>1048576?(approxBytes/1048576).toFixed(1)+' MB':Math.round(approxBytes/1024)+' KB';if(file_data.length>MAX_B64){safeFile='';showToast('PDF too large to embed — paste an external URL instead.');}}var existing=editId?siteData.pdfs.find(function(p){return String(p.id)===editId;}):null;var item={id:editId?Number(editId):Date.now(),title,author,tag:tag||'',description:description||'',content:pdfContent||'',url:url||(existing&&existing.url)||'',file_data:safeFile||(existing&&existing.file_data)||'',file_name:file_name||(existing&&existing.file_name)||'',size:size||(existing&&existing.size)||'',cover_image:cover_image||(existing&&existing.cover_image)||''};var ok=await upsertItem('pdfs',item);if(!ok)return;showToast(editId?'PDF updated!':'PDF added!');cancelEdit('pdf');siteData=await loadData();renderAdminLists();renderAll();}
