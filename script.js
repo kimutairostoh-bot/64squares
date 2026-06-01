@@ -1,4 +1,4 @@
-// 64 SQUARES v10 — 2026-06-01 06:38
+// 64 SQUARES v12 — board-fix — 2026-06-01 07:04
 // ===================================================
 // 64 SQUARES — script.js
 // ===================================================
@@ -56,9 +56,9 @@ const defaultData = {
     { id: 3, tag: 'Opening Theory', title: 'The Sicilian Dragon: Fire on the Board', excerpt: 'One of chess\'s most double-edged openings — why the Dragon keeps burning generations of players.', content: 'Few opening systems in chess generate as much heat as the Sicilian Dragon.\n\nThe Dragon demands deep theoretical preparation. A single misplaced move can be catastrophic for either side.', date: 'Mar 2026', read_time: '6 min', published: true, image: '' },
   ],
   players: [
-    { id: 1, title: 'GM', name: 'Garry Kasparov', country: 'Russia', rating: '2851', style: 'Universal', bio: 'Widely regarded as the greatest chess player of all time, Garry Kasparov dominated competitive chess for two decades. Born in Baku in 1963, he became World Champion at 22 — the youngest in history at the time — defeating the formidable Anatoly Karpov in a legendary five-match series.', career: '1985–2000: World Championship era\nKasparov defeated Karpov in five legendary World Championship matches from 1984 to 1990. He held the world number one ranking for 225 months.\n\n1997: The Deep Blue match\nIn 1997, he famously lost a match to IBM\'s Deep Blue — the first time a computer defeated a reigning world champion under standard time controls.', achievements: [{ title: 'World Chess Champion', year: '1985–2000' }, { title: 'Peak FIDE Rating 2851', year: '1999' }, { title: 'World number 1 for 225 months', year: '1984–2005' }], best_games: [{ title: 'Kasparov vs. Topalov — The Immortal Game', event: 'Wijk aan Zee', year: '1999' }], image: '' },
-    { id: 2, title: 'GM', name: 'Magnus Carlsen', country: 'Norway', rating: '2882', style: 'Universal', bio: 'Magnus Carlsen is a Norwegian grandmaster and the highest-rated player in chess history, achieving a peak rating of 2882 in 2014. Born in 1990, he became a grandmaster at just 13 years of age after winning the C group at Corus in Wijk aan Zee.', career: '2004: The prodigy emerges\nAt just 13 years old, Carlsen made headlines by winning the C group at Corus with 10½/13. His win over Sipke Ernst in 29 moves announced a talent unlike anything seen in a generation.\n\n2009–2010: The climb to world number one\nAt Nanjing Pearl Spring 2009, Carlsen achieved a performance rating of 3002 — one of the greatest tournament results in chess history. By December 2009 he surpassed Topalov as world number one.\n\n2013–2023: World Chess Champion\nCarlsen defeated Anand in Chennai 2013, becoming the 16th undisputed World Champion at age 22. He defended the title four times before voluntarily vacating it in 2022.', achievements: [{ title: 'FIDE World Chess Champion', year: '2013–2023' }, { title: 'Peak FIDE Rating 2882', year: '2014' }, { title: 'World Rapid Champion (6 titles)', year: '2014–2025' }, { title: 'World Blitz Champion (9 titles)', year: '2009–2025' }], best_games: [{ title: 'Carlsen vs. Karjakin — Game 10', event: 'World Championship Match', year: '2016' }], image: '' },
-    { id: 3, title: 'GM', name: 'Bobby Fischer', country: 'USA', rating: '2785', style: 'Tactical', bio: 'Robert James Fischer, the 11th World Chess Champion. Born in 1943, became a grandmaster at 15 — a world record at the time. His intensity, genius, and turbulent personality made him a cultural phenomenon beyond chess.', career: '1956–1971: Rise to the top\nFischer won the US Championship eight times, starting at age 14. His 1971 Candidates campaign saw him defeat Taimanov and Larsen 6–0 each — results without precedent in professional chess.\n\n1972: The Match of the Century\nFischer\'s 1972 match against Spassky in Reykjavik became a global media sensation during the Cold War. He won 12.5–8.5 to become the first American World Champion.\n\n1975: Title forfeited\nFischer refused to defend his title against Anatoly Karpov in 1975, forfeiting the championship. He did not play another official match until 1992.', achievements: [{ title: 'World Chess Champion', year: '1972–1975' }, { title: 'US Chess Champion (8 times)', year: '1957–1967' }, { title: 'Youngest US Champion ever', year: '1957' }], best_games: [{ title: 'The Game of the Century vs. Donald Byrne', event: 'Rosenwald Trophy', year: '1956' }], image: '' },
+    { id: 1, title: 'GM', name: 'Garry Kasparov', country: 'Russia', rating: '2851', style: 'Universal', bio: 'Widely regarded as the greatest chess player of all time, Garry Kasparov dominated competitive chess for two decades. Born in Baku in 1963, he became World Champion at 22 — the youngest in history at the time — defeating the formidable Anatoly Karpov in a legendary five-match series.', career: '1985–2000: World Championship era\nKasparov defeated Karpov in five legendary World Championship matches from 1984 to 1990. He held the world number one ranking for 225 months.\n\n1997: The Deep Blue match\nIn 1997, he famously lost a match to IBM\'s Deep Blue — the first time a computer defeated a reigning world champion under standard time controls.', achievements: [{ title: 'World Chess Champion', year: '1985–2000' }, { title: 'Peak FIDE Rating 2851', year: '1999' }, { title: 'World number 1 for 225 months', year: '1984–2005' }], best_games: [{ title: 'Kasparov vs. Topalov — Immortal Game', event: 'Wijk aan Zee', year: '1999', white: 'Kasparov', black: 'Topalov', result: '1-0', pgn: '1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Be3 Bg7 5.Qd2 c6 6.f3 b5 7.Nge2 Nbd7 8.Bh6 Bxh6 9.Qxh6 Bb7 10.a3 e5 11.O-O-O Qe7 12.Kb1 a6 13.Nc1 O-O-O 14.Nb3 exd4 15.Rxd4 c5 16.Rd1 Nb6 17.g3 Kb8' }], image: '' },
+    { id: 2, title: 'GM', name: 'Magnus Carlsen', country: 'Norway', rating: '2882', style: 'Universal', bio: 'Magnus Carlsen is a Norwegian grandmaster and the highest-rated player in chess history, achieving a peak rating of 2882 in 2014. Born in 1990, he became a grandmaster at just 13 years of age after winning the C group at Corus in Wijk aan Zee.', career: '2004: The prodigy emerges\nAt just 13 years old, Carlsen made headlines by winning the C group at Corus with 10½/13. His win over Sipke Ernst in 29 moves announced a talent unlike anything seen in a generation.\n\n2009–2010: The climb to world number one\nAt Nanjing Pearl Spring 2009, Carlsen achieved a performance rating of 3002 — one of the greatest tournament results in chess history. By December 2009 he surpassed Topalov as world number one.\n\n2013–2023: World Chess Champion\nCarlsen defeated Anand in Chennai 2013, becoming the 16th undisputed World Champion at age 22. He defended the title four times before voluntarily vacating it in 2022.', achievements: [{ title: 'FIDE World Chess Champion', year: '2013–2023' }, { title: 'Peak FIDE Rating 2882', year: '2014' }, { title: 'World Rapid Champion (6 titles)', year: '2014–2025' }, { title: 'World Blitz Champion (9 titles)', year: '2009–2025' }], best_games: [{ title: 'Carlsen vs. Karjakin — Game 10', event: 'World Championship Match', year: '2016', white: 'Carlsen', black: 'Karjakin', result: '1-0', pgn: '1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1 b5 7.Bb3 d6 8.c3 O-O 9.h3 Nb8 10.d4 Nbd7' }], image: '' },
+    { id: 3, title: 'GM', name: 'Bobby Fischer', country: 'USA', rating: '2785', style: 'Tactical', bio: 'Robert James Fischer, the 11th World Chess Champion. Born in 1943, became a grandmaster at 15 — a world record at the time. His intensity, genius, and turbulent personality made him a cultural phenomenon beyond chess.', career: '1956–1971: Rise to the top\nFischer won the US Championship eight times, starting at age 14. His 1971 Candidates campaign saw him defeat Taimanov and Larsen 6–0 each — results without precedent in professional chess.\n\n1972: The Match of the Century\nFischer\'s 1972 match against Spassky in Reykjavik became a global media sensation during the Cold War. He won 12.5–8.5 to become the first American World Champion.\n\n1975: Title forfeited\nFischer refused to defend his title against Anatoly Karpov in 1975, forfeiting the championship. He did not play another official match until 1992.', achievements: [{ title: 'World Chess Champion', year: '1972–1975' }, { title: 'US Chess Champion (8 times)', year: '1957–1967' }, { title: 'Youngest US Champion ever', year: '1957' }], best_games: [{ title: 'Game of the Century vs. Byrne', event: 'Rosenwald Trophy', year: '1956', white: 'Byrne', black: 'Fischer', result: '0-1', pgn: '1.Nf3 Nf6 2.c4 g6 3.Nc3 Bg7 4.d4 O-O 5.Bf4 d5 6.Qb3 dxc4 7.Qxc4 c6 8.e4 Nbd7 9.Rd1 Nb6 10.Qc5 Bg4 11.Bg5 Na4 12.Qa3 Nxc3 13.bxc3 Nxe4 14.Bxe7 Qb6 15.Bc4 Nxc3' }], image: '' },
   ],
   games: [
     { id: 1, title: 'The Opera Game', white: 'Paul Morphy', black: 'Duke of Brunswick & Count Isouard', white_name: 'Paul Morphy', black_name: 'Duke of Brunswick & Count Isouard', white_title: '', black_title: '', year: '1858', event: 'Paris Opera', result: '1-0', description: 'Played during a performance of Norma at the Paris Opera House, this game is the quintessential illustration of rapid development. Morphy declined material repeatedly, culminating in a breathtaking queen sacrifice on move 16.', pgn: '1.e4 e5 2.Nf3 d6 3.d4 Bg4 4.dxe5 Bxf3 5.Qxf3 dxe5 6.Bc4 Nf6 7.Qb3 Qe7 8.Nc3 c6 9.Bg5 b5 10.Nxb5 cxb5 11.Bxb5+ Nbd7 12.O-O-O Rd8 13.Rxd7 Rxd7 14.Rd1 Qe6 15.Bxd7+ Nxd7 16.Qb8+ Nxb8 17.Rd8#' },
@@ -183,14 +183,38 @@ function pathClear(board,fr,fc,tr,tc){const dr=Math.sign(tr-fr),dc=Math.sign(tc-
 function inBounds(r,c){return r>=0&&r<8&&c>=0&&c<8;}
 function getLegalMoves(board,r,c,color){const piece=board[r][c];if(!piece||piece[0]!==color)return[];const type=piece[1];const enemy=color==='w'?'b':'w';const moves=[];const slide=function(dirs){for(const[dr,dc]of dirs){let nr=r+dr,nc=c+dc;while(inBounds(nr,nc)){const t=board[nr][nc];if(!t){moves.push([nr,nc]);}else{if(t[0]===enemy)moves.push([nr,nc]);break;}nr+=dr;nc+=dc;}}};const step=function(dirs){for(const[dr,dc]of dirs){const nr=r+dr,nc=c+dc;if(inBounds(nr,nc)){const t=board[nr][nc];if(!t||t[0]===enemy)moves.push([nr,nc]);}}};if(type==='P'){const dir=color==='w'?-1:1;const sr=color==='w'?6:1;if(inBounds(r+dir,c)&&!board[r+dir][c]){moves.push([r+dir,c]);if(r===sr&&!board[r+2*dir][c])moves.push([r+2*dir,c]);}for(const dc of[-1,1]){if(inBounds(r+dir,c+dc)&&board[r+dir][c+dc]&&board[r+dir][c+dc][0]===enemy)moves.push([r+dir,c+dc]);}}else if(type==='R'){slide([[1,0],[-1,0],[0,1],[0,-1]]);}else if(type==='B'){slide([[1,1],[1,-1],[-1,1],[-1,-1]]);}else if(type==='Q'){slide([[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]);}else if(type==='N'){step([[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]]);}else if(type==='K'){step([[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]);}return moves;}
 
-let homeBoard=fenToBoard(START_FEN),homeSel=null,homeMoves=[],homeTurn='w';
+let homeBoard=fenToBoard(START_FEN),homeSel=null,homeMoves=[],homeTurn='w',homeLastFrom=null,homeLastTo=null;
 function getHomePlayers(){const w=siteData.players[0];const b=siteData.players[1];const whiteName=w?((w.title?w.title+' ':'')+w.name):'White';const blackName=b?((b.title?b.title+' ':'')+b.name):'Black';return{whiteName,blackName};}
-function buildHomeBoard(){const el=document.getElementById('chessBoard');if(!el)return;el.innerHTML='';el.className='chess-board-interactive';for(let r=0;r<8;r++){for(let c=0;c<8;c++){const sq=document.createElement('div');sq.className='isq '+((r+c)%2===0?'isq-light':'isq-dark');if(c===0){const lbl=document.createElement('span');lbl.className='sq-label sq-rank';lbl.textContent=8-r;sq.appendChild(lbl);}if(r===7){const lbl=document.createElement('span');lbl.className='sq-label sq-file';lbl.textContent=String.fromCharCode(97+c);sq.appendChild(lbl);}const piece=homeBoard[r][c];if(piece){const sp=document.createElement('span');sp.className='ipiece piece-svg '+(piece[0]==='w'?'wpiece':'bpiece');sp.innerHTML=PIECE_SVG[piece]||'';sq.appendChild(sp);}if(homeSel&&homeSel[0]===r&&homeSel[1]===c)sq.classList.add('isq-selected');if(homeMoves.some(function(m){return m[0]===r&&m[1]===c;})){sq.classList.add('isq-legal');if(homeBoard[r][c])sq.classList.add('isq-capture');}sq.addEventListener('click',(function(rr,cc){return function(){homeClick(rr,cc);};})(r,c));el.appendChild(sq);}}const{whiteName,blackName}=getHomePlayers();const ti=document.getElementById('turnIndicator');if(ti)ti.textContent=homeTurn==='w'?'\u2B1C '+whiteName+' to move':'\u2B1B '+blackName+' to move';const wpEl=document.getElementById('boardPlayerWhite');const bpEl=document.getElementById('boardPlayerBlack');if(wpEl)wpEl.textContent='\u2654 '+whiteName;if(bpEl)bpEl.textContent='\u265A '+blackName;}
-function homeClick(r,c){if(homeSel){if(homeMoves.some(function(m){return m[0]===r&&m[1]===c;})){homeBoard[r][c]=homeBoard[homeSel[0]][homeSel[1]];homeBoard[homeSel[0]][homeSel[1]]=null;homeTurn=homeTurn==='w'?'b':'w';homeSel=null;homeMoves=[];playMoveSound();buildHomeBoard();return;}homeSel=null;homeMoves=[];}const piece=homeBoard[r][c];if(piece&&piece[0]===homeTurn){homeSel=[r,c];homeMoves=getLegalMoves(homeBoard,r,c,homeTurn);}buildHomeBoard();}
-function resetBoard(){homeBoard=fenToBoard(START_FEN);homeSel=null;homeMoves=[];homeTurn='w';buildHomeBoard();}
+function buildHomeBoard(){const el=document.getElementById('chessBoard');if(!el)return;el.innerHTML='';el.className='chess-board-interactive';for(let r=0;r<8;r++){for(let c=0;c<8;c++){const sq=document.createElement('div');let sqClass='isq '+((r+c)%2===0?'isq-light':'isq-dark');if(homeLastFrom&&homeLastTo){if((r===homeLastFrom[0]&&c===homeLastFrom[1])||(r===homeLastTo[0]&&c===homeLastTo[1]))sqClass+=' isq-lastmove';}sq.className=sqClass;if(c===0){const lbl=document.createElement('span');lbl.className='sq-label sq-rank';lbl.textContent=8-r;sq.appendChild(lbl);}if(r===7){const lbl=document.createElement('span');lbl.className='sq-label sq-file';lbl.textContent=String.fromCharCode(97+c);sq.appendChild(lbl);}const piece=homeBoard[r][c];if(piece){const sp=document.createElement('span');sp.className='ipiece piece-svg '+(piece[0]==='w'?'wpiece':'bpiece');sp.innerHTML=PIECE_SVG[piece]||'';sq.appendChild(sp);}if(homeSel&&homeSel[0]===r&&homeSel[1]===c)sq.classList.add('isq-selected');if(homeMoves.some(function(m){return m[0]===r&&m[1]===c;})){sq.classList.add('isq-legal');if(homeBoard[r][c])sq.classList.add('isq-capture');}sq.addEventListener('click',(function(rr,cc){return function(){homeClick(rr,cc);};})(r,c));el.appendChild(sq);}}const{whiteName,blackName}=getHomePlayers();const ti=document.getElementById('turnIndicator');if(ti)ti.innerHTML=homeTurn==='w'?'<span class="turn-dot white"></span> '+escHtml(whiteName)+' to move':'<span class="turn-dot black"></span> '+escHtml(blackName)+' to move';const wpEl=document.getElementById('boardPlayerWhite');const bpEl=document.getElementById('boardPlayerBlack');if(wpEl)wpEl.textContent='\u2654 '+whiteName;if(bpEl)bpEl.textContent='\u265A '+blackName;}
+function homeClick(r,c){if(homeSel){if(homeMoves.some(function(m){return m[0]===r&&m[1]===c;})){const _fr=homeSel[0],_fc=homeSel[1];homeBoard[r][c]=homeBoard[_fr][_fc];homeBoard[_fr][_fc]=null;homeTurn=homeTurn==='w'?'b':'w';homeSel=null;homeMoves=[];homeLastFrom=[_fr,_fc];homeLastTo=[r,c];playMoveSound();buildHomeBoard();return;}homeSel=null;homeMoves=[];}const piece=homeBoard[r][c];if(piece&&piece[0]===homeTurn){homeSel=[r,c];homeMoves=getLegalMoves(homeBoard,r,c,homeTurn);}buildHomeBoard();}
+function resetBoard(){homeBoard=fenToBoard(START_FEN);homeSel=null;homeMoves=[];homeTurn='w';homeLastFrom=null;homeLastTo=null;buildHomeBoard();}
 
 const gameViewerStates={};
-function buildGameBoard(containerId,boardState,flipped){const el=document.getElementById(containerId);if(!el)return;el.innerHTML='';el.className='chess-board-viewer';for(let rr=0;rr<8;rr++){for(let cc=0;cc<8;cc++){const r=flipped?7-rr:rr;const c=flipped?7-cc:cc;const sq=document.createElement('div');sq.className='vsq '+((r+c)%2===0?'vsq-light':'vsq-dark');const piece=boardState[r][c];if(piece){const sp=document.createElement('span');sp.className='vpiece piece-svg '+(piece[0]==='w'?'wpiece':'bpiece');sp.innerHTML=PIECE_SVG[piece]||'';sq.appendChild(sp);}el.appendChild(sq);}}}
+function buildGameBoard(containerId,boardState,flipped,lastFrom,lastTo){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML='';el.className='chess-board-viewer';
+  for(let rr=0;rr<8;rr++){
+    for(let cc=0;cc<8;cc++){
+      const r=flipped?7-rr:rr;const c=flipped?7-cc:cc;
+      const sq=document.createElement('div');
+      const isLight=(r+c)%2===0;
+      sq.className='vsq '+(isLight?'vsq-light':'vsq-dark');
+      if(lastFrom&&lastTo){
+        if((r===lastFrom[0]&&c===lastFrom[1])||(r===lastTo[0]&&c===lastTo[1]))
+          sq.classList.add('vsq-lastmove');
+      }
+      const piece=boardState[r][c];
+      if(piece){
+        const wrap=document.createElement('span');
+        wrap.className='vpiece piece-svg '+(piece[0]==='w'?'wpiece':'bpiece');
+        wrap.innerHTML=PIECE_SVG[piece]||'';
+        sq.appendChild(wrap);
+      }
+      el.appendChild(sq);
+    }
+  }
+}
 function initGameViewer(vid, pgn) {
   const key = String(vid);
   let states, moveList;
@@ -205,6 +229,18 @@ function initGameViewer(vid, pgn) {
   updateGameNav(key);
   renderMoveList(key, moveList);
 }
+function pgnMoveClick(vid, idx) {
+  const key = String(vid);
+  const vs  = gameViewerStates[key];
+  if (!vs) return;
+  const prev = vs.idx;
+  vs.idx = Math.min(idx, vs.states.length - 1);
+  const lm = getLastMoveSquares(vs);
+  buildGameBoard('board-' + key, vs.states[vs.idx], vs.flipped, lm[0], lm[1]);
+  updateGameNav(key);
+  if (prev !== vs.idx) playMoveSound();
+}
+
 function renderMoveList(key, moveList) {
   const mlEl = document.getElementById('ml-' + key);
   const pgnEl = document.getElementById('pgn-' + key);
@@ -249,19 +285,57 @@ function updateGameNav(vid) {
   });
   if (vs.playing && vs.idx === vs.states.length - 1) stopAutoPlay(key);
 }
+
+function getLastMoveSquares(vs) {
+  if (!vs || vs.idx === 0) return [null, null];
+  const prev = vs.states[vs.idx - 1];
+  const curr = vs.states[vs.idx];
+  let from = null, to = null;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (prev[r][c] && !curr[r][c]) from = [r, c];
+      if (!prev[r][c] && curr[r][c]) to = [r, c];
+    }
+  }
+  return [from, to];
+}
+
+function getCapturedPieces(states, idx) {
+  if (!states || idx < 1) return { white: [], black: [] };
+  const start = states[0];
+  const curr  = states[idx];
+  const startCount = {}, currCount = {};
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (start[r][c]) startCount[start[r][c]] = (startCount[start[r][c]] || 0) + 1;
+      if (curr[r][c])  currCount[curr[r][c]]   = (currCount[curr[r][c]]   || 0) + 1;
+    }
+  }
+  const captured = { white: [], black: [] };
+  for (const key of Object.keys(startCount)) {
+    const diff = (startCount[key] || 0) - (currCount[key] || 0);
+    for (let i = 0; i < diff; i++) {
+      if (key[0] === 'w') captured.white.push(key);
+      else                captured.black.push(key);
+    }
+  }
+  return captured;
+}
+
 function gameStep(vid, dir) {
   const key = String(vid);
-  const vs = gameViewerStates[key];
+  const vs  = gameViewerStates[key];
   if (!vs) return;
   vs.idx = Math.max(0, Math.min(vs.states.length - 1, vs.idx + dir));
-  buildGameBoard('board-' + key, vs.states[vs.idx], vs.flipped);
+  const lm = getLastMoveSquares(vs);
+  buildGameBoard('board-' + key, vs.states[vs.idx], vs.flipped, lm[0], lm[1]);
   updateGameNav(key);
   if (dir !== 0) playMoveSound();
 }
-function gameJump(vid,pos){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.idx=pos==='start'?0:vs.states.length-1;buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);updateGameNav(key);}
-function flipBoard(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.flipped=!vs.flipped;buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);}
+function gameJump(vid,pos){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.idx=pos==='start'?0:vs.states.length-1;const lm=getLastMoveSquares(vs);buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped,lm[0],lm[1]);updateGameNav(key);}
+function flipBoard(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.flipped=!vs.flipped;const lm=getLastMoveSquares(vs);buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped,lm[0],lm[1]);}
 function toggleAutoPlay(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;if(vs.playing)stopAutoPlay(key);else startAutoPlay(key);}
-function startAutoPlay(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;if(vs.idx===vs.states.length-1)vs.idx=0;vs.playing=true;const btn=document.getElementById('play-'+key);if(btn)btn.textContent='\u23F8';vs.timer=setInterval(function(){if(vs.idx<vs.states.length-1){vs.idx++;buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped);updateGameNav(key);}else{stopAutoPlay(key);}},800);}
+function startAutoPlay(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;if(vs.idx===vs.states.length-1)vs.idx=0;vs.playing=true;const btn=document.getElementById('play-'+key);if(btn)btn.textContent='\u23F8';vs.timer=setInterval(function(){if(vs.idx<vs.states.length-1){vs.idx++;const _lm=getLastMoveSquares(vs);buildGameBoard('board-'+key,vs.states[vs.idx],vs.flipped,_lm[0],_lm[1]);updateGameNav(key);playMoveSound();}else{stopAutoPlay(key);}},800);}
 function stopAutoPlay(vid){const key=String(vid);const vs=gameViewerStates[key];if(!vs)return;vs.playing=false;clearInterval(vs.timer);const btn=document.getElementById('play-'+key);if(btn)btn.textContent='\u25B6';}
 
 // ── Piece move sound (Web Audio API — no external file needed) ──────────────
@@ -297,7 +371,11 @@ document.addEventListener('keydown',function(e){if(!_activeViewerGameId)return;i
 
 let currentPage='home';
 function goHome(){currentPage='home';document.getElementById('homePage').style.display='block';document.getElementById('detailPage').style.display='none';window.scrollTo(0,0);}
-function showDetailPage(html){currentPage='detail';document.getElementById('homePage').style.display='none';document.getElementById('detailPage').style.display='block';document.getElementById('detailContent').innerHTML=html;window.scrollTo(0,0);setTimeout(initArticleBoards,120); setTimeout(initBestGameBoards,200);}
+function showDetailPage(html){
+  // Inject reading progress bar
+  const progressBar = '<div id="reading-progress"><div id="reading-progress-fill"></div></div>';
+  html = progressBar + html;
+currentPage='detail';document.getElementById('homePage').style.display='none';document.getElementById('detailPage').style.display='block';document.getElementById('detailContent').innerHTML=html;window.scrollTo(0,0);setTimeout(initArticleBoards,120); setTimeout(initReadingProgress,50);}
 function scrollToSection(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
 
 function buildWhatNext(currentType,currentId){const items=[];const arts=siteData.articles.filter(function(a){return a.published!==false&&(currentType!=='article'||a.id!==currentId);});const plrs=siteData.players.filter(function(p){return currentType!=='player'||p.id!==currentId;});const gms=siteData.games.filter(function(g){return currentType!=='game'||g.id!==currentId;});const pick=function(arr){return arr.length?arr[currentId%arr.length]:null;};const a=pick(arts);const p=pick(plrs);const g=pick(gms);if(a)items.push({type:'article',id:a.id,label:a.tag||'Article',title:a.title,sub:(a.date||'')+(a.read_time?' &middot; '+a.read_time+' read':'')});if(p)items.push({type:'player',id:p.id,label:'Player',title:(p.title?p.title+' ':'')+p.name,sub:p.country||''});if(g)items.push({type:'game',id:g.id,label:'Game',title:g.title,sub:g.white+' vs '+g.black});if(!items.length)return'';return'<div class="whatnext-strip"><div class="whatnext-title">What to read next</div><div class="whatnext-cards">'+items.map(function(it){const oc=it.type==='article'?'openArticle('+it.id+')':it.type==='player'?'openPlayer('+it.id+')':'openGame('+it.id+')';return'<div class="whatnext-card" onclick="'+oc+'"><div class="whatnext-label">'+it.label+'</div><div class="whatnext-card-title">'+it.title+'</div><div class="whatnext-card-sub">'+it.sub+'</div></div>';}).join('')+'</div></div>';}
@@ -368,7 +446,7 @@ function initArticleBoards() {
   });
 }
 
-function openArticle(id){const a=siteData.articles.find(function(x){return x.id===id;});if(!a)return;trackView('article',id);articleBoardCounter=0;const bodyHTML=renderArticleBody(a.content||a.excerpt||'').split('\n').filter(function(p){return p.trim();}).map(function(p){return'<p>'+p.trim()+'</p>';}).join('');const heroImg=a.image?'<img class="article-detail-hero-img" src="'+a.image+'" alt="'+escHtml(a.title)+'"/>':'';const related=siteData.articles.filter(function(x){return x.published!==false&&x.id!==id&&x.tag===a.tag;}).slice(0,2);const relatedHTML=related.length?'<div class="related-strip"><div class="related-title">More in '+escHtml(a.tag)+'</div><div class="related-cards">'+related.map(function(r){return'<div class="related-card" onclick="openArticle('+r.id+')"><div class="related-tag">'+escHtml(r.tag)+'</div><div class="related-card-title">'+escHtml(r.title)+'</div><div class="related-card-meta">'+(r.read_time||'')+'</div></div>';}).join('')+'</div></div>':'';showDetailPage('<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div><div class="article-detail">'+heroImg+'<div class="article-detail-tag">'+escHtml(a.tag||'General')+'</div><h1 class="article-detail-title">'+escHtml(a.title)+'</h1><div class="article-detail-meta">'+escHtml(a.date||'')+' &nbsp;&middot;&nbsp; '+escHtml(a.read_time||'')+' read</div><div class="article-detail-body">'+bodyHTML+'</div>'+relatedHTML+buildWhatNext('article',id)+'</div>');}
+function openArticle(id){const a=siteData.articles.find(function(x){return x.id===id;});if(!a)return;trackView('article',id);addRecentlyViewed('article',id,a.title);articleBoardCounter=0;const bodyHTML=renderArticleBody(a.content||a.excerpt||'').split('\n').filter(function(p){return p.trim();}).map(function(p){return'<p>'+p.trim()+'</p>';}).join('');const heroImg=a.image?'<img class="article-detail-hero-img" src="'+a.image+'" alt="'+escHtml(a.title)+'"/>':'';const related=siteData.articles.filter(function(x){return x.published!==false&&x.id!==id&&x.tag===a.tag;}).slice(0,2);const relatedHTML=related.length?'<div class="related-strip"><div class="related-title">More in '+escHtml(a.tag)+'</div><div class="related-cards">'+related.map(function(r){return'<div class="related-card" onclick="openArticle('+r.id+')"><div class="related-tag">'+escHtml(r.tag)+'</div><div class="related-card-title">'+escHtml(r.title)+'</div><div class="related-card-meta">'+(r.read_time||'')+'</div></div>';}).join('')+'</div></div>':'';showDetailPage('<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div><div class="article-detail">'+heroImg+'<div class="article-detail-tag">'+escHtml(a.tag||'General')+'</div><h1 class="article-detail-title">'+escHtml(a.title)+'</h1><div class="article-detail-meta">'+escHtml(a.date||'')+' &nbsp;&middot;&nbsp; '+escHtml(a.read_time||'')+' read</div><div class="article-detail-body">'+bodyHTML+'</div>'+relatedHTML+buildWhatNext('article',id)+'</div>');}
 
 
 function openPlayer(id) {
@@ -619,18 +697,22 @@ function pdSwitchTab(btn, id) {
   document.querySelectorAll('.pd-pane').forEach(function(p) { p.classList.remove('active'); });
   const panel = document.getElementById('pd-' + id);
   if (panel) panel.classList.add('active');
-  // Init boards when games tab becomes visible
+
   if (id === 'games') {
+    // Small delay to ensure panel is visible before board init
     setTimeout(function() {
-      initBestGameBoards();
-      // Force rebuild any boards that rendered at 0-size
-      document.querySelectorAll('.bgc-pgn-data').forEach(function(el) {
+      document.querySelectorAll('.bgc-pgn-data').forEach(function(el, i) {
         const vid = el.dataset.vid;
-        if (vid && gameViewerStates[vid] && gameViewerStates[vid].states) {
-          buildGameBoard('board-' + vid, gameViewerStates[vid].states[gameViewerStates[vid].idx], gameViewerStates[vid].flipped);
-        }
+        const pgn = el.textContent ? el.textContent.trim() : '';
+        if (!vid) return;
+        const alreadyInit = gameViewerStates[String(vid)] &&
+                            gameViewerStates[String(vid)].states &&
+                            gameViewerStates[String(vid)].states.length > 1;
+        setTimeout(function() {
+          initGameViewer(vid, pgn);
+        }, i * 150);
       });
-    }, 60);
+    }, 50);
   }
 }
 
@@ -661,7 +743,7 @@ function toggleBestGameViewer(vid, pgn) {
 
 
 
-function openGame(id){const g=siteData.games.find(function(x){return x.id===id;});if(!g)return;trackView('game',id);const vid='d'+id;const boardId='board-'+vid;const opening=detectOpening(g.pgn);const openingBadge=opening?'<span class="opening-badge">\u265E '+escHtml(opening)+'</span>':'';const whiteLbl=(g.white_title?g.white_title+' ':'')+( g.white_name||g.white||'White');const blackLbl=(g.black_title?g.black_title+' ':'')+( g.black_name||g.black||'Black');showDetailPage('<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div><div class="game-detail"><div class="game-detail-header"><div class="game-detail-num">Games of the Century</div><h1 class="game-detail-title">'+escHtml(g.title)+'</h1>'+openingBadge+'<div class="game-detail-players">'+escHtml(g.white)+' (White) vs '+escHtml(g.black)+' (Black) &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' '+escHtml(g.year||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-detail-body"><div class="game-detail-left"><p class="game-detail-desc">'+escHtml(g.description||'A landmark game in chess history.')+'</p>'+(g.pgn?'<div class="game-detail-pgn-label">PGN Notation</div><div class="game-detail-pgn-box"><div id="pgn-'+vid+'"></div></div>':'')+'</div><div class="game-detail-right"><div class="board-player-strip board-player-black">\u265A '+escHtml(blackLbl)+'</div><div id="'+boardId+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+escHtml(whiteLbl)+'</div><div class="gv-nav"><button class="gv-btn" title="Start" onclick="gameJump(\''+vid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+vid+'" onclick="gameStep(\''+vid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+vid+'" onclick="toggleAutoPlay(\''+vid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+vid+'">Move 0</span><button class="gv-btn" id="next-'+vid+'" onclick="gameStep(\''+vid+'\',1)">\u25B6</button><button class="gv-btn" title="End" onclick="gameJump(\''+vid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+vid+'" title="Flip" onclick="flipBoard(\''+vid+'\')">&#8645;</button></div></div></div>'+buildWhatNext('game',id)+'</div>');_activeViewerGameId=vid;setTimeout(function(){initGameViewer(vid,g.pgn||'');},50);}
+function openGame(id){const g=siteData.games.find(function(x){return x.id===id;});if(!g)return;trackView('game',id);addRecentlyViewed('game',id,g.title);const vid='d'+id;const boardId='board-'+vid;const opening=detectOpening(g.pgn);const openingBadge=opening?'<span class="opening-badge">\u265E '+escHtml(opening)+'</span>':'';const whiteLbl=(g.white_title?g.white_title+' ':'')+( g.white_name||g.white||'White');const blackLbl=(g.black_title?g.black_title+' ':'')+( g.black_name||g.black||'Black');showDetailPage('<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div><div class="game-detail"><div class="game-detail-header"><div class="game-detail-num">Games of the Century</div><h1 class="game-detail-title">'+escHtml(g.title)+'</h1>'+openingBadge+'<div class="game-detail-players">'+escHtml(g.white)+' (White) vs '+escHtml(g.black)+' (Black) &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' '+escHtml(g.year||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-detail-body"><div class="game-detail-left"><p class="game-detail-desc">'+escHtml(g.description||'A landmark game in chess history.')+'</p>'+(g.pgn?'<div class="game-detail-pgn-label">PGN Notation</div><div class="game-detail-pgn-box"><div id="pgn-'+vid+'"></div></div>':'')+'</div><div class="game-detail-right"><div class="board-player-strip board-player-black">\u265A '+escHtml(blackLbl)+'</div><div id="'+boardId+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+escHtml(whiteLbl)+'</div><div class="gv-nav"><button class="gv-btn" title="Start" onclick="gameJump(\''+vid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+vid+'" onclick="gameStep(\''+vid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+vid+'" onclick="toggleAutoPlay(\''+vid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+vid+'">Move 0</span><button class="gv-btn" id="next-'+vid+'" onclick="gameStep(\''+vid+'\',1)">\u25B6</button><button class="gv-btn" title="End" onclick="gameJump(\''+vid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+vid+'" title="Flip" onclick="flipBoard(\''+vid+'\')">&#8645;</button></div></div></div>'+buildWhatNext('game',id)+'</div>');_activeViewerGameId=vid;setTimeout(function(){initGameViewer(vid,g.pgn||'');},50);}
 
 async function openPdf(id){showToast('Loading\u2026');let p=await sbSelectOne('pdfs',id);if(!p){p=siteData.pdfs.find(function(x){return x.id===id;});}if(!p){showToast('PDF not found.');return;}trackView('pdf',id);const contentHTML=(p.content||'').split('\n').filter(function(x){return x.trim();}).map(function(x){return'<p>'+escHtml(x.trim())+'</p>';}).join('');let downloadBtn;if(p.file_data){downloadBtn='<a class="pdf-download-btn" href="'+p.file_data+'" download="'+escHtml(p.file_name||p.title+'.pdf')+'">\u2193 Download PDF</a>';}else if(p.url){downloadBtn='<a class="pdf-download-btn" href="'+escHtml(p.url)+'" target="_blank" rel="noopener">\u2193 Open PDF</a>';}else{downloadBtn='<button class="pdf-download-btn" onclick="showToast(\'No file attached.\')">\u2193 Download PDF</button>';}let viewerHTML='';const viewerSrc=p.file_data||p.url;if(viewerSrc){viewerHTML='<div style="margin-top:2rem;"><p style="font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mid);margin-bottom:.8rem;">Document Preview</p><iframe class="pdf-viewer-embed" src="'+viewerSrc+'" title="'+escHtml(p.title)+'"></iframe></div>';}const coverImg=p.cover_image?'<img src="'+p.cover_image+'" alt="'+escHtml(p.title)+'" style="width:100%;max-height:280px;object-fit:cover;margin-bottom:2rem;border:1px solid var(--rule);">':'';const tagBadge=p.tag?'<span class="pdf-tag-badge">'+escHtml(p.tag)+'</span>':'';showDetailPage('<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div><div class="pdf-detail">'+coverImg+'<div class="pdf-detail-header"><div class="pdf-detail-icon">PDF</div><div><h1 class="pdf-detail-title">'+escHtml(p.title)+'</h1><div class="pdf-detail-author">by '+escHtml(p.author)+'</div>'+tagBadge+(p.size?'<div class="pdf-detail-size">'+escHtml(p.size)+'</div>':'')+(p.file_name?'<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);margin-top:.3rem;">File: '+escHtml(p.file_name)+'</div>':'')+'</div></div>'+(p.description?'<p class="pdf-detail-desc">'+escHtml(p.description)+'</p>':'')+downloadBtn+viewerHTML+(contentHTML?'<div class="pdf-detail-content" style="margin-top:2.5rem;padding-top:2.5rem;border-top:1px solid var(--rule);">'+contentHTML+'</div>':'')+buildWhatNext('pdf',id)+'</div>');}
 
@@ -783,7 +865,7 @@ function renderPlayers() {
 }
 
 let activePdfTag='All';
-function renderGames(){const list=document.getElementById('gamesList');if(!list)return;if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}list.innerHTML=siteData.games.map(function(g,i){const opening=detectOpening(g.pgn);const gid=String(g.id);const blackName=escHtml(g.black_name||g.black||'Black');const whiteName=escHtml(g.white_name||g.white||'White');return'<div class="game-entry fade-in"><div class="game-row" onclick="toggleGameViewer(\'gv-'+gid+'\','+gid+')"><div class="game-num">'+String(i+1).padStart(2,'0')+'</div><div><div class="game-title">'+escHtml(g.title)+(opening?' <span class="opening-badge-sm">\u265E '+escHtml(opening)+'</span>':'')+'</div><div class="game-meta">'+escHtml(g.white||'')+' vs '+escHtml(g.black||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-right"><div class="game-year">'+escHtml(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div></div><div class="game-viewer" id="gv-'+gid+'" style="display:none;"><div class="game-viewer-inner"><div class="gv-board-wrap"><div class="board-player-strip board-player-black">\u265A '+blackName+'</div><div id="board-'+gid+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+whiteName+'</div></div><div class="gv-controls"><div class="gv-pgn" id="pgn-'+gid+'"></div><div class="gv-nav"><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+gid+'" onclick="gameStep(\''+gid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+gid+'" onclick="toggleAutoPlay(\''+gid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+gid+'">Move 0</span><button class="gv-btn" id="next-'+gid+'" onclick="gameStep(\''+gid+'\',1)">\u25B6</button><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+gid+'" onclick="flipBoard(\''+gid+'\')">&#8645;</button></div><button class="gv-open-page" onclick="openGame('+gid+')">Open full game page \u2192</button></div></div></div></div>';}).join('');}
+function renderGames(){const list=document.getElementById('gamesList');if(!list)return;if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}list.innerHTML=siteData.games.map(function(g,i){const opening=detectOpening(g.pgn);const gid=String(g.id);const blackName=escHtml(g.black_name||g.black||'Black');const whiteName=escHtml(g.white_name||g.white||'White');return'<div class="game-entry fade-in"><div class="game-row" onclick="toggleGameViewer(\'gv-'+gid+'\','+gid+')"><div class="game-num">'+String(i+1).padStart(2,'0')+'</div><div><div class="game-title">'+escHtml(g.title)+(opening?' <span class="opening-badge-sm" style="background:'+openingColor(opening)+'22;color:'+openingColor(opening)+';border-color:'+openingColor(opening)+'55;">\u265E '+escHtml(opening)+'</span>':'')+'</div><div class="game-meta">'+escHtml(g.white||'')+' vs '+escHtml(g.black||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-right"><div class="game-year">'+escHtml(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div></div><div class="game-viewer" id="gv-'+gid+'" style="display:none;"><div class="game-viewer-inner"><div class="gv-board-wrap"><div class="board-player-strip board-player-black">\u265A '+blackName+'</div><div id="board-'+gid+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+whiteName+'</div></div><div class="gv-controls"><div class="gv-pgn" id="pgn-'+gid+'"></div><div class="gv-nav"><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+gid+'" onclick="gameStep(\''+gid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+gid+'" onclick="toggleAutoPlay(\''+gid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+gid+'">Move 0</span><button class="gv-btn" id="next-'+gid+'" onclick="gameStep(\''+gid+'\',1)">\u25B6</button><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+gid+'" onclick="flipBoard(\''+gid+'\')">&#8645;</button></div><button class="gv-open-page" onclick="openGame('+gid+')">Open full game page \u2192</button></div></div></div></div>';}).join('');}
 
 function toggleGameViewer(id,gameId){const el=document.getElementById(id);if(!el)return;const isOpen=el.style.display!=='none';el.style.display=isOpen?'none':'block';if(!isOpen){const gid=String(gameId);_activeViewerGameId=gid;const game=siteData.games.find(function(g){return String(g.id)===gid;});if(game){setTimeout(function(){initGameViewer(gid,game.pgn||'');},50);}}}
 
@@ -819,7 +901,7 @@ function renderPDFs() {
 }
 
 function setPdfTag(tag){activePdfTag=tag;renderPDFs();}
-function renderAll(){renderArticles();renderPlayers();renderGames();renderPDFs();buildLatestStrip();buildHomeBoard();setTimeout(initFadeIn,80);}
+function renderAll(){renderArticles();renderPlayers();renderGames();renderPDFs();buildLatestStrip();buildHomeBoard();renderHeroStats();renderRecentlyViewed();setTimeout(initFadeIn,80);}
 
 function handleImgUpload(inputId,previewId,dataId){const input=document.getElementById(inputId);const file=input.files[0];if(!file)return;if(file.size>2*1024*1024){showToast('Image too large — max 2MB.');input.value='';return;}const reader=new FileReader();reader.onload=function(e){document.getElementById(dataId).value=e.target.result;const preview=document.getElementById(previewId);const img=document.getElementById(previewId+'-img');if(img)img.src=e.target.result;if(preview)preview.style.display='flex';const dropId=inputId.replace('-input','-drop');const drop=document.getElementById(dropId);if(drop)drop.style.display='none';showToast('Image loaded \u2713');};reader.readAsDataURL(file);}
 function handlePdfUpload(){const input=document.getElementById('d-pdf-input');const file=input.files[0];if(!file)return;if(file.type!=='application/pdf'){showToast('Please select a PDF file.');input.value='';return;}if(file.size>5*1024*1024){showToast('PDF too large — max 5MB.');input.value='';return;}const sizeMB=(file.size/(1024*1024)).toFixed(1)+' MB';const reader=new FileReader();reader.onload=function(e){document.getElementById('d-file-data').value=e.target.result;document.getElementById('d-file-name').value=file.name;document.getElementById('d-pdf-preview-name').textContent=file.name;document.getElementById('d-pdf-preview-size').textContent=sizeMB;document.getElementById('d-pdf-preview').style.display='flex';document.getElementById('d-pdf-drop').style.display='none';showToast('PDF loaded \u2713 — '+sizeMB);};reader.onerror=function(){showToast('Failed to read file.');};reader.readAsDataURL(file);}
@@ -857,7 +939,159 @@ function v(id){const el=document.getElementById(id);return el?el.value.trim():''
 function nowDate(){return new Date().toLocaleDateString('en-GB',{month:'short',year:'numeric'});}
 function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2800);}
 function escHtml(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+// Reading progress bar
+function initReadingProgress() {
+  const fill = document.getElementById('reading-progress-fill');
+  if (!fill) return;
+  const onScroll = function() {
+    const dp = document.getElementById('detailPage');
+    if (!dp) return;
+    const scrollTop  = dp.scrollTop || window.pageYOffset;
+    const docHeight  = (dp.scrollHeight || document.body.scrollHeight) - window.innerHeight;
+    const pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+    fill.style.width = pct + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  document.getElementById('detailPage') && document.getElementById('detailPage').addEventListener('scroll', onScroll, { passive: true });
+}
+
+
+// ── Scroll to top ─────────────────────────────────────────────
+function initScrollToTop() {
+  const existing = document.getElementById('scroll-top-btn');
+  if (existing) return;
+  const btn = document.createElement('button');
+  btn.id = 'scroll-top-btn';
+  btn.innerHTML = '&#8679;';
+  btn.title = 'Back to top';
+  btn.onclick = function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  document.body.appendChild(btn);
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.pageYOffset > 400);
+  }, { passive: true });
+}
+
+// ── Recently viewed ───────────────────────────────────────────
+const RECENT_KEY = 'chess64_recent';
+function addRecentlyViewed(type, id, title) {
+  try {
+    let recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    recent = recent.filter(function(r) { return !(r.type === type && r.id === id); });
+    recent.unshift({ type, id, title, ts: Date.now() });
+    recent = recent.slice(0, 5);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+    renderRecentlyViewed();
+  } catch(e) {}
+}
+
+function renderRecentlyViewed() {
+  const el = document.getElementById('recently-viewed');
+  if (!el) return;
+  try {
+    const recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    if (!recent.length) { el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.innerHTML = '<div class="rv-label">Recently viewed</div>'
+      + '<div class="rv-items">'
+      + recent.slice(0, 3).map(function(r) {
+          const onclick = r.type === 'article' ? 'openArticle(' + r.id + ')'
+                        : r.type === 'player'  ? 'openPlayer('  + r.id + ')'
+                        : r.type === 'game'    ? 'openGame('    + r.id + ')'
+                        : 'openPdf('           + r.id + ')';
+          const icon = r.type === 'article' ? '&#128196;'
+                     : r.type === 'player'  ? '&#9812;'
+                     : r.type === 'game'    ? '&#9822;'
+                     : '&#128218;';
+          return '<div class="rv-item" onclick="' + onclick + '">'
+            + '<span class="rv-icon">' + icon + '</span>'
+            + '<span class="rv-title">' + escHtml(r.title) + '</span>'
+            + '</div>';
+        }).join('')
+      + '</div>';
+  } catch(e) {}
+}
+
+// ── Homepage hero stats ───────────────────────────────────────
+function renderHeroStats() {
+  const el = document.getElementById('hero-stats');
+  if (!el) return;
+  const a = siteData.articles.filter(function(x) { return x.published !== false; }).length;
+  const p = siteData.players.length;
+  const g = siteData.games.length;
+  el.innerHTML =
+    '<div class="hstat"><span class="hstat-n">' + a + '</span><span class="hstat-l">Articles</span></div>' +
+    '<div class="hstat"><span class="hstat-n">' + p + '</span><span class="hstat-l">Players</span></div>' +
+    '<div class="hstat"><span class="hstat-n">' + g + '</span><span class="hstat-l">Games</span></div>';
+}
+
+// ── Opening color-coding ──────────────────────────────────────
+const OPENING_COLORS = {
+  'Sicilian': '#e74c3c', 'Ruy Lopez': '#3498db', 'Italian': '#2980b9',
+  'Kings Gambit': '#e67e22', 'Queens Gambit': '#8e44ad',
+  'Kings Indian': '#27ae60', 'Nimzo': '#16a085', 'Grunfeld': '#1abc9c',
+  'French': '#f39c12', 'Caro': '#d35400', 'English': '#2c3e50',
+  'London': '#7f8c8d', 'Dutch': '#c0392b', 'Reti': '#34495e',
+};
+function openingColor(name) {
+  if (!name) return '#555';
+  for (const key of Object.keys(OPENING_COLORS)) {
+    if (name.toLowerCase().includes(key.toLowerCase())) return OPENING_COLORS[key];
+  }
+  return '#556b82';
+}
+
+// ── Live word count (admin) ───────────────────────────────────
+function updateWordCount(textareaId, counterId) {
+  const ta = document.getElementById(textareaId);
+  const ct = document.getElementById(counterId);
+  if (!ta || !ct) return;
+  const words = ta.value.trim().split(/\s+/).filter(Boolean).length;
+  const mins  = Math.max(1, Math.round(words / 200));
+  ct.textContent = words + ' words · ~' + mins + ' min read';
+}
+
+// ── Duplicate item (admin) ────────────────────────────────────
+async function duplicateItem(type, id) {
+  const arr = siteData[type === 'article' ? 'articles' : type === 'player' ? 'players' : type === 'game' ? 'games' : 'pdfs'];
+  const item = arr.find(function(x) { return x.id === id; });
+  if (!item) return;
+  const copy = Object.assign({}, item, { id: Date.now(), title: (item.title || item.name || '') + ' (copy)' });
+  if (copy.name) copy.name = copy.name + ' (copy)';
+  const table = type === 'article' ? 'articles' : type === 'player' ? 'players' : type === 'game' ? 'games' : 'pdfs';
+  const ok = await sbUpsert(table, copy);
+  if (ok) {
+    showToast('Duplicated ✓');
+    siteData = await loadData();
+    renderAdminLists();
+    renderAll();
+  }
+}
+
+// ── Named confirm delete ──────────────────────────────────────
+async function deleteItemNamed(type, id, name) {
+  if (!confirm('Delete "' + name + '"?\n\nThis cannot be undone.')) return;
+  const ok = await sbDelete(type, id);
+  if (!ok) { showToast('Delete failed.'); return; }
+  showToast('"' + name + '" deleted.');
+  siteData = await loadData();
+  renderAdminLists();
+  renderAll();
+}
+
+// ── Country flag emoji ────────────────────────────────────────
+function countryFlag(country) {
+  if (!country) return '';
+  const flags = {
+    'russia':'🇷🇺','norway':'🇳🇴','usa':'🇺🇸','germany':'🇩🇪','france':'🇫🇷',
+    'india':'🇮🇳','china':'🇨🇳','ukraine':'🇺🇦','armenia':'🇦🇲','azerbaijan':'🇦🇿',
+    'netherlands':'🇳🇱','poland':'🇵🇱','spain':'🇪🇸','england':'🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'uk':'🇬🇧','united states':'🇺🇸','soviet union':'🏴',
+  };
+  return flags[country.toLowerCase()] || '';
+}
+
 function initFadeIn(){const obs=new IntersectionObserver(function(entries){entries.forEach(function(e,i){if(e.isIntersecting){setTimeout(function(){e.target.classList.add('visible');},i*80);obs.unobserve(e.target);}});},{threshold:0.1});document.querySelectorAll('.fade-in:not(.visible)').forEach(function(el){obs.observe(el);});}
 function initScrollSpy(){const sections=['articles','players','games','library'];const links=document.querySelectorAll('.nav-links a');window.addEventListener('scroll',function(){if(currentPage!=='home')return;let cur='';sections.forEach(function(id){const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-120)cur=id;});links.forEach(function(l,i){l.classList.toggle('active',sections[i]===cur);});});}
 
-window.addEventListener('DOMContentLoaded',async function(){applyStoredTheme();buildHomeBoard();showToast('Loading content\u2026');siteData=await loadData();if(!siteData.articles.length&&!siteData.players.length&&!siteData.games.length){showToast('First run — loading default content\u2026');await seedDefaultData();siteData=await loadData();}renderAll();buildHomeBoard();buildLatestStrip();initScrollSpy();setTimeout(initFadeIn,120);const pwInput=document.getElementById('adminPwInput');if(pwInput){pwInput.addEventListener('keydown',function(e){if(e.key==='Enter')submitAdminLogin();});}document.addEventListener('keydown',function(e){if(e.key==='Escape'&&searchOpen)closeSearch();});});
+window.addEventListener('DOMContentLoaded',async function(){applyStoredTheme();buildHomeBoard();showToast('Loading content\u2026');siteData=await loadData();if(!siteData.articles.length&&!siteData.players.length&&!siteData.games.length){showToast('First run — loading default content\u2026');await seedDefaultData();siteData=await loadData();}renderAll();buildHomeBoard();buildLatestStrip();initScrollSpy();initScrollToTop();setTimeout(initFadeIn,120);const pwInput=document.getElementById('adminPwInput');if(pwInput){pwInput.addEventListener('keydown',function(e){if(e.key==='Enter')submitAdminLogin();});}document.addEventListener('keydown',function(e){if(e.key==='Escape'&&searchOpen)closeSearch();});});
