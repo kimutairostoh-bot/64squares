@@ -6,7 +6,7 @@
   <title>64 Squares — Chess Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css?v=202606010638"/>
+  <link rel="stylesheet" href="style.css?v=202606010704"/>
 </head>
 <body>
 
@@ -48,7 +48,9 @@
       <p class="hero-tag">&#9817; Chess Journal &amp; Archive</p>
       <h1 class="hero-title">Where the board <em>tells</em> its stories.</h1>
       <p class="hero-desc">Deep dives into the game&#39;s greatest minds, immortal games, strategic ideas, and a growing library of chess literature.</p>
+      <div id="hero-stats" class="hero-stats"></div>
       <button class="hero-cta" onclick="scrollToSection('articles')">Explore Articles &#8594;</button>
+      <div id="recently-viewed" class="recently-viewed" style="display:none;"></div>
     </div>
     <div class="hero-right">
       <p class="board-label">&#9817; Play &mdash; click a piece to move</p>
@@ -162,7 +164,8 @@
           <input type="hidden" id="a-img-data"/>
         </div>
         <label>Full Content *</label>
-        <textarea id="a-content" rows="7" placeholder="Write the full article here&hellip;"></textarea>
+        <textarea id="a-content" rows="7" placeholder="Write the full article here&hellip;" oninput="updateWordCount('a-content','a-wordcount')"></textarea>
+        <div id="a-wordcount" style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.08em;margin-top:-.3rem;"></div>
         <label>Excerpt <span style="font-weight:300;opacity:.7">(auto-generated if blank)</span></label>
         <textarea id="a-excerpt" rows="2" placeholder="Short preview shown on the card"></textarea>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
@@ -401,6 +404,6 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="script.js?v=202606010638"></script>
+<script src="script.js?v=202606010704"></script>
 </body>
 </html>
