@@ -2894,6 +2894,14 @@ body.dark .bestgames-format-hint {
 }
 .bgc-board {
   width: 200px !important;
+  display: grid !important;
+  grid-template-columns: repeat(8, 25px) !important;
+  grid-template-rows: repeat(8, 25px) !important;
+  height: 200px !important;
+}
+.bgc-board .vsq {
+  width: 25px !important;
+  height: 25px !important;
 }
 .bgc-player {
   font-family: var(--mono);
@@ -3041,4 +3049,252 @@ body.dark .players-see-more-btn:hover {
 }
 @media (max-width: 768px) {
   .all-players-page { padding: 2rem 1.5rem; }
+}
+
+/* ============================================
+   READING PROGRESS BAR
+   ============================================ */
+#reading-progress {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--rule);
+  z-index: 200;
+  pointer-events: none;
+}
+#reading-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4a90d9, #7ab8ff);
+  transition: width .1s linear;
+}
+
+/* ============================================
+   SCROLL TO TOP BUTTON
+   ============================================ */
+#scroll-top-btn {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+  z-index: 90;
+  font-family: var(--serif);
+}
+#scroll-top-btn.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+#scroll-top-btn:hover {
+  background: #333;
+  transform: translateY(-3px);
+}
+body.dark #scroll-top-btn {
+  background: #e8e4dc;
+  color: #0d0d0d;
+}
+
+/* ============================================
+   HERO STATS
+   ============================================ */
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.hstat {
+  display: flex;
+  flex-direction: column;
+}
+.hstat-n {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+}
+.hstat-l {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-top: .2rem;
+}
+
+/* ============================================
+   RECENTLY VIEWED
+   ============================================ */
+.recently-viewed {
+  margin-top: 1.8rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+.rv-label {
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: .8rem;
+}
+.rv-items {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.rv-item {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  cursor: pointer;
+  padding: .3rem 0;
+  transition: color .15s;
+}
+.rv-item:hover { color: var(--ink); }
+.rv-icon {
+  font-size: .85rem;
+  opacity: .5;
+  flex-shrink: 0;
+}
+.rv-title {
+  font-family: var(--sans);
+  font-size: .82rem;
+  color: var(--mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color .15s;
+}
+.rv-item:hover .rv-title { color: var(--ink); }
+
+/* ============================================
+   GAME RESULT DOTS
+   ============================================ */
+.game-result-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: .4rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.game-result-dot.win  { background: #4caf50; }
+.game-result-dot.loss { background: #f44336; }
+.game-result-dot.draw { background: #ffc107; }
+
+/* ============================================
+   LAST MOVE HIGHLIGHT
+   ============================================ */
+.vsq-lastmove {
+  background: rgba(246, 246, 105, 0.5) !important;
+}
+.isq-lastmove {
+  background: rgba(246, 246, 105, 0.5) !important;
+}
+
+/* ============================================
+   DARK MODE — smooth transition
+   ============================================ */
+body {
+  transition: background .25s ease, color .25s ease;
+}
+body *, body *::before, body *::after {
+  transition: background-color .2s ease, border-color .2s ease, color .15s ease;
+}
+/* But don't animate everything — keep boards snappy */
+.isq, .vsq, .ipiece, .vpiece, .chess-board-interactive, .chess-board-viewer {
+  transition: filter .1s !important;
+}
+
+/* ============================================
+   ADMIN DUPLICATE BUTTON
+   ============================================ */
+.admin-edit-btn[title="Duplicate"] {
+  color: #3498db;
+}
+.admin-edit-btn[title="Duplicate"]:hover {
+  color: #2980b9;
+}
+
+/* ============================================
+   HOMEPAGE BOARD — live turn indicator fix
+   ============================================ */
+.board-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: min(440px, 90vw);
+}
+#turnIndicator {
+  font-family: var(--mono);
+  font-size: .65rem;
+  letter-spacing: .06em;
+  color: rgba(255,255,255,.6);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.turn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.turn-dot.white { background: #f0d9b5; box-shadow: 0 0 0 1px #b58863; }
+.turn-dot.black { background: #1a1a1a; box-shadow: 0 0 0 1px #b58863; }
+
+/* ============================================
+   RESPONSIVE ADDITIONS
+   ============================================ */
+@media (max-width: 768px) {
+  #scroll-top-btn { bottom: 1.5rem; right: 1rem; }
+  .hero-stats { gap: 1.2rem; }
+  .hstat-n { font-size: 1.3rem; }
+}
+
+/* ============================================
+   BGC BOARD — explicit square sizes (fixes hidden panel render)
+   ============================================ */
+.bgc-board.chess-board-viewer {
+  display: grid !important;
+  grid-template-columns: repeat(8, 25px) !important;
+  grid-template-rows: repeat(8, 25px) !important;
+  width: 200px !important;
+  height: 200px !important;
+  border: 2px solid #8b6343 !important;
+}
+.bgc-board .vsq {
+  width: 25px !important;
+  height: 25px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.bgc-board .vpiece.piece-svg {
+  width: 90% !important;
+  height: 90% !important;
+}
+.bgc-board .vpiece.piece-svg svg {
+  width: 100% !important;
+  height: 100% !important;
 }
