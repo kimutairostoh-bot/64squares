@@ -1,4 +1,4 @@
-// 64 SQUARES v9 — best-games-autoshow — 2026-06-01 06:05
+// 64 SQUARES v10 — 2026-06-01 06:38
 // ===================================================
 // 64 SQUARES — script.js
 // ===================================================
@@ -601,12 +601,14 @@ function closeBestGame(playerId) {
 
 // Auto-init all best game boards on player detail page
 function initBestGameBoards() {
-  document.querySelectorAll('.bgc-pgn-data').forEach(function(el) {
+  document.querySelectorAll('.bgc-pgn-data').forEach(function(el, i) {
     const vid = el.dataset.vid;
-    const pgn = el.textContent;
-    if (vid && pgn && pgn.trim()) {
-      setTimeout(function() { initGameViewer(vid, pgn); }, 80);
-    }
+    const pgn = el.textContent ? el.textContent.trim() : '';
+    if (!vid) return;
+    // Stagger init so boards don't all compete at once
+    setTimeout(function() {
+      initGameViewer(vid, pgn);
+    }, 80 + i * 120);
   });
 }
 
@@ -617,6 +619,19 @@ function pdSwitchTab(btn, id) {
   document.querySelectorAll('.pd-pane').forEach(function(p) { p.classList.remove('active'); });
   const panel = document.getElementById('pd-' + id);
   if (panel) panel.classList.add('active');
+  // Init boards when games tab becomes visible
+  if (id === 'games') {
+    setTimeout(function() {
+      initBestGameBoards();
+      // Force rebuild any boards that rendered at 0-size
+      document.querySelectorAll('.bgc-pgn-data').forEach(function(el) {
+        const vid = el.dataset.vid;
+        if (vid && gameViewerStates[vid] && gameViewerStates[vid].states) {
+          buildGameBoard('board-' + vid, gameViewerStates[vid].states[gameViewerStates[vid].idx], gameViewerStates[vid].flipped);
+        }
+      });
+    }, 60);
+  }
 }
 
 function toggleBestGameViewer(vid, pgn) {
@@ -686,7 +701,86 @@ function renderArticles() {
 }
 function showAllArticles() { articlesShowAll = true; renderArticles(); }
 
-function renderPlayers(){const grid=document.getElementById('playersGrid');if(!grid)return;if(!siteData.players.length){grid.innerHTML='<p class="empty-msg">No players yet.</p>';return;}grid.innerHTML=siteData.players.map(function(p){const avatarHTML=p.image?'<img class="player-avatar-photo" src="'+p.image+'" alt="'+escHtml(p.name)+'"/>':'<div class="player-avatar">'+escHtml(p.name[0])+'</div>';return'<div class="player-card fade-in" onclick="openPlayer('+p.id+')"><div class="player-card-header">'+avatarHTML+'<div><div class="player-name">'+(p.title?'<span class="player-title-badge">'+escHtml(p.title)+'</span> ':'')+escHtml(p.name)+'</div><div class="player-country">'+escHtml(p.country||'')+'</div></div></div><div class="player-card-body"><div class="player-rating">Peak Rating <strong>'+escHtml(p.rating||'N/A')+'</strong></div>'+(p.style?'<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">'+escHtml(p.style)+'</div>':'')+'<div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">Click to view full profile \u2192</div></div></div>';}).join('');}
+
+function openAllPlayersPage() {
+  const cards = siteData.players.map(function(p) {
+    const avatarHTML = p.image
+      ? '<img class="player-avatar-photo" src="' + p.image + '" alt="' + escHtml(p.name) + '"/>'
+      : '<div class="player-avatar">' + escHtml(p.name[0]) + '</div>';
+    return '<div class="player-card fade-in" onclick="openPlayer(' + p.id + ')">'
+      + '<div class="player-card-header">' + avatarHTML
+        + '<div><div class="player-name">'
+          + (p.title ? '<span class="player-title-badge">' + escHtml(p.title) + '</span> ' : '')
+          + escHtml(p.name) + '</div>'
+          + '<div class="player-country">' + escHtml(p.country || '') + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="player-card-body">'
+        + '<div class="player-rating">Peak Rating <strong>' + escHtml(p.rating || 'N/A') + '</strong></div>'
+        + (p.style ? '<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">' + escHtml(p.style) + '</div>' : '')
+        + '<div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">View profile \u2192</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  showDetailPage(
+    '<div onclick="goHome()" class="detail-back">\u2190 Back to Journal</div>'
+    + '<div class="all-players-page">'
+      + '<div class="all-players-header">'
+        + '<h1 class="all-players-title">Player Profiles</h1>'
+        + '<p class="all-players-sub">' + siteData.players.length + ' players</p>'
+      + '</div>'
+      + '<div class="players-grid all-players-grid">' + cards + '</div>'
+    + '</div>'
+  );
+  setTimeout(initFadeIn, 80);
+}
+
+function renderPlayers() {
+  const grid = document.getElementById('playersGrid');
+  if (!grid) return;
+  if (!siteData.players.length) {
+    grid.innerHTML = '<p class="empty-msg">No players yet.</p>';
+    return;
+  }
+  const LIMIT = 6;
+  const visible = siteData.players.slice(0, LIMIT);
+  const hasMore = siteData.players.length > LIMIT;
+
+  grid.innerHTML = visible.map(function(p) {
+    const avatarHTML = p.image
+      ? '<img class="player-avatar-photo" src="' + p.image + '" alt="' + escHtml(p.name) + '"/>'
+      : '<div class="player-avatar">' + escHtml(p.name[0]) + '</div>';
+    return '<div class="player-card fade-in" onclick="openPlayer(' + p.id + ')">'
+      + '<div class="player-card-header">' + avatarHTML
+        + '<div><div class="player-name">'
+          + (p.title ? '<span class="player-title-badge">' + escHtml(p.title) + '</span> ' : '')
+          + escHtml(p.name) + '</div>'
+          + '<div class="player-country">' + escHtml(p.country || '') + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="player-card-body">'
+        + '<div class="player-rating">Peak Rating <strong>' + escHtml(p.rating || 'N/A') + '</strong></div>'
+        + (p.style ? '<div style="font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem;">' + escHtml(p.style) + '</div>' : '')
+        + '<div style="margin-top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--mid);letter-spacing:.08em;">View profile \u2192</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  // Remove old button if exists
+  const existing = document.getElementById('players-see-more');
+  if (existing) existing.remove();
+
+  if (hasMore) {
+    const wrap = document.createElement('div');
+    wrap.id = 'players-see-more';
+    wrap.className = 'players-see-more-wrap';
+    wrap.innerHTML = '<button class="players-see-more-btn" onclick="openAllPlayersPage()">'
+      + 'See all ' + siteData.players.length + ' players &nbsp;&#8594;</button>';
+    grid.parentNode.insertBefore(wrap, grid.nextSibling);
+  }
+  setTimeout(initFadeIn, 80);
+}
 
 let activePdfTag='All';
 function renderGames(){const list=document.getElementById('gamesList');if(!list)return;if(!siteData.games.length){list.innerHTML='<p class="empty-msg">No games yet.</p>';return;}list.innerHTML=siteData.games.map(function(g,i){const opening=detectOpening(g.pgn);const gid=String(g.id);const blackName=escHtml(g.black_name||g.black||'Black');const whiteName=escHtml(g.white_name||g.white||'White');return'<div class="game-entry fade-in"><div class="game-row" onclick="toggleGameViewer(\'gv-'+gid+'\','+gid+')"><div class="game-num">'+String(i+1).padStart(2,'0')+'</div><div><div class="game-title">'+escHtml(g.title)+(opening?' <span class="opening-badge-sm">\u265E '+escHtml(opening)+'</span>':'')+'</div><div class="game-meta">'+escHtml(g.white||'')+' vs '+escHtml(g.black||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.event||'')+' &nbsp;&middot;&nbsp; '+escHtml(g.result||'')+'</div></div><div class="game-right"><div class="game-year">'+escHtml(g.year||'')+'</div><div class="game-expand-icon">\u25BE</div></div></div><div class="game-viewer" id="gv-'+gid+'" style="display:none;"><div class="game-viewer-inner"><div class="gv-board-wrap"><div class="board-player-strip board-player-black">\u265A '+blackName+'</div><div id="board-'+gid+'" class="chess-board-viewer"></div><div class="board-player-strip board-player-white">\u2654 '+whiteName+'</div></div><div class="gv-controls"><div class="gv-pgn" id="pgn-'+gid+'"></div><div class="gv-nav"><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'start\')">\u007C\u25C0</button><button class="gv-btn" id="prev-'+gid+'" onclick="gameStep(\''+gid+'\',-1)">\u25C0</button><button class="gv-btn" id="play-'+gid+'" onclick="toggleAutoPlay(\''+gid+'\')">\u25B6</button><span class="gv-movenav" id="movenav-'+gid+'">Move 0</span><button class="gv-btn" id="next-'+gid+'" onclick="gameStep(\''+gid+'\',1)">\u25B6</button><button class="gv-btn" onclick="gameJump(\''+gid+'\',\'end\')">\u25B6\u007C</button><button class="gv-btn" id="flip-'+gid+'" onclick="flipBoard(\''+gid+'\')">&#8645;</button></div><button class="gv-open-page" onclick="openGame('+gid+')">Open full game page \u2192</button></div></div></div></div>';}).join('');}
