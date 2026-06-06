@@ -6,7 +6,7 @@
   <title>64 Squares — Chess Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css?v=202606010704"/>
+  <link rel="stylesheet" href="style.css?v=202606041221"/>
 </head>
 <body>
 
@@ -258,17 +258,15 @@
         <textarea id="p-achievements" rows="3" placeholder="World Chess Champion | 1985&#8211;2000&#10;Peak FIDE Rating 2851 | 1999"></textarea>
 
         <!-- BEST GAMES — updated with PGN field -->
-                        <label>Best Games <span style="font-weight:300;opacity:.7">(up to 10 games — one per line)</span></label>
+                                <label>Best Games <span style="font-weight:300;opacity:.7">(one per line, up to 10)</span></label>
         <div class="bestgames-format-hint">
-          <strong>Format per line:</strong> Title | Event | Year | PGN | White | Black | Result<br/>
+          <strong>Format:</strong> Title | Event | Year | PGN | White | Black | Result<br/>
           <strong>Result values:</strong> 1-0 &nbsp;·&nbsp; 0-1 &nbsp;·&nbsp; 1/2<br/>
-          <strong>PGN</strong> is optional — board still shows starting position if blank.<br/><br/>
-          <strong>Examples:</strong><br/>
-          Immortal Game | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6 3.Bb5 | Kasparov | Topalov | 1-0<br/>
-          Game of the Century | Rosenwald | 1956 | 1.Nf3 Nf6 2.c4 g6 | Byrne | Fischer | 0-1<br/>
-          WCC Game 6 | Dubai 2021 | 2021 | 1.d4 Nf6 2.Nf3 | Carlsen | Nepomniachtchi | 1-0
+          <strong>PGN tip:</strong> Get accurate PGN from <a href="https://lichess.org/analysis" target="_blank" style="color:#4a90d9">lichess.org/analysis</a> — paste moves in the 4th column.<br/><br/>
+          <strong>Example:</strong><br/>
+          Immortal Game | Wijk aan Zee | 1999 | 1.e4 d6 2.d4 Nf6 3.Nc3 g6 | Kasparov | Topalov | 1-0
         </div>
-        <textarea id="p-bestgames" rows="8" placeholder="Immortal Game | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 Nc6 | Kasparov | Topalov | 1-0&#10;Game of Century | Rosenwald | 1956 | 1.Nf3 Nf6 | Byrne | Fischer | 0-1&#10;(add up to 10 games)"></textarea>
+        <textarea id="p-bestgames" rows="10" style="font-family:var(--mono);font-size:.75rem;line-height:1.8;" placeholder="Immortal Game | Wijk aan Zee | 1999 | 1.e4 e5 2.Nf3 | Kasparov | Topalov | 1-0&#10;Game of the Century | Rosenwald | 1956 | 1.Nf3 Nf6 2.c4 | Byrne | Fischer | 0-1&#10;WCC Game 10 | New York | 2016 | 1.e4 e5 2.Nf3 Nc6 | Carlsen | Karjakin | 1-0"></textarea>
 
         <button class="admin-submit-btn" onclick="addPlayer()"><span id="p-submit-label">Add Player &#8594;</span></button>
       </div>
@@ -404,6 +402,6 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script src="script.js?v=202606010704"></script>
+<script src="script.js?v=202606041221"></script>
 </body>
 </html>
