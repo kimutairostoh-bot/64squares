@@ -1,4 +1,4 @@
-// 64 SQUARES v12 — board-fix — 2026-06-01 07:04
+// 64 SQUARES v13 — dark-default — 2026-06-04 12:21
 // ===================================================
 // 64 SQUARES — script.js
 // ===================================================
@@ -47,7 +47,20 @@ let siteData = { articles: [], players: [], games: [], pdfs: [] };
 function getViews() { try { return JSON.parse(localStorage.getItem(VIEWS_KEY) || '{}'); } catch { return {}; } }
 function trackView(type, id) { const v = getViews(); const k = type + ':' + id; v[k] = (v[k] || 0) + 1; try { localStorage.setItem(VIEWS_KEY, JSON.stringify(v)); } catch (e) {} }
 function toggleTheme() { const isDark = document.body.classList.toggle('dark'); localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); document.getElementById('themeToggleBtn').textContent = isDark ? '\u25CB' : '\u25D1'; }
-function applyStoredTheme() { if (localStorage.getItem(THEME_KEY) === 'dark') { document.body.classList.add('dark'); const btn = document.getElementById('themeToggleBtn'); if (btn) btn.textContent = '\u25CB'; } }
+function applyStoredTheme() {
+  const stored = localStorage.getItem(THEME_KEY);
+  // Default is dark — only go light if user explicitly chose light
+  const isDark = stored === null ? true : stored === 'dark';
+  if (isDark) {
+    document.body.classList.add('dark');
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) btn.textContent = '\u25CB';
+  } else {
+    document.body.classList.remove('dark');
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) btn.textContent = '\u25D1';
+  }
+}
 
 const defaultData = {
   articles: [
