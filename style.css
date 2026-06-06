@@ -3298,3 +3298,25 @@ body *, body *::before, body *::after {
   width: 100% !important;
   height: 100% !important;
 }
+
+/* ============================================
+   PLAYER CARDS — dark mode fixes
+   ============================================ */
+body.dark .player-card-header {
+  background: #1c1c1c;
+}
+body.dark .player-name {
+  color: #e8e4dc !important;
+}
+body.dark .player-country {
+  color: rgba(232,228,220,.5) !important;
+}
+body.dark .player-title-badge {
+  background: rgba(255,140,0,.2);
+  color: #ffb347;
+  border-color: rgba(255,140,0,.4);
+}
+body.dark .style-badge {
+  border-color: rgba(232,228,220,.25);
+  color: rgba(232,228,220,.65);
+}
